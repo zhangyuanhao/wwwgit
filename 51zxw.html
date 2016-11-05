@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet/css" type="text/css" href="zxw.css">
+<script type="text/javascript" href="zxw.js"></script>
+<script src="http://cdn.static.runoob.com/libs/angular.js/1.4.6/angular.min.js"></script>
+<script src="http://cdn.static.runoob.com/libs/angular.js/1.4.6/angular.min.js"></script>
+<style>
+.color_red{
+    background-color:red;
+}
+</style>
+</head>
+<body ng-app="myApp" ng-controller="userCtrl">
+
+<div class="container">
+
+<h3>Users</h3>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th ng-show="shanc">删除</th>
+      <th ng-show="!shanc"> </th>
+      <th>编辑</th>
+      <th>名</th>
+      <th>姓</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="user in users">
+      <td>
+        <button class="btn" ng-click="remove(user.id)" ng-show="shanc">
+          <span class="glyphicon glyphicon-pencil"></span>删除
+        </button>
+      </td>
+      <td>
+        <button class="btn" ng-click="editUser(user.id)">
+          <span class="glyphicon glyphicon-pencil"></span>编辑
+        </button>
+      </td>
+      <td>{{ user.fName }}</td>
+      <td>{{ user.lName }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+<button class="btn btn-success" ng-click="editUser('new')" alt="haha">
+<span class="glyphicon glyphicon-user"></span>创建新用户
+</button>
+
+<button class="btn btn-success" ng-click="shanchu()">
+<span class="glyphicon glyphicon-user"></span>删除
+</button>
+
+<button class="btn btn-success" ng-click="duiqi()">
+<span class="glyphicon glyphicon-user"></span>对齐
+</button>
+<hr>
+
+<h3 ng-show="edit">创建新用户:</h3>
+<h3 ng-hide="edit">编辑用户:</h3>
+
+<form class="form-horizontal">
+
+  <div class="row">
+    <div class="form-group">
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+        <label class="control-label">名:</label>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <input type="text" ng-model="fName" ng-disabled="!edit" placeholder="名">
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <label class=" control-label">姓:</label>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <input type="text" ng-model="lName" ng-disabled="!edit" placeholder="姓">
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <label class=" control-label">密码:</label>
+       </div>
+       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <input name="password1" type="password" ng-model="passw1" ng-class="cl" placeholder="密码"  required="required">
+         <text style="color:red" ng-show="less_than_6">长度不能小于6</text>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <label class=" control-label">重复密码:</label>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <input type="password" ng-model="passw2" placeholder="重复密码">
+      </div>
+    </div>
+  </div>
+
+</form>
+
+<hr>
+<button class="btn btn-success" ng-disabled="error || incomplete" ng-show="xiugai" ng-click="passwo()">
+<span class="glyphicon glyphicon-save"></span>修改
+</button>
+
+<button class="btn btn-success" ng-disabled="error || incomplete" ng-show="save1" ng-click="addUser()">
+<span class="glyphicon glyphicon-save"></span>保存
+</button>
+
+
+<script src="zxw.js"></script>
+<script src="zxw.css"></script>
+
+</body>
+</html>
