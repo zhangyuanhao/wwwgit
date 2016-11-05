@@ -1,0 +1,241 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(cbis: String)(implicit messages: Messages)
+
+@import common._
+
+@ng._panel_collapse("TaskSvc.task_info.criminal",
+                   "fa-balance-scale",
+                    MSG("criminal_records"),
+                    Some(parts._checkbox_of_remaining(
+                    s"!${cbis}.not_provided",
+                    s"${cbis}.remaining.status"
+                    ))){
+  <div ng-if="@(cbis).remaining.status">
+    @parts._reason_of_remaining(
+      "cri",
+      "TaskSvc.dictionary.reason_def.cri",
+      s"${cbis}.remaining"
+      )
+  </div>
+
+  <div ng-if="!@(cbis).remaining.status">
+    <div class="row">
+      <div class="col-xs-12">
+        @{parts._line_of_truth(s"${cbis}.checks.records", false)}
+      </div>
+    </div>
+
+    <div ng-repeat="cbi in @(cbis).checks.records.facts.translated.zh.primary.fact track by $index">
+      @criminal_show("cbi", "zh")
+    </div>
+
+    <div ng-repeat="cbi in @(cbis).checks.records.facts.translated.en.primary.fact track by $index">
+      @criminal_show("cbi", "en")
+    </div>
+
+    <div ng-controller="CriminalCtrl">
+      <div class="row m-b-sm">
+        <div class="col-xs-12">
+          <button class="btn btn-primary btn-xs" ng-click="newCriminal('zh')" ng-if="TaskSvc.lang.zh">
+            @TasksCtrl.msg("add_record.zh")
+          </button>
+          <button class="btn btn-primary btn-xs" ng-click="newCriminal('en')" ng-if="TaskSvc.lang.en">
+            @TasksCtrl.msg("add_record.en")
+          </button>
+        </div>
+      </div>
+      <div class="slide-animate-container">
+        <div class="slide-animate" ng-include="input_page"></div>
+      </div>
+    </div>
+
+    @*  犯罪记录备注  *@
+    <div class="row m-t-md">
+      <div class="col-xs-12">
+        @{parts._line_comment(TasksCtrl.msg("cri_comment"), s"${cbis}.comments", "cri_comment")}
+      </div>
+    </div>
+  </div>
+}
+
+@criminal_show(cbi: String, language: String) = {
+  <div class="panel panel-info ng-cloak">
+    <div class="panel-body p-xxs">
+      <div class="row m-b-sm">
+        <div class="col-xs-6">
+          <strong class="text-success">
+            @TasksCtrl.msg(s"record.$language")
+          </strong>
+        </div>
+        <div class="col-xs-6">
+          <button type="button" class="close pull-right" ng-click="TaskSvc.criminalRemove($index, '@language')">
+            <i class="fa fa-fw fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("criminal_records.imprisoned_on") : </strong> {{ @(cbi).imprisoned_on | date : "@MSG("date.format.long")" }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("criminal_records.offense") : </strong> {{ @(cbi).offense }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("criminal_records.classification") : </strong> {{ @(cbi).classification }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("criminal_records.authority") : </strong> {{ @(cbi).authority }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("criminal_records.sentence_length")  : </strong> {{ @(cbi).sentence_length }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("criminal_records.result_of_justice")  : </strong>{{ @(cbi).result_of_justice }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("criminal_records.released_from_prison_on") : </strong> {{ @(cbi).released_from_prison_on | date : "@MSG("date.format.long")" }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("criminal_records.reason_for_releasing") : </strong> {{ @(cbi).reason_for_releasing }}</p>
+        </div>
+        <div class="col-xs-12">
+          <p><strong>@MSG("criminal_records.case_summary")  : </strong> {{ @(cbi).case_summary }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<script type="text/ng-template" id="criminalInputZh.html">
+  @criminal_input("zh")
+</script>
+
+<script type="text/ng-template" id="criminalInputEn.html">
+  @{criminal_input("en")}
+</script>
+
+@criminal_input(language: String) = {
+  <div class="panel panel-default panel-border">
+    <div class="panel-body">
+      <form name="criminal_form" novalidate>
+        <div class="row m-b-sm">
+          <div class="col-xs-12">
+            <strong>@TasksCtrl.msg(s"record.$language")</strong>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            <div class="form-group">
+              <label class="sr-only">@TasksCtrl.msg("criminal_records.imprisoned_on")</label>
+              @ng._input_date_picker("imprisoned_on",
+                '_formname               -> "criminal_form",
+                "ng-model".s             -> "criminal.imprisoned_on",
+                "datepicker-options".s   -> "criminal_info.imprisoned_on_picker.date_options",
+                "is-open".s              -> "criminal_info.imprisoned_on_picker.opened",
+                "uib-datepicker-popup".s -> MSG("date.format.long"),
+                '_click                  -> "criminal_info.imprisoned_on_picker.open()",
+                "localdate-to-string".s  -> None,
+                'placeholder             -> MSG("criminal_records.imprisoned_on")
+              )
+            </div>
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            @ng._form_control("offense",
+              '_formname        -> "criminal_form",
+              'maxLength        -> 512,
+              'placeholder      -> MSG("criminal_records.offense"),
+              "ng-model".s      -> "criminal.offense",
+              "empty-to-null".s -> None
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            @ng._form_control("classification",
+              '_formname   -> "criminal_form",
+              'maxLength   -> 512,
+              'placeholder -> MSG("criminal_records.classification"),
+              'required    -> true,
+              "ng-model".s -> "criminal.classification"
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            @ng._form_control("authority",
+              '_formname        -> "criminal_form",
+              'maxLength        -> 512,
+              'placeholder      -> MSG("criminal_records.authority"),
+              "ng-model".s      -> "criminal.authority",
+              "empty-to-null".s -> None
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            @ng._form_control("sentence_length",
+              '_formname        -> "criminal_form",
+              'maxLength        -> 512,
+              'placeholder      -> MSG("criminal_records.sentence_length"),
+              "ng-model".s      -> "criminal.sentence_length",
+              "empty-to-null".s -> None
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            @ng._form_control("result_of_justice",
+              '_formname        -> "criminal_form",
+              'maxLength        -> 64,
+              'placeholder      -> MSG("criminal_records.result_of_justice"),
+              "ng-model".s      -> "criminal.result_of_justice",
+              "empty-to-null".s -> None
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            <div class="form-group">
+              <label class="sr-only">@TasksCtrl.msg("criminal_records.released_from_prison_on")</label>
+              @ng._input_date_picker("released_from_prison_on",
+                '_formname               -> "criminal_form",
+                "ng-model".s             -> "criminal.released_from_prison_on",
+                "datepicker-options".s   -> "criminal_info.released_from_prison_on_picker.date_options",
+                "is-open".s              -> "criminal_info.released_from_prison_on_picker.opened",
+                "uib-datepicker-popup".s -> MSG("date.format.long"),
+                '_click                  -> "criminal_info.released_from_prison_on_picker.open()",
+                "localdate-to-string".s  -> None,
+                'placeholder             -> MSG("criminal_records.released_from_prison_on")
+              )
+            </div>
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            @ng._form_control("reason_for_releasing",
+              '_formname        -> "criminal_form",
+              'maxLength        -> 512,
+              'placeholder      -> MSG("criminal_records.reason_for_releasing"),
+              "ng-model".s      -> "criminal.reason_for_releasing",
+              "empty-to-null".s -> None
+            )
+          </div>
+          <div class="col-xs-12">
+            @ng._form_control("case_summary",
+              '_formname        -> "criminal_form",
+              '_type            -> "textarea",
+              '_textarea_rows   -> 1,
+              'maxLength        -> 512,
+              'placeholder      -> MSG("criminal_records.case_summary"),
+              "ng-model".s      -> "criminal.case_summary",
+              "empty-to-null".s -> None
+            )
+          </div>
+        </div>
+        <div class="row text-right">
+          <div class="col-xs-12">
+            <button type="submit" class="btn btn-primary btn-sm" ng-click="criminal_form.$valid ? addCriminal('@language') : ''">@MSG("ok")</button>
+            <button class="btn btn-link btn-sm" ng-click="cancelCriminal()">@MSG("cancel")</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}

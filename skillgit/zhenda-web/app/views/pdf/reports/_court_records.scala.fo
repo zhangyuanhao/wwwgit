@@ -1,0 +1,80 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  报告正文 -- 法院诉讼记录
+*@
+@(checks_set:ChecksSet)(implicit messages: Messages)
+
+@CourtRecordsChecks.findIn(checks_set).map{ court_records =>
+
+  @if(!court_records.review_result.passed_?) {
+    @* 未通过审核 *@
+    @__panel_explanation(MSG("court_records"), MSG("views.background_reports.pdf.review_not_passed"))
+  } else {
+    @if(court_records.remaining.status) {
+      @* 待查 *@
+      @__panel_explanation(MSG("court_records"), __remaining(court_records.remaining, CourtRecordsChecks.RemainingReason).toString)
+    } else {
+      <fo:table @attribute_sets("panel", "panel-block", "margin-bottom-sm", s"${messages.lang.code}-panel")>
+        <fo:table-column column-width="19%"/>
+        <fo:table-column column-width="21%"/>
+        <fo:table-column column-width="24%"/>
+        <fo:table-column column-width="15%"/>
+        <fo:table-column column-width="21%"/>
+
+        <fo:table-body>
+          @* 标题 *@
+          @__panel_header(MSG("court_records"), colspan = 5)
+          @* 表格中列标题 *@
+          @__panel_row(
+            __panel_cell(MSG("court_records.classification"), Seq("text-center", "text-strong")),
+            __panel_cell(MSG("court_records.court_date"), Seq("text-center", "text-strong")),
+            __panel_cell(MSG("court_records.court"), Seq("text-center", "text-strong")),
+            __panel_cell(MSG("court_records.party"), Seq("text-center", "text-strong")),
+            __panel_cell(MSG("court_records.sentence"), Seq("text-center", "text-strong"))
+          )()
+
+          @* 表格中列内容 *@
+          @CourtRecordsCheck.Records.findIn(court_records).map { records =>
+            @records.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+              @if(fact.isEmpty) {
+                @__panel_row(
+                  __panel_cell(MSG("not_exists"), Seq("text-center")),
+                  __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"), Seq("text-center")),
+                  __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"), Seq("text-center")),
+                  __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"), Seq("text-center")),
+                  __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"), Seq("text-center"))
+                )()
+              } else {
+                @fact.map { cou =>
+                  @__panel_row(
+                    __panel_cell(cou.classification.self, Seq("text-center")),
+                    __panel_cell(DateTimeFormat("date.format.long").print(cou.court_date), Seq("text-center")),
+                    __panel_cell(cou.court.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")), Seq("text-center")),
+                    __panel_cell(cou.party.self, Seq("text-center")),
+                    __panel_cell(cou.disposition.self, Seq("text-center"))
+                  )()
+                }
+              }
+            }
+          }
+
+          @* 备注 *@
+          @__panel_comment(court_records.comments, colspan = 5)
+        </fo:table-body>
+      </fo:table>
+    }
+  }
+}

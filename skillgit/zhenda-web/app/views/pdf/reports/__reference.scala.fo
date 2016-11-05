@@ -1,0 +1,108 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services._
+@import models.business.checks._
+@import models.business.references._
+@import models.business.infogathering._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  背景调查核实项目, 合并单元格用 (工作履历核实)
+*@
+@(reference: ReferenceCheckList, empty: Boolean = false, review_passed: Boolean = true, colspan: Int = 3)(implicit messages: Messages)
+
+@defining(
+  if (!review_passed) ""
+  else if (reference.invalid.status) BackgroundReportsCtrl.msg("pdf.empty")
+  else ""
+){ emptyText =>
+@* 证明人来源 *@
+@__panel_row(
+  __panel_cell(MSG(s"${ReferenceCheckList.basicName}.source"), Seq("text-strong")),
+  __panel_cell(Provide(reference.source.map(Reference.Source.msg(_))).format, colspan = colspan, pre_line = true)
+)()
+
+@defining(reference.current.map(r => r.translate(messages.lang).getOrElse(r.origin))) { referenceInfo =>
+@* 证明人 *@
+@__panel_row(
+  __panel_cell(MSG(s"${ReferenceCheckList.basicName}.name.1"), Seq("text-strong")),
+  __panel_cell(ReferenceGathering.BasicInfo.findIn(referenceInfo).map(_.provide.name).format, colspan = colspan, pre_line = true)
+)()
+
+@* 证明人职位 *@
+@__panel_row(
+  __panel_cell(MSG(s"${ReferenceCheckList.basicName}.position_title"), Seq("text-strong")),
+  __panel_cell(Provide(reference.basic_info.map(_.provide.position_title)).format, colspan = colspan, pre_line = true)
+)()
+
+@* 共事关系 *@
+@defining(
+  if (empty) emptyText
+  else ReferenceGathering.Relationship.findIn(referenceInfo).map(_.provide).format
+){ content =>
+@__panel_row(
+  __panel_cell(MSG(s"${ReferenceCheckList.basicName}.relationship"), Seq("text-strong")),
+  __panel_cell(content, colspan = colspan, pre_line = true)
+)()
+}
+
+@* 共事时间 *@
+@defining(
+  if (empty) emptyText
+  else ReferenceGathering.HowLong.findIn(referenceInfo).map(_.provide).format
+){ content =>
+@__panel_row(
+  __panel_cell(MSG(s"${ReferenceCheckList.basicName}.how_long"), Seq("text-strong")),
+  __panel_cell(content, colspan = colspan, pre_line = true)
+)()
+}
+}
+
+@* 证明人验证 *@
+@ReferenceCheck.Authenticity.findIn(reference).map { authenticity =>
+
+  @defining(
+    if (empty) emptyText
+    else authenticity.approaches.format
+  ){ content =>
+  @* 验证方式 *@
+  @__panel_row(
+    __panel_cell(MSG(s"${ReferenceCheckList.basicName}.authenticity.approaches"), Seq("text-strong")),
+    __panel_cell(content, colspan = colspan, pre_line = true)
+  )()
+  }
+
+  @defining(
+    if(empty){
+      if (!review_passed) __rating(Some(Level.Unknown))
+      else if (reference.invalid.status) __rating(Some(Level.Na))
+      else __rating(Some(Level.Unknown))
+    }else __rating(authenticity.rating)
+  ) { content =>
+    @* 验证结果 *@
+    @__panel_row(
+      __panel_cell(MSG(s"${ReferenceCheckList.basicName}.authenticity.result"), Seq("text-strong")),
+      __panel_cell(content, colspan = colspan)
+    )()
+  }
+
+  @defining(
+    if (empty) emptyText
+    else authenticity.comments.format
+  ) { content =>
+    @* 验证说明 *@
+    @__panel_row(
+      __panel_cell(MSG(s"${ReferenceCheckList.basicName}.authenticity.comment"), Seq("text-strong")),
+      __panel_cell(content, colspan = colspan, pre_line = true)
+    )()
+  }
+}}

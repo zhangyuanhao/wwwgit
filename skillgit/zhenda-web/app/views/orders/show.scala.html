@@ -1,0 +1,272 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services.definitions.PurchasedServices
+
+@(customer_id: UUID, order_id: UUID, purchased_services: PurchasedServices)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import service_options._
+
+@layouts.base(CustomerUserOrdersCtrl.msg("my.order.show")){
+
+  <div class="row ng-cloak" ng-controller="ShowCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+      <div class="row page-heading white-bg">
+        <h2>
+          <i class="fa fa-file-text-o fa-lg fa-fw"></i>
+          @CustomerUserOrdersCtrl.msg("my.orders")
+          <small>@CustomerUserOrdersCtrl.msg("my.order.show")</small>
+          <small ng-show="ShowSvc.status == 'Canceled'">
+            <span class="label label-warning">
+              {{ ShowSvc.dictionary.status_def[ShowSvc.status] }}
+            </span>
+          </small>
+        </h2>
+      </div>
+
+      @ng._msg_confirm_delete()
+
+      <div class="ibox m-t-md">
+        <div class="ibox-title">
+          <h3>
+            <i class="fa fa-hourglass-half fa-lg fa-fw"></i>
+            @CustomerUserOrdersCtrl.msg("order.progress")
+          </h3>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10 col-sm-offset-1 col-md-offset-1 col-lg-offset-1">
+              <div class="bs-wizard p-w-m">
+                @progress_step("order.progress.info_gathering", 0)
+                @progress_step("order.progress.basically_report", 1)
+                @progress_end("order.progress.finally_report", 2)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ibox">
+        <div class="ibox-title">
+          <h3>
+            <i class="fa fa-binoculars fa-lg fa-fw"></i>
+            @CustomerUserOrdersCtrl.msg("order.track")
+          </h3>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <table class="table table-hover table-striped">
+                <tbody>
+                  <tr class="ng-cloak" ng-repeat="track in ShowSvc.tracks">
+                    <td class="operator-column text-right">
+                      {{ShowSvc.dictionary['operator'][track.principal.role]}}
+                    </td>
+                    <td>
+                      <p class="main-content">
+                        <span>{{ShowSvc.dictionary['actions'][track.action]}}</span>
+                        <br ng-if="track.action === 'CustomerComplained'">
+                        <span ng-if="track.action === 'CustomerComplained'">
+                          @CustomerUserOrdersCtrl.msg("order.complained_info"): {{track.comment}}
+                        </span>
+                      </p>
+                      <small>{{track.happened_at | date:"@MSG("datetime.format.long")"}}</small>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ibox">
+        <div class="ibox-title">
+          <h3>
+            <i class="fa fa-black-tie fa-lg fa-fw"></i>
+            @CustomerUserOrdersCtrl.msg("candidate.basic_info")
+          </h3>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label>@CustomerUserOrdersCtrl.msg("order.name1") :</label>
+                {{OrderSvc.candidate_info.personal_name | personalName:"@messages.lang.language"}}
+              </div>
+              <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <label>@CustomerUserOrdersCtrl.msg("order.phone1") :</label>
+                {{OrderSvc.candidate_info.phone}}
+              </div>
+              <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4"
+                ng-show="OrderSvc.candidate_info.email">
+                <label>@MSG("email") :</label>
+                <a href="{{'mailto:' + OrderSvc.candidate_info.email}}">{{OrderSvc.candidate_info.email}}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ibox">
+        <div class="ibox-title">
+          <h3>
+            <i class="fa fa-cogs fa-lg fa-fw"></i>
+            @CustomerUserOrdersCtrl.msg("order.service")
+          </h3>
+        </div>
+        <div class="ibox-content">
+          <div class="row" ng-if="ShowSvc.packageName">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <label>@CustomerUserOrdersCtrl.msg("order.service_set") : </label>
+              <span> {{ShowSvc.packageName}} </span>
+            </div>
+          </div>
+
+          <div class="transparent-content m-t-sm">
+            @{_service_set(purchased_services)}
+          </div>
+
+          <div class="row" ng-show="OrderSvc.candidate_info.message_for_candidate">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  <label>@CustomerUserOrdersCtrl.msg("order.to_candidate") :</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  {{OrderSvc.candidate_info.message_for_candidate}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row" ng-show="OrderSvc.candidate_info.message_for_employees">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  <label>@CustomerUserOrdersCtrl.msg("order.to_employee") :</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  {{OrderSvc.candidate_info.message_for_employees}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row text-right m-b-md">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <a type="button" class="btn btn-primary "
+            ng-href="{{jsRoutes.controllers.BackgroundReportsCtrl.show(ShowSvc.order_id).url}}">
+            <i class="fa fa-search"></i>
+            @CustomerUserOrdersCtrl.msg("order.view")
+          </a>
+          <a type="button" class="btn btn-primary "
+            ng-href="{{ ShowSvc.editable ? jsRoutes.controllers.CustomerUserOrdersCtrl.edit(ShowSvc.order_id).url : ''}}"
+            ng-disabled="!ShowSvc.editable">
+            <i class="fa fa-pencil-square-o"></i>
+            @CustomerUserOrdersCtrl.msg("order.edit")
+          </a>
+          <button type="button" class="btn btn-default"
+            ng-click="confirmDelete()"
+            ng-disabled="ShowSvc.status != 'AwaitingSubmission'" >
+            <i class="fa fa-times"></i>
+            @CustomerUserOrdersCtrl.msg("order.cancel")
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+}(
+  libs.webjars("css", "awesome-bootstrap-checkbox"),
+  libs.assets("css", "orders/show")
+  )(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api_internal/orders"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "orders/show"),
+  libs.assets("js", "orders/order_svc"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.CustomerUserOrdersCtrl.edit,
+    routes.javascript.BackgroundReportsCtrl.show
+  )
+}
+
+@controller = {
+  <script>
+    views.orders.show.run(['ShowSvc', function(ShowSvc) {
+      ShowSvc.order_id = '@order_id';
+      ShowSvc.dictionary.msg = {
+        'work_days' : '@CustomerUserOrdersCtrl.msg("order.progress.work_days")'
+      };
+      ShowSvc.dictionary.status_def = @Html(Order.Status.toJson());
+      ShowSvc.dictionary.status_array = @Html(CustomerUserOrdersCtrl.StatusDef.toSeqArray);
+      ShowSvc.dictionary.actions = @Html(Order.Action.toJson());
+      ShowSvc.dictionary.operator = @Html(Order.Principal.Role.toJson());
+      ShowSvc.confirmDelete = {
+        title              : '@CustomerUserOrdersCtrl.msg("order.confirm.cancel.title")',
+        text               : '@CustomerUserOrdersCtrl.msg("order.confirm.cancel.text")',
+        type               : 'warning',
+        showCancelButton   : true,
+        confirmButtonText  : '@CustomerUserOrdersCtrl.msg("order.confirm.cancel.btn_confirm")',
+        cancelButtonText   : '@CustomerUserOrdersCtrl.msg("order.confirm.cancel.btn_cancel")',
+        confirmButtonClass : 'btn btn-lg btn-default',
+        cancelButtonClass  : 'btn btn-lg btn-primary',
+        buttonsStyling     : false
+      };
+    }]);
+  </script>
+}
+
+@progress_step(stepName : String, stepNum : Int) = {
+  <div class="bs-wizard-step m-b-sm m-t-md" ng-class="ShowSvc.progress_step[@{stepNum}]">
+    <div class="text-center bs-wizard-stepnum">@CustomerUserOrdersCtrl.msg(stepName)</div>
+    <div class="progress">
+      <div class="progress-bar">
+      </div>
+    </div>
+    <a class="bs-wizard-dot"></a>
+    <div class="bs-wizard-info text-center">
+      {{ ShowSvc.days_metrics[@stepNum] }}
+    </div>
+  </div>
+}
+
+@progress_end(stepName : String, stepNum : Int) = {
+  <div class="bs-wizard-step m-t-md" ng-class="ShowSvc.progress_step[@{stepNum}]">
+    <div class="text-center bs-wizard-stepnum">@CustomerUserOrdersCtrl.msg(stepName)</div>
+    <div class="progress">
+      <div class="progress-bar">
+      </div>
+    </div>
+    <a class="bs-wizard-dot"></a>
+    <div class="bs-wizard-info text-center">
+      {{ ShowSvc.days_metrics[@stepNum] }}
+    </div>
+    <a class="bs-wizard-dot"></a>
+  </div>
+}

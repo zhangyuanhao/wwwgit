@@ -1,0 +1,119 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(pager: Pager, sort:Seq[SortField])(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(InstitutionsCtrl.msg("index.title")) {
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa fa-institution fa-lg fa-fw"></i>
+      @InstitutionsCtrl.msg("index.head")
+    </h2>
+  </div>
+
+  <div class="row wrapper-content" ng-controller="InstitutionsCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div class="ibox">
+        <div class="ibox-title">
+          <div class="row">
+            <div class="col-xs-8 col-sm-6">
+              @ng._search("keyword", InstitutionsCtrl)
+            </div>
+            <div class="col-xs-4 col-sm-6 text-right">
+              <a href="@routes.InstitutionsCtrl.nnew" class="btn btn-primary">
+                <i class="fa fa-plus"></i>
+                @InstitutionsCtrl.msg("new.institution")
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="table-responsive">
+                <table class="table table-hover table-ellipsis">
+                  <thead>
+                    <tr>
+                      <th class="col-xs-4 col-sm-4">
+                        @InstitutionsCtrl.msg("institution.name")
+                      </th>
+                      <th class="col-xs-4 col-sm-2">
+                        @InstitutionsCtrl.msg("institution.former_name")
+                      </th>
+                      <th class="col-sm-1 text-right">
+                        @MSG("operation")
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="ng-cloak" ng-repeat="inst in List.values">
+                      <td>
+                        {{ inst.name }}
+                      </td>
+                      <td>
+                        {{ inst.former_name }}
+                      </td>
+                      <td class="text-right">
+                        <a ng-href="{{jsRoutes.controllers.InstitutionsCtrl.edit(inst.id).url}}">
+                          <i class="fa fa-edit fa-lg text-warning"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-xs-12">
+              @ng._pager("List.links")
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "api_internal/institutions"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "institutions/index"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.InstitutionsCtrl.edit
+  )
+}
+
+@controller = {
+  <script>
+    views.institutions.index.run(['InstitutionList', function(InstitutionList) {
+      InstitutionList.options = {
+        page     : @pager.pageNum,
+        pageSize : @pager.pageSize,
+        sort     : @Html(SortField.toJson(sort)),
+        nextPage : '@Html(routes.InstitutionsCtrl.index(pager.next).toString)',
+        prevPage : '@Html(routes.InstitutionsCtrl.index(pager.prev).toString)'
+      };
+    }]);
+  </script>
+}

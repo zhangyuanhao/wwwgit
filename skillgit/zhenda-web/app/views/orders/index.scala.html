@@ -1,0 +1,157 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(customer_id: UUID, pager: Pager, sort:Seq[SortField])(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(CustomerUserOrdersCtrl.msg("index.title")) {
+  <div class="row ng-cloak" ng-controller="OrderCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+      <div class="row page-heading white-bg">
+        <h2>
+          <i class="fa fa-file-text-o fa-lg fa-fw"></i>
+          @CustomerUserOrdersCtrl.msg("my.orders")
+          <small>@CustomerUserOrdersCtrl.msg("my.orders.describe")</small>
+        </h2>
+      </div>
+
+      <div class="row wrapper-content">
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-md-push-9 col-lg-push-9">
+          <div class="ibox">
+            <div class="ibox-title">
+              <strong>@CustomerUserOrdersCtrl.msg("my.orders")</strong>
+            </div>
+            <div class="ibox-content no-padding">
+              <div class="list-group">
+                <a class="list-group-item"
+                  ui-sref="all_orders"
+                  ng-class="{'list-group-item-info':OrderListSvc.condition_status == 'all_orders'}">
+                  @CustomerUserOrdersCtrl.msg("my.order.all")
+                </a>
+                <a class="list-group-item"
+                  ui-sref="search_orders"
+                  ng-class="{'list-group-item-info':OrderListSvc.condition_status == 'search_orders'}">
+                  @CustomerUserOrdersCtrl.msg("my.order.search")
+                </a>
+                <a class="list-group-item"
+                  ui-sref="finally_completed"
+                  ng-class="{'list-group-item-info':OrderListSvc.condition_status == 'finally_completed'}">
+                  <span class="badge" >{{OrderListSvc.counts.finally_completed[0]}}</span>
+                  @CustomerUserOrdersCtrl.msg("my.order.finally_completed")
+                </a>
+                <a class="list-group-item"
+                  ui-sref="basically_completed"
+                  ng-class="{'list-group-item-info':OrderListSvc.condition_status == 'basically_completed'}">
+                  <span class="badge" >{{OrderListSvc.counts.basically_completed[0]}}</span>
+                  @CustomerUserOrdersCtrl.msg("my.order.basically_completed")
+                </a>
+                <a class="list-group-item"
+                  ui-sref="in_progress"
+                  ng-class="{'list-group-item-info':OrderListSvc.condition_status == 'in_progress'}">
+                  <span class="badge" >{{OrderListSvc.counts.in_progress[0]}}</span>
+                  <span class="badge risk_number"
+                    ng-show="OrderListSvc.counts.in_progress[1]">
+                    {{OrderListSvc.counts.in_progress[1]}}
+                  </span>
+                  @CustomerUserOrdersCtrl.msg("my.order.in_progress")
+                </a>
+                <a class="list-group-item"
+                  ui-sref="awaiting_submission"
+                  ng-class="{'list-group-item-info':OrderListSvc.condition_status == 'awaiting_submission'}">
+                  <span class="badge" >{{OrderListSvc.counts.awaiting_submission[0]}}</span>
+                  @CustomerUserOrdersCtrl.msg("my.order.new")
+                </a>
+                <a class="list-group-item"
+                  ui-sref="customer_complained"
+                  ng-class="{'list-group-item-info':OrderListSvc.condition_status == 'customer_complained'}">
+                  <span class="badge" >{{OrderListSvc.counts.customer_complained[0]}}</span>
+                  @CustomerUserOrdersCtrl.msg("my.order.customer_complained")
+                </a>
+              </div>
+            </div>
+
+            <div class="row m-t-md">
+              <div class="col-xs-12">
+                <div class="ibox-content">
+                  @parts.__new_order()
+                </div>
+              </div>
+            </div>
+
+            <div class="row m-t-md hidden-xs hidden-is hidden-sm ">
+              <div class="col-xs-12">
+                @parts.__account_executives()
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-md-pull-3 col-lg-pull-3">
+          <div ui-view ></div>
+        </div>
+
+        <div class="hidden-md hidden-lg col-xs-12">
+          @parts.__account_executives()
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+}(
+  libs.assets("css", "orders/index")
+  )(
+  libs.webjars("js", "angular-resource"),
+  libs.webjars("js", "angular-ui-router"),
+  libs.assets("js", "api_internal/orders"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "orders/index"),
+  libs.assets("js", "orders/order_svc"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.CustomerUserOrdersCtrl.show,
+    routes.javascript.BackgroundReportsCtrl.show,
+    routes.javascript.CustomerUserOrdersCtrl.parts
+  )
+}
+
+@controller = {
+  <script>
+    views.orders.index.run(['OrderListSvc', function(OrderListSvc) {
+      OrderListSvc.options = {
+        page     : @pager.pageNum,
+        pageSize : @pager.pageSize,
+        sort     : @Html(SortField.toJson(sort)),
+        uid      : '@req.user.id',
+        nextPage : '@Html(routes.CustomerUserOrdersCtrl.index(pager.next).toString)',
+        prevPage : '@Html(routes.CustomerUserOrdersCtrl.index(pager.prev).toString)'
+      };
+      OrderListSvc.customer_id       = '@customer_id';
+      OrderListSvc.dictionary.status = @Html(Order.Status.toJson());
+      OrderListSvc.actions_def = {
+        "Place"              : '@MSG("order.search_by.Place")',
+        "PartiallyCompleted" : '@MSG("order.search_by.BasicallyComplete")',
+        "FinallyCompleted"   : '@MSG("order.search_by.FinallyCompleted")'
+      };
+
+      OrderListSvc.initSearchDate();
+    }]);
+  </script>
+}

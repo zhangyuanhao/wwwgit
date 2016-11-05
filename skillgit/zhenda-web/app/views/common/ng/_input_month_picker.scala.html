@@ -1,0 +1,28 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(name: String, ngModel: String)(
+implicit message: Messages)
+
+  <div class="input-group">
+    <input type="text" class="form-control"
+     uib-datepicker-popup="@MSG("month.format.long")"
+     ng-model="@ngModel"
+     datepicker-options="@{name}.options"
+     is-open="@{name}.opened"
+     show-button-bar="false"
+     ng-required="true"
+     ng-change="index()"/>
+    <span class="input-group-btn">
+      <button type="button" class="btn btn-primary" ng-click="@{name}.open()">
+        <i class="fa fa-calendar"></i>
+      </button>
+    </span>
+  </div>

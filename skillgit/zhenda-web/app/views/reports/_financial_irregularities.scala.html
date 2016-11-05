@@ -1,0 +1,81 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import common._
+@import reports._
+
+@(checks_set:ChecksSet)(implicit messages: Messages)
+
+  @* 在checksSet中查找是否有金融违规记录 *@
+  @FinancialIrregularitiesChecks.findIn(checks_set).map { financial_irregularities =>
+    @financial_irregularities.remaining.status match {
+      case false => {
+        <div ng-show="show_all || @BackgroundReportsCtrl.showOrNot(financial_irregularities.rating, financial_irregularities.review_result.passed)">
+          @_report_panel(
+            "financial_irregularities",
+            "zd-coins",
+            MSG(FinancialIrregularitiesCheck.basicName),
+            BackgroundReportsCtrl.showOrNot(financial_irregularities.rating, financial_irregularities.review_result.passed),
+            Some(reports.common._panel_label(financial_irregularities.rating, financial_irregularities.review_result.passed, false, financial_irregularities.toRecheck)),
+            BackgroundReportsCtrl.getPanelType(financial_irregularities.rating, financial_irregularities.review_result.passed, false)
+            ){
+            @financial_irregularities.review_result.passed match {
+              case Some(true) => {
+                @* 调查内容已经通过审核 *@
+
+                @* 中国证监会行政处罚记录 *@
+                @FinancialIrregularitiesCheck.CSRC_AP.findIn(financial_irregularities).map { csrc_ap =>
+                  @{__financial_irregularities_check(FinancialIrregularitiesCheck.CSRC_AP.basicName, csrc_ap)}
+                }
+
+                @* 中国证监会证券市场禁入记录 *@
+                @FinancialIrregularitiesCheck.CSRC_SMB.findIn(financial_irregularities).map { csrc_smb =>
+                  @{__financial_irregularities_check(FinancialIrregularitiesCheck.CSRC_SMB.basicName, csrc_smb)}
+                }
+
+                @* 中国保监会行政处罚记录 *@
+                @FinancialIrregularitiesCheck.CIRC_AP.findIn(financial_irregularities).map { circ_ap =>
+                  @{__financial_irregularities_check(FinancialIrregularitiesCheck.CIRC_AP.basicName, circ_ap)}
+                }
+                @reports.common._comment(financial_irregularities.comments)
+              }
+              case _ => {
+                @* 调查内容尚未通过审核 *@
+                @reports.common._not_passed()
+              }
+            }
+          }
+        </div>
+      }
+      case _ => {
+      @* 待查 *@
+        <div ng-show="show_all">
+          @_report_panel(
+            "financial_irregularities",
+            "zd-coins",
+            MSG(FinancialIrregularitiesCheck.basicName),
+            "false",
+            Some(reports.common._panel_label(None, financial_irregularities.review_result.passed, financial_irregularities.remaining.status, None)),
+            BackgroundReportsCtrl.getPanelType(None, financial_irregularities.review_result.passed, financial_irregularities.remaining.status)
+            ){
+              @financial_irregularities.review_result.passed match {
+                case Some(true) => {
+                  @reports.common._reason_for_remaining(FinancialIrregularitiesChecks.RemainingReason, financial_irregularities.remaining)
+                }
+                case _ => {
+                  @reports.common._not_passed()
+                }
+              }
+          }
+        </div>
+      }
+    }
+  }

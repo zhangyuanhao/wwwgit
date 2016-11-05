@@ -1,0 +1,24 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(key:String,nowrap:Boolean=false)(html:Html)(implicit messages: Messages)
+
+<div class="form-group">
+  <label class="control-label">@MSG(key)</label>
+  <div>
+    @if(nowrap) {
+      @html
+    } else {
+      <p class="form-control-static text-ellipsis">
+        @html
+      </p>
+    }
+  </div>
+</div>

@@ -1,0 +1,22 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(name:String,args: (Symbol,Any)*)(html:Html)(implicit messages: Messages)
+
+@argsMap = @{args.toMap}
+@label   = @{argsMap.get('_label).map(_.toString).getOrElse(MSG(name))}
+@inline  = @{argsMap.get('_inline).map(_ == true).getOrElse(true)}
+
+<div class="form-group">
+  <label @if(inline){class="sr-only"} for="@name">@label</label>
+  <div class="form-control-static" style="padding-top:0px">
+    @html
+  </div>
+</div>

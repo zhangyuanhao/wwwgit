@@ -1,0 +1,123 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import common._
+@import reports._
+
+@(checks_set:ChecksSet)(implicit messages: Messages)
+  @* 在checksSet中查找是否有非法组织机构记录 *@
+  @IllegalOrganizationRecordsChecks.findIn(checks_set).map { illegal_organization_records =>
+
+    @illegal_organization_records.remaining.status match {
+      case false => {
+      @* 非待查 *@
+        <div ng-show="show_all || @BackgroundReportsCtrl.showOrNot(illegal_organization_records.rating, illegal_organization_records.review_result.passed)">
+          @_report_panel(
+            "illegal_organization_records",
+            "fa-ban",
+            MSG(IllegalOrganizationRecordsCheck.basicName),
+            BackgroundReportsCtrl.showOrNot(illegal_organization_records.rating, illegal_organization_records.review_result.passed),
+            Some(reports.common._panel_label(illegal_organization_records.rating, illegal_organization_records.review_result.passed, false, illegal_organization_records.toRecheck)),
+            BackgroundReportsCtrl.getPanelType(illegal_organization_records.rating, illegal_organization_records.review_result.passed, false)
+            ){
+            @illegal_organization_records.review_result.passed match {
+              case Some(true) => {
+
+                @* 调查内容已经通过审核 *@
+                @IllegalOrganizationRecordsCheck.Records.findIn(illegal_organization_records).map { records =>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 object-check">
+                      @records.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+                        <div class="table-responsive">
+                          <table class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th class="col-xs-6  col-sm-6 col-md-6 col-lg-6">
+                                  @MSG("illegal_organization_records.search")
+                                </th>
+                                <th class="col-xs-6  col-sm-6 col-md-6 col-lg-6">
+                                  @MSG("illegal_organization_records.result")
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @fact.length match {
+                                case 0 => {
+                                  <tr class="ng-cloak">
+                                    <td>
+                                      -
+                                    </td>
+                                    <td>
+                                      -
+                                    </td>
+                                  </tr>
+                                }
+                                case _ => {
+                                  @fact.map { record =>
+                                    <tr class="ng-cloak">
+                                      <td>
+                                        @IllegalOrganizationRecord.Search.msg(record.search)
+                                      </td>
+                                      <td>
+                                        @record.result match {
+                                          case Some(result) => {
+                                            @result.self
+                                          }
+                                          case _ => {
+                                            @BackgroundReportsCtrl.msg("illegal_organization_records.no_result")
+                                          }
+                                        }
+                                      </td>
+                                    </tr>
+                                  }
+                                }
+                              }
+                            </tbody>
+                          </table>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+                @reports.common._comment(illegal_organization_records.comments)
+              }
+              case _ => {
+                @* 调查内容尚未通过审核 *@
+                @reports.common._not_passed()
+              }
+            }
+          }
+        </div>
+      }
+      case _ => {
+      @* 待查 *@
+        <div ng-show="show_all">
+          @_report_panel(
+            "illegal_organization_records",
+            "fa-ban",
+            MSG(IllegalOrganizationRecordsCheck.basicName),
+            "false",
+            Some(reports.common._panel_label(None, illegal_organization_records.review_result.passed, illegal_organization_records.remaining.status, None)),
+            BackgroundReportsCtrl.getPanelType(None, illegal_organization_records.review_result.passed, illegal_organization_records.remaining.status)
+            ){
+              @illegal_organization_records.review_result.passed match {
+                case Some(true) => {
+                  @reports.common._reason_for_remaining(IllegalOrganizationRecordsChecks.RemainingReason, illegal_organization_records.remaining)
+                }
+                case _ => {
+                  @reports.common._not_passed()
+                }
+              }
+          }
+        </div>
+      }
+    }
+  }

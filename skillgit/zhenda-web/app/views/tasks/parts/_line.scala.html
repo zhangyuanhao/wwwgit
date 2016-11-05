@@ -1,0 +1,78 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(title: String, ngModel: String, edit_zh: Option[Html] = None, edit_en: Option[Html] = None, filter: Option[String] = None, withAPI: Boolean = false)(implicit message: Messages)
+
+<div ng-if="@ngModel">
+  @{_line_of_title(title, ngModel, withAPI)}
+
+  <div class="row m-t-xs">
+    <div class="col-xs-12 col-is-6">
+      <div class="panel panel-default panel-border ng-cloak">
+        <div class="panel-body" style="padding-bottom: 5px">
+          <div class="row" ng-class="{'m-b-13' : TaskSvc.lang.zh && TaskSvc.lang.en}">
+            <div class="col-xs-12">
+              <div class="form-group">
+                <label class="control-label">@TasksCtrl.msg("provided")</label>
+                <div class="form-control-static">
+                  <span ng-if="@(ngModel).provided.origin">
+                    @filter match {
+                      case Some(f:String) => { {{@(ngModel).provided.origin | @f}} }
+                      case None => { {{@(ngModel).provided.origin}} }
+                    }
+                  </span>
+                  <span ng-if="!@(ngModel).provided.origin">
+                    @MSG("not_provided")
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          @edit_zh.map{ html =>
+            <div class="row" ng-if="TaskSvc.lang.zh">
+              <div class="col-xs-12">
+                @html
+              </div>
+            </div>
+          }
+
+          @edit_en.map{ html =>
+            <div class="row" ng-if="TaskSvc.lang.en">
+              <div class="col-xs-12">
+                @html
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-is-6">
+      @if(withAPI){
+        <div class="panel panel-default panel-border" ng-if="@(ngModel).facts">
+          <div class="panel-body" style="padding-bottom: 5px">
+            <div class="form-control-static">
+              @filter match {
+                case Some(f:String) => { {{@(ngModel).facts | @f}} }
+                case None => { {{@(ngModel).facts}} }
+              }
+            </div>
+          </div>
+        </div>
+      }
+      <div class="panel panel-default panel-border">
+        <div class="panel-body" style="padding-bottom: 5px">
+          @{_line_of_truth(ngModel)}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

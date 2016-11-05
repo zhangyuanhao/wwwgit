@@ -1,0 +1,129 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(employment: String, task_type: String)(implicit message: Messages)
+
+<div ng-if="@(employment).not_provided.status">
+  @{parts._not_provided(TasksCtrl.msg("employment.not_provided"), s"${employment}.not_provided")}
+</div>
+
+<div ng-if="!@(employment).not_provided.status">
+  <div class="ibox">
+    <div class="ibox-content">
+      @* 待查 *@
+      <div class="row text-right m-b-xs" ng-if="employment_index === 0">
+        <div class="col-xs-12">
+          @parts._checkbox_of_remaining(
+            s"!${employment}.not_provided.status",
+            s"${employment}.remaining.status"
+            )
+        </div>
+      </div>
+      <div ng-if="@(employment).remaining.status">
+        @parts._reason_of_remaining(
+          "employ_" + "{{employment_index}}" + "_",
+          "TaskSvc.dictionary.reason_def.employment",
+          s"${employment}.remaining"
+          )
+      </div>
+      <div ng-if="!@(employment).remaining.status">
+        @* 额外收集信息 *@
+        <div class="section-header">
+          <h4>@TasksCtrl.msg("extra_gathering")</h4>
+        </div>
+        <div class="row cloak">
+          <div class="col-xs-12 col-is-6 col-sm-6" ng-if="@(employment).extra_gathered.telephone">
+            <strong>@MSG("employment_details.employer_telephone")</strong>
+            {{ @(employment).extra_gathered.telephone }}
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6" ng-if="@(employment).extra_gathered.position_title">
+            <strong>@MSG("employment_details.position_title")</strong>
+            {{ @(employment).extra_gathered.position_title | jobTitle }}
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6" ng-if="@(employment).extra_gathered.hire_type">
+            <strong>@MSG("employment_details.hire_type")</strong>
+            {{ TaskSvc.dictionary.hire_types[@(employment).extra_gathered.hire_type] }}
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6" ng-if="@(employment).extra_gathered.employee_number">
+            <strong>@MSG("employment_details.employee_number1")</strong>
+            {{ @(employment).extra_gathered.employee_number }}
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6" ng-if="@(employment).extra_gathered.earnings">
+            <strong>@MSG("employment_details.earnings")</strong>
+            {{ TaskSvc.dictionary.salary_types[@(employment).extra_gathered.earnings[0].data.period] + " " + TaskSvc.dictionary.currency_types[@(employment).extra_gathered.earnings[0].data.rate.currency] + " " + @(employment).extra_gathered.earnings[0].data.rate.amount }}
+          </div>
+          <div class="col-xs-12" ng-if="@(employment).extra_gathered.major_responsibility">
+            <strong>@MSG("employment_details.major_responsibility")</strong>
+            {{ @(employment).extra_gathered.major_responsibility }}
+          </div>
+          <div class="col-xs-12" ng-if="@(employment).extra_gathered.performance_description">
+            <strong>@MSG("employment_details.performance_description")</strong>
+            {{ @(employment).extra_gathered.performance_description }}
+          </div>
+          <div class="col-xs-12" ng-if="@(employment).extra_gathered.reason_for_leaving">
+            <strong>@MSG("employment_details.reason_for_leaving")</strong>
+            {{ @(employment).extra_gathered.reason_for_leaving }}
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6" ng-if="@(employment).extra_gathered.handed_over">
+            <span ng-if="@(employment).extra_gathered.handed_over === 'true'">
+              <strong>@MSG("employment_details.handed_over.true")</strong>
+            </span>
+            <span ng-if="@(employment).extra_gathered.handed_over === 'false'">
+              <strong>@MSG("employment_details.handed_over.false")</strong>
+            </span>
+          </div>
+          <div class="col-xs-12">
+            <span ng-if="@(employment).extra_gathered.still_employed">
+              @TasksCtrl.msg("interview.since")<strong class="text-danger">{{ @(employment).extra_gathered.no_check_until | date:"@MSG("date.format.long")" }}</strong>@TasksCtrl.msg("interview.postfix")
+            </span>
+            <span ng-if="!@(employment).extra_gathered.still_employed" class="text-success">
+              <strong>@TasksCtrl.msg("interview.permit")</strong>
+            </span>
+          </div>
+        </div>
+
+        @* 上传补查资料 *@
+        <div class="row m-t-md">
+          <div class="col-xs-12">
+            <upload-attachment title="@MSG("upload.attachment")" name="attachments" module-name="employment" module-index="{{employment_index}}" ng-model="@(employment).attachments" src-fn="TaskSvc.getLoadUrl(fName)" upload-fn="TaskSvc.getUploadUrl(fName)">
+            </upload-attachment>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div ng-if="!@(employment).remaining.status">
+    <div ng-if="@(employment).interviews.PersonnelOfficer">
+      @{_interview(s"${employment}.interviews", s"${employment}.interviews.PersonnelOfficer", "PersonnelOfficer", "PersonnelOfficer", task_type)}
+    </div>
+    <div ng-if="@(employment).interviews.PersonnelOfficer_Copy">
+      @{_interview(s"${employment}.interviews", s"${employment}.interviews.PersonnelOfficer_Copy", "PersonnelOfficer_Copy", "PersonnelOfficer", task_type)}
+    </div>
+    <div ng-if="@(employment).interviews.Supervisor">
+      @{_interview(s"${employment}.interviews", s"${employment}.interviews.Supervisor", "Supervisor", "Supervisor", task_type)}
+    </div>
+    <div ng-if="@(employment).interviews.Supervisor_Copy">
+      @{_interview(s"${employment}.interviews", s"${employment}.interviews.Supervisor_Copy", "Supervisor_Copy", "Supervisor", task_type)}
+    </div>
+    <div ng-if="@(employment).interviews.Additional1">
+      @{_interview(s"${employment}.interviews", s"${employment}.interviews.Additional1", "Additional1", "Additional1", task_type)}
+    </div>
+    <div ng-if="@(employment).interviews.Additional1_Copy">
+      @{_interview(s"${employment}.interviews", s"${employment}.interviews.Additional1_Copy", "Additional1_Copy", "Additional1", task_type)}
+    </div>
+    <div ng-if="@(employment).interviews.Additional2">
+      @{_interview(s"${employment}.interviews", s"${employment}.interviews.Additional2", "Additional2", "Additional2", task_type)}
+    </div>
+    <div ng-if="@(employment).interviews.Additional2_Copy">
+      @{_interview(s"${employment}.interviews", s"${employment}.interviews.Additional2_Copy", "Additional2_Copy", "Additional2", task_type)}
+    </div>
+  </div>
+</div>

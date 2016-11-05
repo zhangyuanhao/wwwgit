@@ -1,0 +1,38 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+<tr class="bg-warning">
+  <td>
+    <div class="row">
+      <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+        <span class="label label-default" ng-show="order.dead_line">
+          {{order.hours_left}}
+        </span>
+        <span class="label label-default" style="margin-left:2px;"
+          ng-show="order.task_type">
+          {{EmployeeOrdersSvc.task_type_def[order.task_type]}}
+        </span>
+        <span class="label label-default" style="margin-left:2px;">
+          {{EmployeeOrdersSvc.order_status_def[order.statuses[0]]}}
+        </span>
+        <span class="label label-default" style="margin-left:2px;"
+          ng-show="order.attributes.Expedited"
+          popover="{{order.attributes.Expedited}}" popover-trigger="mouseenter">
+          @EmployeeOrdersCtrl.msg("tags.expedite")
+        </span>
+      </div>
+      <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 text-right">
+        @_remove_button()
+      </div>
+    </div>
+  </td>
+</tr>

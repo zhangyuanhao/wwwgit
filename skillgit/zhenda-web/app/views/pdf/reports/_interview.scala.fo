@@ -1,0 +1,84 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import models.business.services._
+@import models.business.references._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  报告正文 -- 证明人访谈
+*@
+@(employer_name: String, tpe: Reference.Type, interview: Interview)(implicit messages: Messages)
+
+<fo:table @attribute_sets("panel", "margin-bottom-sm", s"${messages.lang.code}-panel")>
+  @* 布局 *@
+  @__panel_layout1()
+
+  <fo:table-body>
+    @__panel_header(employer_name)
+    @* 访谈类型 *@
+    @__panel_header2(Reference.Type.msg(tpe))
+
+    @* 证明人 *@
+    @__reference(interview.reference)
+
+    @* 工作履历核实 *@
+    @interview.employment_details.map { employment_details =>
+
+      @__panel_header2(MSG("service.employment_verif"))
+
+      @* 表格中列标题 *@
+      @__panel_column_headers1()
+
+      @employment_details.checks.map {
+        case strict_check : Check.Strict[_] => {
+          @__strict_check(employment_details.basicName, strict_check)
+        }
+        case strict_multiple: ExtraCheck.StrictMultipleChoice => {
+          @__strict_multiple_choice(employment_details.basicName, strict_multiple)
+        }
+        case _ => {}
+      }
+    }
+
+    @* 工作表现鉴定 *@
+    @interview.work_performance.map { performance =>
+
+      @__panel_header2(MSG("service.employment_performance_verif"))
+
+      @performance.checks.map {
+        case wp:ExtraCheck.MultipleChoice => {
+          @_multiple_choice(performance.basicName, wp)
+        }
+        case rt: WorkPerformanceCheck.Rating => {
+          @__panel_row(
+            __panel_cell(MSG("work_performance.total_rating"), Seq("text-strong"), colspan = 2),
+            __panel_cell(Provide(rt.judgement.map(_.toString + " " + MSG("work_performance.rating_unit"))).format, colspan = 2)
+          )()
+        }
+        case _ => {}
+      }
+    }
+
+    @* 备注信息 *@
+    @__panel_comment(interview.comments)
+
+  </fo:table-body>
+</fo:table>
+
+@_multiple_choice(prefix: String, check: ExtraCheck.MultipleChoice) = {
+
+  @__panel_row(
+    __panel_cell(MSG(s"$prefix.${check.basicName}"), Seq("text-strong"), colspan = 2),
+    __panel_cell(check.judgements.format, colspan = 2, pre_line = true)
+  )()
+}

@@ -1,0 +1,348 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import models.business.services._
+@import models.fact._
+@import models.fact.regulations._
+@import common._
+@import reports._
+
+@(checks_set:ChecksSet)(implicit messages: Messages)
+
+  @* 在checksSet中查找是否有商业利益冲突 *@
+  @ConflictOfBusinessInterestChecks.findIn(checks_set).map { conflict =>
+    @conflict.remaining.status match {
+      case false => {
+        <div ng-show="show_all || @BackgroundReportsCtrl.showOrNot(conflict.rating, conflict.review_result.passed)">
+          @_report_panel(
+            "conflict_of_business_interest",
+            "fa-link",
+            MSG("conflict_of_business_interest"),
+            BackgroundReportsCtrl.showOrNot(conflict.rating, conflict.review_result.passed),
+            Some(reports.common._panel_label(conflict.rating, conflict.review_result.passed, false, conflict.toRecheck)),
+            BackgroundReportsCtrl.getPanelType(conflict.rating, conflict.review_result.passed, false)
+            ){
+            @conflict.review_result.passed match {
+              case Some(true) => {
+                @* 调查内容已经通过审核 *@
+
+                @* 个人担任企业法定代表人信息 *@
+                @ConflictOfBusinessInterestCheck.LegalRepresentative.findIn(conflict).map { legal_representative =>
+                <div class="row">
+                  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 object-check">
+                    @head(legal_representative.basicName, legal_representative.rating)
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        @legal_representative.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+                          @fact.length match {
+                            case 0 => {
+                              @table_body_no_content(legal_representative.basicName)
+                            }
+                            case _ => {
+                              <tbody>
+                                @fact.map { fact =>
+                                  <tr>
+                                    <td>
+                                      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        @content_common(fact.corporation)
+                                      </div>
+                                    </td>
+                                  </tr>
+                                }
+                              </tbody>
+                            }
+                          }
+                        }
+                      </table>
+                    </div>
+                    @reports.common._comment(legal_representative.comments)
+                  </div>
+                </div>
+                }
+
+                @* 个人投资股权信息 *@
+                @ConflictOfBusinessInterestCheck.Shareholder.findIn(conflict).map { shareholder =>
+                <div class="row">
+                  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 object-check">
+                    @head(shareholder.basicName, shareholder.rating)
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        @shareholder.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+                          @fact.length match {
+                            case 0 => {
+                              @table_body_no_content(shareholder.basicName)
+                            }
+                            case _ => {
+                              <tbody>
+                                @fact.map { fact =>
+                                  <tr>
+                                    <td>
+                                      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        @content_common(fact.corporation)
+                                        @content_shareholder(fact)
+                                      </div>
+                                    </td>
+                                  </tr>
+                                }
+                              </tbody>
+                            }
+                          }
+                        }
+                      </table>
+                    </div>
+                    @reports.common._comment(shareholder.comments)
+                  </div>
+                </div>
+                }
+
+                @* 个人担任企业高管信息 *@
+                @ConflictOfBusinessInterestCheck.CorporateExecutive.findIn(conflict).map { corporate_executive =>
+                <div class="row">
+                  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 object-check">
+                    @head(corporate_executive.basicName, corporate_executive.rating)
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        @corporate_executive.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+                          @fact.length match {
+                            case 0 => {
+                              @table_body_no_content(corporate_executive.basicName)
+                            }
+                            case _ => {
+                              <tbody>
+                                @fact.map { fact =>
+                                  <tr>
+                                    <td>
+                                      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        @content_common(fact.corporation)
+                                        @content_corporate_executive(fact)
+                                      </div>
+                                    </td>
+                                  </tr>
+                                }
+                              </tbody>
+                            }
+                          }
+                        }
+                      </table>
+                    </div>
+                    @reports.common._comment(corporate_executive.comments)
+                  </div>
+                </div>
+                }
+                @reports.common._comment(conflict.comments)
+              }
+              case _ => {
+                @* 调查内容尚未通过审核 *@
+                @reports.common._not_passed()
+              }
+            }
+          }
+        </div>
+      }
+      case _ => {
+      @* 待查 *@
+        <div ng-show="show_all">
+          @_report_panel(
+            "conflict_of_business_interest",
+            "fa-link",
+            MSG("conflict_of_business_interest"),
+            "false",
+            Some(reports.common._panel_label(None, conflict.review_result.passed, conflict.remaining.status, None)),
+            BackgroundReportsCtrl.getPanelType(None, conflict.review_result.passed, conflict.remaining.status)
+            ){
+              @conflict.review_result.passed match {
+                case Some(true) => {
+                  @reports.common._reason_for_remaining(ConflictOfBusinessInterestChecks.RemainingReason, conflict.remaining)
+                }
+                case _ => {
+                  @reports.common._not_passed()
+                }
+              }
+          }
+        </div>
+      }
+    }
+  }
+
+@* 共通的head *@
+@head(class_type: String, rating: Option[Level]) = {
+  <h5>
+    <span>
+      @MSG(s"${ConflictOfBusinessInterestCheck.basicName}.${class_type}")
+    </span>
+    <span class="pull-right">
+      @reports.common._level_object(rating)
+    </span>
+  </h5>
+}
+
+@* 共通的table_head *@
+@table_head(rating: Option[Level]) = {
+  <thead>
+    <tr>
+      <span class="pull-right">
+        @reports.common._level_object(rating)
+      </span>
+    </tr>
+  </thead>
+}
+
+@* 无内容的table_body *@
+@table_body_no_content(class_type: String) = {
+  <tbody>
+    <tr>
+      <td>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="row">
+            @no_content_common
+            @class_type match {
+              case ConflictOfBusinessInterestCheck.Shareholder.basicName => {
+                @no_content_shareholder
+              }
+              case ConflictOfBusinessInterestCheck.CorporateExecutive.basicName => {
+                @no_content_corporate_executive
+              }
+              case _ => {}
+            }
+          </div>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+}
+
+@* 无内容的个人担任企业法定代表人信息 *@
+@no_content_common = {
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporation.name") :</label>
+    <span>@MSG("conflict_of_business_interest.none")</span>
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporation.registration_number") :</label>
+    <span>-</span>
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporation.business_type") :</label>
+    <span>-</span>
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporation.registered_capital.amount") :</label>
+    <span>-</span>
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporation.registered_capital.unit") :</label>
+    <span>-</span>
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporation.status") :</label>
+    <span>-</span>
+  </div>
+}
+
+@* 个人担任企业法定代表人信息 *@
+@content_common(corporation: Corporation) = {
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporation.name") :</label>
+    <span>@corporation.name.self</span>
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporation.registration_number") :</label>
+    @corporation.registration_number.map { o =>
+      <span>@o.self</span>
+    }.getOrElse {
+      <span>-</span>
+    }
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporation.business_type") :</label>
+    @corporation.business_type.map { o =>
+      <span>@BusinessType.msg(o)</span>
+    }.getOrElse {
+      <span>-</span>
+    }
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporation.registered_capital.amount") :</label>
+    @corporation.registered_capital.map { o =>
+      <span>@{(BigDecimal(o.getAmount) / BigDecimal(10000)).toString()}</span>
+    }.getOrElse {
+      <span>-</span>
+    }
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporation.registered_capital.unit") :</label>
+    @corporation.registered_capital.map { o =>
+      <span>@MSG(s"Currency.${o.getCurrencyUnit.getCurrencyCode}")</span>
+    }.getOrElse {
+      <span>-</span>
+    }
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporation.status") :</label>
+    @corporation.status.map { o =>
+      <span>@BusinessEntity.Status.msg(o)</span>
+    }.getOrElse {
+      <span>-</span>
+    }
+  </div>
+}
+
+@* 无内容的个人投资股权信息 *@
+@no_content_shareholder = {
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("shareholder.investment") :</label>
+    <span>-</span>
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("shareholder.investment_percentage") :</label>
+    <span>-</span>
+  </div>
+}
+
+@* 个人投资股权信息 *@
+@content_shareholder(shareholder: Shareholder) = {
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("shareholder.investment") :</label>
+    @shareholder.investment.map { o =>
+      <span>@{(BigDecimal(o.getAmount) / BigDecimal(10000)).toString()}</span>
+    }.getOrElse {
+      <span>-</span>
+    }
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("shareholder.investment_percentage") :</label>
+    @shareholder.investment_percentage.map { o =>
+      <span>@MSG("ratio", o.toString)</span>
+    }.getOrElse {
+      <span>-</span>
+    }
+  </div>
+}
+
+@* 无内容的个人担任企业高管信息 *@
+@no_content_corporate_executive = {
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporate_executive.position_title") :</label>
+    <span>-</span>
+  </div>
+}
+
+@* 个人担任企业高管信息 *@
+@content_corporate_executive(corporate_executive: CorporateExecutive) = {
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    <label>@MSG("corporate_executive.position_title") :</label>
+    @corporate_executive.position_title.map { o =>
+      <span>@{s"${o.department.map(_.self).getOrElse("")} ${o.job_title.self}" }</span>
+    }.getOrElse {
+      <span>-</span>
+    }
+  </div>
+}

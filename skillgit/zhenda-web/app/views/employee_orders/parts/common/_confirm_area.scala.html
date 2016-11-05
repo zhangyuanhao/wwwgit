@@ -1,0 +1,37 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <label> {{ dictionary.confirm_type[EmployeeOrdersSvc.confirm_type] }} </label>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <textarea class="form-control" ng-model="order.comment"></textarea>
+  </div>
+</div>
+<div class="row text-right m-t-xs">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <button type="button" class="btn btn-primary btn-xs"
+      ng-click="EmployeeOrdersSvc.submit_confirm(order, $index)"
+      ng-disabled="!order.comment">
+      <i class="fa fa-edit"></i>
+      @MSG("submit")
+    </button>
+    <button type="button" class="btn btn-primary btn-xs"
+      ng-click="EmployeeOrdersSvc.cancel_confirm(order)">
+      <i class="fa fa-cancel"></i>
+      @MSG("cancel")
+    </button>
+  </div>
+</div>

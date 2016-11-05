@@ -1,0 +1,138 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(customer_id: UUID)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import models.business.customers._
+@import common._
+
+@layouts.base(CustomerUserOrdersCtrl.msg("metrics.title")){
+
+  <div class="row ng-cloak" ng-controller="OrderMetricsCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+      <div class="row page-heading white-bg">
+        <h2>
+          <i class="fa fa-bar-chart fa-lg fa-fw"></i>
+          @CustomerUserOrdersCtrl.msg("metrics.head")
+        </h2>
+      </div>
+
+      <div class="row wrapper-content">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+          <div class="ibox">
+            <div class="ibox-title">
+              <h3>
+                <i class="fa fa-line-chart fa-lg fa-fw"></i>
+                @CustomerUserOrdersCtrl.msg("metrics.monthly_orders_count")
+              </h3>
+            </div>
+            <div class="ibox-content no-padding">
+              <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  <div id="monthly_orders_counts" style="height: 400px;position: relative; "></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ibox">
+            <div class="ibox-title no-top-border">
+              <h3>
+                <i class="fa fa-pie-chart fa-lg fa-fw"></i>
+                @CustomerUserOrdersCtrl.msg("metrics.yearly_on_time_ratio")
+              </h3>
+            </div>
+            <div class="ibox-content no-padding">
+              <div class="row text-center">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  <div id="yearly_on_time_ratio" style="height: 400px;position: relative; "></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ibox">
+            <div class="ibox-title no-top-border">
+              <h3>
+                <i class="fa fa-bar-chart fa-lg fa-fw"></i>
+                @CustomerUserOrdersCtrl.msg("metrics.risk_reports_ratio")
+              </h3>
+            </div>
+            <div class="ibox-content no-padding">
+              <div class="row text-center">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  <div id = "risk_reports_ratio" style="height: 400px;position: relative; "></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ibox">
+            <div class="ibox-title no-top-border">
+              <h3>
+                <i class="fa fa-pie-chart fa-lg fa-fw"></i>
+                @CustomerUserOrdersCtrl.msg("metrics.risk_ratio_status")
+              </h3>
+            </div>
+            <div class="ibox-content no-padding">
+              <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  <div id = "lights_ratio" style="height: 400px; position: relative; "></div>
+                </div>
+              </div>
+              <div class="row" style="margin-top:20px;">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  <div id = "modules_ratio" style="height: 400px; position: relative; "></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+}(
+  )(
+  libs.webjars("js", "angular-resource"),
+  libs.webjars("js", "echarts"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/orders"),
+  libs.assets("js", "orders/echarts_options"),
+  libs.assets("js", "orders/metrics"),
+  controller
+)
+
+@controller = {
+  <script>
+    views.orders.metrics.run(['OrderMetricsSvc', function(OrderMetricsSvc) {
+      OrderMetricsSvc.customer_id        = '@customer_id';
+      OrderMetricsSvc.dictionary = {
+        'abstract'           : '@CustomerUserOrdersCtrl.msg("metrics.abstract")',
+        'details'            : '@CustomerUserOrdersCtrl.msg("metrics.details")',
+        'lights'             : '@CustomerUserOrdersCtrl.msg("metrics.lights")',
+        'modules'            : '@CustomerUserOrdersCtrl.msg("metrics.modules")',
+        'danger'             : '@CustomerUserOrdersCtrl.msg("metrics.lights.danger")',
+        'warning'            : '@CustomerUserOrdersCtrl.msg("metrics.lights.warning")',
+        'info'               : '@CustomerUserOrdersCtrl.msg("metrics.lights.info")',
+        'safe'               : '@CustomerUserOrdersCtrl.msg("metrics.lights.safe")',
+        'risk_reports_ratio' : '@CustomerUserOrdersCtrl.msg("metrics.risk_reports_ratio")',
+        'lights_ratio'       : '@CustomerUserOrdersCtrl.msg("metrics.lights_ratio")',
+        'modules_ratio'      : '@CustomerUserOrdersCtrl.msg("metrics.modules_ratio")'
+      }
+    }]);
+  </script>
+}

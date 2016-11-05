@@ -1,0 +1,67 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  报告正文 -- 非法组织记录
+*@
+@(checks_set:ChecksSet)(implicit messages: Messages)
+
+@IllegalOrganizationRecordsChecks.findIn(checks_set).map{ illegal_organization_records =>
+  @if(!illegal_organization_records.review_result.passed_?) {
+    @* 未通过审核 *@
+    @__panel_explanation(MSG("illegal_organization_records"), MSG("views.background_reports.pdf.review_not_passed"))
+  } else {
+    @if(illegal_organization_records.remaining.status) {
+      @* 待查 *@
+      @__panel_explanation(MSG("illegal_organization_records"), __remaining(illegal_organization_records.remaining, IllegalOrganizationRecordsChecks.RemainingReason).toString)
+    } else {
+      <fo:table @attribute_sets("panel", "panel-block", "margin-bottom-sm", s"${messages.lang.code}-panel") >
+        <fo:table-column column-width="26%"/>
+        <fo:table-column column-width="74%"/>
+
+        <fo:table-body>
+          @* 标题 *@
+          @__panel_header(MSG("illegal_organization_records"), colspan = 2)
+          @* 表格中列标题 *@
+          @__panel_row(
+            __panel_cell(MSG("illegal_organization_records.search"), Seq("text-center", "text-strong")),
+            __panel_cell(MSG("illegal_organization_records.result"), Seq("text-center", "text-strong"))
+          )()
+
+          @* 表格中列内容 *@
+          @IllegalOrganizationRecordsCheck.Records.findIn(illegal_organization_records).map { records =>
+            @records.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+              @if(fact.isEmpty) {
+                @__panel_row(
+                  __panel_cell(MSG("not_exists"), Seq("text-center")),
+                  __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"), Seq("text-center"))
+                )()
+              } else {
+                @fact.map { ill =>
+                  @__panel_row(
+                    __panel_cell(IllegalOrganizationRecord.Search.msg(ill.search), Seq("text-center")),
+                    __panel_cell(ill.result.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")), Seq("text-center"))
+                  )()
+                }
+              }
+            }
+          }
+
+          @* 备注 *@
+          @__panel_comment(illegal_organization_records.comments, colspan = 2)
+        </fo:table-body>
+      </fo:table>
+    }
+  }
+}

@@ -1,0 +1,76 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import common._
+@import models.business.checks._
+@import models.business.reports._
+
+@(report:BackgroundReport, title:String, head: String)(
+implicit req: MaybeUserRequest[_], messages: Messages, env: Environment)
+
+@base_tmpl(title){
+  <div class="row ng-cloak" ng-controller="ShowCtrl">
+    <div class="col-xs-12">
+      <div class="page-header">
+        <h1>
+          <i class="fa fa-file-text-o fa-lg fa-fw"></i>
+          @head
+          <small class="pull-right">
+            @{reports.common._header_label(report.content.rating)}
+          </small>
+        </h1>
+      </div>
+  @report.content.isEmpty match {
+    case false => {
+      @* 报告信息(客户信息，候选人信息) *@
+      @{_report_info(report)}
+      @* 个人信息Check *@
+      @{_identity(report.content)}
+      @* 学历信息Check *@
+      @{_education(report.content)}
+      @* 专业资格信息Check *@
+      @{_professional_licenses(report.content)}
+      @* 犯罪记录Check *@
+      @{_criminal_records(report.content)}
+      @* 法院诉讼Check *@
+      @{_court_records(report.content)}
+      @* 非法组织Check *@
+      @{_illegal_organization_records(report.content)}
+      @* 金融违规Check *@
+      @{_financial_irregularities(report.content)}
+      @* 商业利益冲突Check *@
+      @{_conflict_of_businessInterest(report.content)}
+      @* 工作履历Check *@
+      @{_employment(report.content)}
+    }
+    case _ => {
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
+        <h4>@BackgroundReportsCtrl.msg("none")</h4>
+      </div>
+    }
+  }
+    </div>
+  </div>
+}(libs.assets("css", "reports/show"))(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "reports/show"),
+  controller
+  )
+
+@controller = {
+  <script>
+    views.reports.show.run(['ShowSvc', function(ShowSvc) {
+      ShowSvc.dictionary = {
+        'only_risk' : '@BackgroundReportsCtrl.msg("show.only_risk")',
+        'all' : '@BackgroundReportsCtrl.msg("show.all")'
+      };
+    }]);
+  </script>
+}

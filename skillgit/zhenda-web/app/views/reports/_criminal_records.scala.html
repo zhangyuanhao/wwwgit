@@ -1,0 +1,188 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import common._
+@import reports._
+
+@(checks_set:ChecksSet)(implicit messages: Messages)
+
+  @* 在checksSet中查找是否有犯罪记录信息核实 *@
+  @CriminalRecordsChecks.findIn(checks_set).map { criminal_records =>
+    @criminal_records.remaining.status match {
+      case false => {
+      @* 非待查 *@
+        <div ng-show="show_all || @BackgroundReportsCtrl.showOrNot(criminal_records.rating, criminal_records.review_result.passed)">
+          @_report_panel(
+            "criminal_records",
+            "fa-balance-scale",
+            MSG(CriminalRecordsCheck.basicName),
+            BackgroundReportsCtrl.showOrNot(criminal_records.rating, criminal_records.review_result.passed),
+            Some(reports.common._panel_label(criminal_records.rating, criminal_records.review_result.passed, false, criminal_records.toRecheck)),
+            BackgroundReportsCtrl.getPanelType(criminal_records.rating, criminal_records.review_result.passed, false)
+            ){
+            @criminal_records.review_result.passed match {
+              case Some(true) => {
+
+                @* 调查内容已经通过审核 *@
+                @CriminalRecordsCheck.Records.findIn(criminal_records).map { records =>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 object-check">
+                      @records.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+
+                        <h5>
+                          @BackgroundReportsCtrl.msg("criminal_records.head", fact.length)
+                        </h5>
+
+                        @fact.length match {
+                          case 0 => {}
+                          case _ => {
+                            <div class="table-responsive">
+                              <table class="table table-hover">
+                                <tbody>
+                                  @fact.map { record =>
+                                    <tr class="ng-cloak">
+                                      <td>
+                                        <div class="col-xs-12">
+                                          @record.imprisoned_on.map { date =>
+                                          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                            <label>
+                                              @MSG("criminal_records.imprisoned_on"):
+                                            </label>
+                                            <span>
+                                              @DateTimeFormat("date.format.long").print(date)
+                                            </span>
+                                          </div>
+                                          }
+                                          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                            <label>
+                                              @MSG("criminal_records.classification"):
+                                            </label>
+                                            <span>
+                                              @record.classification.self
+                                            </span>
+                                          </div>
+                                          @record.offense.map { offense =>
+                                          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                            <label>
+                                              @MSG("criminal_records.offense"):
+                                            </label>
+                                            <span>
+                                              @offense.self
+                                            </span>
+                                          </div>
+                                          }
+                                          @record.authority.map { authority =>
+                                          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                            <label>
+                                              @MSG("criminal_records.authority"):
+                                            </label>
+                                            <span>
+                                              @authority.self
+                                            </span>
+                                          </div>
+                                          }
+                                          @record.sentence_length.map { sentence_length =>
+                                          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                            <label>
+                                              @MSG("criminal_records.sentence_length"):
+                                            </label>
+                                            <span>
+                                              @sentence_length.self
+                                            </span>
+                                          </div>
+                                          }
+                                          @record.result_of_justice.map { result_of_justice =>
+                                          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                            <label>
+                                              @MSG("criminal_records.result_of_justice"):
+                                            </label>
+                                            <span>
+                                              @result_of_justice.self
+                                            </span>
+                                          </div>
+                                          }
+                                          @record.released_from_prison_on.map { date =>
+                                          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                            <label>
+                                              @MSG("criminal_records.released_from_prison_on"):
+                                            </label>
+                                            <span>
+                                              @DateTimeFormat("date.format.long").print(date)
+                                            </span>
+                                          </div>
+                                          }
+                                          @record.reason_for_releasing.map { reason_for_releasing =>
+                                          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                            <label>
+                                              @MSG("criminal_records.reason_for_releasing"):
+                                            </label>
+                                            <span>
+                                              @reason_for_releasing.self
+                                            </span>
+                                          </div>
+                                          }
+                                          @record.case_summary.map { case_summary =>
+                                          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                            <label>
+                                              @MSG("criminal_records.case_summary"):
+                                            </label>
+                                            <span>
+                                              @case_summary.self
+                                            </span>
+                                          </div>
+                                          }
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  }
+                                </tbody>
+                              </table>
+                            </div>
+                          }
+                        }
+                      }
+                    </div>
+                  </div>
+                }
+                @reports.common._comment(criminal_records.comments)
+              }
+              case _ => {
+                @* 调查内容尚未通过审核 *@
+                @reports.common._not_passed()
+              }
+            }
+          }
+        </div>
+      }
+      case _ => {
+      @* 待查 *@
+        <div ng-show="show_all">
+          @_report_panel(
+            "criminal_records",
+            "fa-balance-scale",
+            MSG(CriminalRecordsCheck.basicName),
+            "false",
+            Some(reports.common._panel_label(None, criminal_records.review_result.passed, criminal_records.remaining.status, None)),
+            BackgroundReportsCtrl.getPanelType(None, criminal_records.review_result.passed, criminal_records.remaining.status)
+            ){
+              @criminal_records.review_result.passed match {
+                case Some(true) => {
+                  @reports.common._reason_for_remaining(CriminalRecordsChecks.RemainingReason, criminal_records.remaining)
+                }
+                case _ => {
+                  @reports.common._not_passed()
+                }
+              }
+          }
+        </div>
+      }
+    }
+  }

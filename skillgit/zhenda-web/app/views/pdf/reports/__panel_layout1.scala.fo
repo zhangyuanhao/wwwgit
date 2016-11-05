@@ -1,0 +1,19 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@*
+  通用布局1, see __panel_column_headers1
+*@
+@()
+
+<fo:table-column column-width="15%"/>
+<fo:table-column column-width="33%"/>
+<fo:table-column column-width="12%"/>
+<fo:table-column column-width="40%"/>

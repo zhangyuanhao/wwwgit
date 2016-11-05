@@ -1,0 +1,140 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(videoOpt: Option[Path])(implicit req: MaybeUserRequest[_], messages: Messages, env: Environment)
+
+@welcome.base_tmpl(MSG("wiki"), above_content = movie){
+
+  <div class="row">
+    <div class="col-xs-10 col-sm-6">
+      <a href="http://jquery.com">
+        <img class="img-responsive" src="http://upload.wikimedia.org/wikipedia/en/thumb/9/9e/JQuery_logo.svg/524px-JQuery_logo.svg.png">
+      </a>
+    </div>
+
+    <div class="col-xs-10 col-sm-6">
+      <a href="http://backbonejs.org">
+        <img class="img-responsive" src="http://backbonejs.org/docs/images/backbone.png">
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-10 col-sm-4 bootstrap3">
+      <a href="http://getbootstrap.com" title="">
+        <h1>B</h1>
+      </a>
+    </div>
+    <div class="col-xs-10 col-sm-8 font-awesome">
+      <a href="http://fortawesome.github.io/Font-Awesome/" title="">
+        <h1>Font Awesome</h1>
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-10">
+      <a href="http://coffeescript.org">
+        <img class="img-responsive" src="http://coffeescript.org/documentation/images/logo.png">
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-6 col-sm-6">
+      <a href="http://www.scala-lang.org">
+        <img class="img-responsive" src="http://upload.wikimedia.org/wikipedia/en/8/85/Scala_logo.png">
+      </a>
+    </div>
+    <div class="col-xs-3 col-sm-3">
+      <a href="http://www.w3.org/html/logo">
+        <img class="img-responsive" src="http://www.w3.org/html/logo/downloads/HTML5_Logo_128.png">
+      </a>
+    </div>
+    <div class="col-xs-3 col-sm-3">
+      <a href="http://www.debian.org">
+        <img class="img-responsive" src="http://www.debian.org/logos/openlogo-100.jpg">
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-6 col-sm-4">
+      <a href="https://www.playframework.com" title="">
+      <img class="img-responsive" src="https://www.playframework.com/assets/images/logos/play_full_color.png" alt="">
+      </a>
+    </div>
+    <div class="col-xs-6 col-sm-4 col-sm-offset-2">
+      <a href="http://akka.io" title="">
+      <img class="img-responsive" src="http://akka.io/resources/images/akka_full_color.svg" alt="">
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-10 col-sm-7">
+      <a href="http://cassandra.apache.org">
+        <img class="img-responsive" src="http://cassandra.apache.org/media/img/cassandra_logo.png">
+      </a>
+    </div>
+  </div>
+}{
+  <style>
+    .col-xs-10, .col-xs-6, .col-xs-3 {
+      margin-bottom: 20px;
+    }
+    .aws-col {
+      padding: 0px;
+    }
+
+    .aws {
+      width: 100%;
+      margin-bottom: 40px;
+    }
+
+    .bootstrap3 h1 {
+      display: block;
+      font-weight: 500;
+      color: #fff;
+      background-color: #563d7c;
+      width: 144px;
+      height: 144px;
+      line-height: 140px;
+      text-align: center;
+      font-size: 108px;
+      border: 1px solid #cdbfe3;
+      border-radius: 15%;
+      margin: 5px;
+    }
+
+    .font-awesome h1 {
+      text-shadow: 4px 3px 0px #1d9d74, 9px 8px 0px rgba(0, 0, 0, 0.15);
+      background-color: #1d9d74;
+      color: #ffffff;
+      padding: 20px 40px;
+      display: inline-block;
+      font-size: 36px;
+    }
+  </style>
+}()
+
+@movie = {
+  @videoOpt.map {path =>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 aws-col">
+          <video class="aws"
+            src="@routes.FileSystemCtrl.stream(path)" autoplay autobuffer>
+          </video>
+        </div>
+      </div>
+    </div>
+  }
+}

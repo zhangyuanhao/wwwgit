@@ -1,0 +1,171 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(pager: Pager, sort: Seq[SortField])(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(UsersCtrl.msg("title")) {
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa fa-user fa-lg fa-fw"></i>
+      @UsersCtrl.msg("head")
+    </h2>
+  </div>
+
+  <div class="row wrapper-content" ng-controller="UsersCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+      <div class="ibox">
+        <div class="ibox-title">
+          <div class="row">
+            <div class="col-xs-8 col-xs-offset-4 col-sm-6 col-sm-offset-6">
+              <div class="form-group">
+                <label class="sr-only" for="search-users">
+                  @UsersCtrl.msg("search.label")
+                </label>
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <i class="fa fa-search"></i>
+                  </div>
+                  <input type="search" class="form-control" id="search-users"
+                    placeholder="@UsersCtrl.msg("search.placeholder")"
+                    autocomplete="off"
+                    ng-model="keyword"
+                    ng-model-options="{ debounce: 500 }">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="table-responsive">
+                <table class="table table-hover table-ellipsis">
+                  <thead>
+                    <tr>
+                      <th class="hidden-xs col-sm-6  col-md-5">
+                        @MSG("id")
+                      </th>
+                      <th class="col-xs-8  col-sm-3  col-md-3">
+                        @MSG("email")
+                      </th>
+                      <th class="hidden-xs hidden-sm col-md-3">
+                        @MSG("user.user_name")
+                      </th>
+                      <th class="col-xs-4  col-sm-3  col-md-1 text-right">
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="ng-cloak" ng-repeat="usr in UserListSvc.values">
+                      <td class="hidden-xs">
+                        <a ng-href="{{jsRoutes.controllers.UsersCtrl.show(usr.id).url}}">
+                          <code>{{ usr.id }}</code>
+                        </a>
+                      </td>
+                      <td class="hidden-xs">
+                        {{ usr.email }}
+                      </td>
+                      <td class="visible-xs">
+                        <a ng-href="{{jsRoutes.controllers.UsersCtrl.show(usr.id).url}}">
+                          {{ usr.email }}
+                        </a>
+                      </td>
+                      <td class="hidden-xs hidden-sm">
+                        {{ usr.user_name }}
+                      </td>
+                      <td>
+                        <div class="pull-right">
+                          <i class="fa fa-unlock-alt fa-lg fa-fw"></i>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div ng-hide="keyword">
+                @ng._pager("UserListSvc.links")
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+      <div class="ibox">
+        <div class="ibox-content">
+          <div class="row">
+            <form name="form" novalidate>
+              <div class="col-xs-12 col-sm-4 col-md-12 col-lg-12">
+                @ng._form_control("email",
+                  '_type        -> "email",
+                  'email        -> None,
+                  'tabindex     -> 1,
+                  'placeholder  -> UsersCtrl.msg("email.placeholder"),
+                  'autocomplete -> "off",
+                  "ng-model".s  -> "user.email"
+                )
+              </div>
+              <div class="col-xs-12 col-sm-4 col-md-12 col-lg-12">
+                @ng._form_control("name",
+                  'maxLength    -> 64,
+                  'minLength    -> 4,
+                  'tabindex    -> 2,
+                  'placeholder -> UsersCtrl.msg("name.placeholder"),
+                  "ng-model".s -> "user.user_name"
+                )
+              </div>
+              <div class="col-xs-12 col-sm-4 col-md-12 col-lg-12">
+                <button type="submit" class="btn btn-primary pull-right" ng-click="create(user)"
+                  ng-disabled="form.$invalid || !user.email || !user.user_name">
+                  <i class="fa fa-user-plus"></i>
+                  @UsersCtrl.msg("new.user")
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/users"),
+  libs.assets("js", "users/index"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.UsersCtrl.show
+  )
+}
+
+@controller = {
+  <script>
+    views.users.index.run(['UserListSvc', function(UserListSvc) {
+      UserListSvc.options = {
+        page     : @pager.pageNum,
+        pageSize : @pager.pageSize,
+        sort     : @Html(SortField.toJson(sort)),
+        nextPage : '@Html(routes.UsersCtrl.index(pager.next).toString)',
+        prevPage : '@Html(routes.UsersCtrl.index(pager.prev).toString)'
+      };
+    }]);
+  </script>
+}

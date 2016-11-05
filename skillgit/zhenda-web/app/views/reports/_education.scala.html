@@ -1,0 +1,113 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import views.ClassFormats._
+@import common._
+@import reports._
+
+@(checks_set:ChecksSet)(implicit messages: Messages)
+@* 在checksSet中查找是否有学历信息核实 *@
+  @EducationChecks.findIn(checks_set).map { education_checks =>
+    @* 找到学历信息后，遍历每一个学历信息 *@
+    @education_checks.list.zipWithIndex.map { case (check_list, index) =>
+      @check_list.institution match {
+        case Some(name) => {
+          @* 候选人提供信息的情况 *@
+          @check_list.review_result.passed match {
+            case Some(true) => {
+              @* 区别处理待查和非待查 *@
+              @check_list.remaining.status match {
+                case false => {
+                @* 非待查 *@
+                  @* 学历信息核实 *@
+                  @check_list.education_details.map { education_details =>
+                    <div ng-show="show_all || @BackgroundReportsCtrl.showOrNot(education_details.rating, check_list.review_result.passed)">
+                      @_report_panel(
+                        s"education_info_checks[$index]",
+                        "fa-institution",
+                        BackgroundReportsCtrl.msg("education_details", name.translate(messages.lang).getOrElse(name.origin).self),
+                        BackgroundReportsCtrl.showOrNot(education_details.rating, check_list.review_result.passed),
+                        Some(reports.common._panel_label(education_details.rating, check_list.review_result.passed, check_list.remaining.status, education_details.toRecheck)),
+                        BackgroundReportsCtrl.getPanelType(education_details.rating, check_list.review_result.passed, check_list.remaining.status)
+                        ){
+                        @{ __education_details(education_details) }
+                        @reports.common._comment(education_details.comments)
+                      }
+                    </div>
+                  }
+                  @* 学位信息核实 *@
+                  @check_list.degree.map { degree =>
+                    <div ng-show="show_all || @BackgroundReportsCtrl.showOrNot(degree.rating, check_list.review_result.passed)">
+                      @_report_panel(
+                        s"degree_info_checks[$index]",
+                        "fa-graduation-cap",
+                        BackgroundReportsCtrl.msg("degree", name.translate(messages.lang).getOrElse(name.origin).self),
+                        BackgroundReportsCtrl.showOrNot(degree.rating, check_list.review_result.passed),
+                        Some(reports.common._panel_label(degree.rating, check_list.review_result.passed, check_list.remaining.status, degree.toRecheck)),
+                        BackgroundReportsCtrl.getPanelType(degree.rating, check_list.review_result.passed, check_list.remaining.status)
+                        ){
+                        @{ __degree(degree) }
+                        @reports.common._comment(degree.comments)
+                      }
+                    </div>
+                  }
+                }
+                case _ => {
+                  @* 待查 *@
+                   <div ng-show="show_all">
+                    @_report_panel(
+                      s"education_info_checks[$index]",
+                      "fa-institution",
+                      name.origin.self,
+                      "false",
+                      Some(reports.common._panel_label(None, check_list.review_result.passed, check_list.remaining.status, None)),
+                      BackgroundReportsCtrl.getPanelType(None, check_list.review_result.passed, check_list.remaining.status)
+                      ){
+                        @reports.common._reason_for_remaining(EducationCheckList.RemainingReason, check_list.remaining)
+                    }
+                  </div>
+                }
+              }
+            }
+            case _ => {
+              @* 未通过审核 *@
+              <div ng-show="show_all">
+                @_report_panel(
+                  s"education_info_checks[$index]",
+                  "fa-institution",
+                  name.origin.self,
+                  BackgroundReportsCtrl.showOrNot(None, check_list.review_result.passed),
+                  Some(reports.common._panel_label(None, check_list.review_result.passed, check_list.remaining.status, None)),
+                  BackgroundReportsCtrl.getPanelType(None, check_list.review_result.passed, check_list.remaining.status)
+                  ){
+                    @* 调查内容尚未通过审核 *@
+                    @reports.common._not_passed()
+                }
+              </div>
+            }
+          }
+        }
+        case _ => {
+          @* 候选人未提供信息的情况 *@
+          <div ng-show="show_all">
+            @_report_panel(s"education_info_checks[$index]", "fa-institution", BackgroundReportsCtrl.msg("education.none", index)){
+              @{
+                common._not_provided_object(
+                  BackgroundReportsCtrl.msg("education.none.comment", index),
+                  check_list.not_provided.comments
+                )
+              }
+            }
+          </div>
+        }
+      }
+    }
+}

@@ -1,0 +1,84 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import java.util.Locale
+
+@import models.business.checks._
+@import models.business.reports._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  概述 -- 报告信息
+*@
+@(report: BackgroundReport)(implicit messages: Messages)
+
+<fo:table @attribute_sets("panel", "panel-block", "margin-bottom-md", s"${messages.lang.code}-panel")>
+
+  @{
+    messages.lang match {
+      case Lang(Locale.ENGLISH) => {
+        <fo:table-column column-width="20%"/>
+        <fo:table-column column-width="20%"/>
+        <fo:table-column column-width="25%"/>
+        <fo:table-column column-width="8%"/>
+        <fo:table-column column-width="14%"/>
+        <fo:table-column column-width="13%"/>
+      }
+      case _ => {
+        <fo:table-column column-width="15%"/>
+        <fo:table-column column-width="17%"/>
+        <fo:table-column column-width="17%"/>
+        <fo:table-column column-width="17%"/>
+        <fo:table-column column-width="17%"/>
+        <fo:table-column column-width="17%"/>
+      }
+    }
+  }
+
+  <fo:table-body>
+    @* 标题 *@
+    @__panel_header(BackgroundReportsCtrl.msg("report_info"), colspan = 6)
+
+    @__panel_row(
+      __panel_cell(MSG("client.1"), Seq("text-strong")),
+      __panel_cell(report.customer_name.format, colspan = 5)
+    )()
+
+    @defining(IdentityChecks.findIn(report.content).flatMap(IdentityCheck.BasicInfo.findIn(_).flatMap(_.provided))) { provided =>
+    @defining(provided.map(p => MSG(s"Gender.${p.self.gender.toString}"))) { gender =>
+    @defining(provided.map(p => MSG(s"Country.${p.self.nationality.code}"))) { nationality =>
+    @defining(provided.map(p => MSG(s"IdDocType.${p.self.id_doc_nbr.basicName}"))) { document_type =>
+    @defining(provided.map(p => p.self.id_doc_nbr.number)) { document_number =>
+
+      @__panel_row(
+        __panel_cell(MSG("candidate.1"), Seq("text-strong")),
+        __panel_cell(report.candidate_info.personal_name.format),
+        __panel_cell(MSG("identity.gender.1"), Seq("text-strong")),
+        __panel_cell(gender.format),
+        __panel_cell(MSG("identity.nationality.1"), Seq("text-strong")),
+        __panel_cell(nationality.format)
+      )()
+
+      @__panel_row(
+        __panel_cell(MSG("identity.document_type"), Seq("text-strong")),
+        __panel_cell(document_type.format),
+        __panel_cell(MSG("identity.document_number"), Seq("text-strong")),
+        __panel_cell(document_number.format, colspan = 3)
+      )()
+
+    }}}}}
+
+    @__panel_row(
+      __panel_cell(BackgroundReportsCtrl.msg("pdf.report.finally_completed_at"), Seq("text-strong")),
+      __panel_cell(report.updated_at.toLocalDate.format, colspan = 5)
+    )()
+  </fo:table-body>
+</fo:table>

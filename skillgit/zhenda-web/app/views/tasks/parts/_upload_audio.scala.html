@@ -1,0 +1,132 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(referenceType:String, audioFiles: String)(
+implicit messages: Messages)
+
+<div class="row" ng-show="@(audioFiles).length || TaskSvc.layout_type === 'task'">
+  <div class="col-xs-12 col-sm-12">
+    <div class="section-header">
+      <h4>@TasksCtrl.msg("audio.comment")</h4>
+    </div>
+  </div>
+</div>
+
+<div ng-repeat="audio_file in @audioFiles track by $index"
+  ng-init="audio_index = $index">
+  <div class="row">
+    @* 播放器 *@
+    <div class="col-xs-10 col-is-8 col-sm-8 col-md-9 col-lg-9">
+      <audio id="{{employment_index + '_' + '@referenceType' + '_' + audio_index}}"
+        ng-src="{{TaskSvc.audioSrc('@referenceType', employment_index, audio_index)}}"
+        class="fit-width"
+        autoloop loop controls
+        preload="none">
+      </audio>
+    </div>
+    @* 上传文件 *@
+    <div class="col-xs-2 col-is-4 col-sm-4 col-md-3 col-lg-3 text-right"
+      ng-class=" errorMessage ? ' has-error' : '' ">
+      @* ng-flow *@
+      <div flow-init
+           flow-files-submitted="uploadAudio($flow, '@referenceType', employment_index, audio_index)"
+           flow-upload-started="startUploadAudio('@referenceType', employment_index, audio_index)"
+           flow-file-success="onAudioUploaded($message, '@referenceType', employment_index, audio_index)"
+           flow-file-error="onFailedAudio($message, '@referenceType', employment_index, audio_index)"
+           flow-progress="flowProgress($flow, '@referenceType', employment_index, audio_index)"
+           flow-complete="flowComplete($flow, '@referenceType', employment_index, audio_index)">
+
+        @* 重新上传文件 *@
+        <span ng-show="!(TaskSvc.isAudioUploading('@referenceType', employment_index, audio_index))
+          && TaskSvc.layout_type === 'task'"
+          class="btn btn-primary btn-sm fit-width"
+          flow-btn
+          flow-single-file
+          flow-attrs="{ accept: '@EmployeeOrdersCtrl.acceptAudioFormats.mkString(", ")' }">
+          <i class="fa fa-upload"></i>
+          <strong class="hidden-xs">@TasksCtrl.msg("audio.modify")</strong>
+        </span>
+
+        @* 上传中 *@
+        <span ng-show="TaskSvc.isAudioUploading('@referenceType', employment_index, audio_index)
+          && TaskSvc.layout_type === 'task'"
+          class="btn btn-default btn-sm fit-width"
+          disabled>
+          <i class="fa fa-refresh fa-spin"></i>
+          <span>{{ TaskSvc.audio_info[audioKey('@referenceType', employment_index, audio_index)].upload_progress | percent }}</span>
+          <strong class="hidden-xs">@TasksCtrl.msg("audio.uploading")</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+  @* 错误信息 *@
+  <div class="row" ng-show="TaskSvc.audio_info['{{employment_index + '_' + '@referenceType' + '_' + audio_index}}'].errorMessage">
+    <div class="col-xs-12 col-sm-12">
+    <span class="text-danger">
+      {{TaskSvc.audio_info[employment_index + '_' + '@referenceType' + '_' + audio_index].errorMessage}}
+    </span>
+    </div>
+  </div>
+  @* 备注 *@
+  <div class="row" ng-show="audio_file.filename">
+    <div class="col-xs-12 col-sm-12">
+      <div class="form-control-static">
+        <textarea class="form-control" rows="1"
+          ng-model="audio_file.comment"
+          placeholder="@TasksCtrl.msg("audio.placeholder")"
+          ng-disabled="TaskSvc.layout_type === 'review'"
+          empty-to-null>
+        </textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" ng-show="TaskSvc.layout_type === 'task'">
+  @* 上传文件 *@
+  <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1">
+    @* ng-flow *@
+    <div flow-init
+         flow-files-submitted="uploadAudio($flow, '@referenceType', employment_index, @(audioFiles).length)"
+         flow-upload-started="startUploadAudio('@referenceType', employment_index, @(audioFiles).length)"
+         flow-file-success="onAudioUploaded($message, '@referenceType', employment_index, @(audioFiles).length)"
+         flow-file-error="onFailedAudio($message, '@referenceType', employment_index, @(audioFiles).length)"
+         flow-progress="flowProgress($flow, '@referenceType', employment_index, @(audioFiles).length)"
+         flow-complete="flowComplete($flow, '@referenceType', employment_index, @(audioFiles).length)">
+
+      @* 新增上传文件 *@
+      <span ng-show="!(TaskSvc.isAudioUploading('@referenceType', employment_index, @(audioFiles).length))"
+        class="btn btn-success btn-sm collapse-button"
+        flow-btn
+        flow-single-file
+        flow-attrs="{ accept: '@EmployeeOrdersCtrl.acceptAudioFormats.mkString(", ")' }">
+        <i class="fa fa-upload"></i>
+        <strong>@TasksCtrl.msg("audio.upload")</strong>
+      </span>
+
+      @* 上传中 *@
+      <span ng-show="TaskSvc.isAudioUploading('@referenceType', employment_index, @(audioFiles).length)"
+        class="btn btn-default btn-sm collapse-button"
+        disabled>
+        <i class="fa fa-refresh fa-spin"></i>
+        <span>{{ TaskSvc.audio_info[audioKey('@referenceType', employment_index, @(audioFiles).length)].upload_progress | percent }}</span>
+        <strong>@TasksCtrl.msg("audio.uploading")</strong>
+      </span>
+    </div>
+  </div>
+</div>
+@* 错误信息 *@
+<div class="row" ng-show="TaskSvc.audio_info['{{employment_index + '_' + '@referenceType' + '_' + @(audioFiles).length}}'].errorMessage">
+  <div class="col-xs-12 col-sm-12">
+  <span class="text-danger">
+    {{TaskSvc.audio_info[employment_index + '_' + '@referenceType' + '_' + @(audioFiles).length].errorMessage}}
+  </span>
+  </div>
+</div>

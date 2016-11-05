@@ -1,0 +1,55 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+<div class="m-b-md">
+  <h3>
+    @CustomersCtrl.msg("contract.professional_licenses")
+  </h3>
+</div>
+
+@{parts._line_header()}
+
+@*  认证日期  *@
+@{parts._line(MSG("professional_license.issue_date"), "prl_issue_date","ContractSvc.value.prl.fields.issue_date", "ContractSvc.savePrl('issue_date',1)", "ContractSvc.savePrl('issue_date',2)", "ContractSvc.savePrl('issue_date',3,#desc_type)", "ContractSvc.savePrl('issue_date',4)")}
+
+@*  认证内容  *@
+@{parts._line(MSG("professional_license.license_type"), "prl_license_type","ContractSvc.value.prl.fields.license_type", "ContractSvc.savePrl('license_type',1)", "ContractSvc.savePrl('license_type',2)", "ContractSvc.savePrl('license_type',3,#desc_type)", "ContractSvc.savePrl('license_type',4)")}
+
+@*  所在国  *@
+@{parts._line(MSG("professional_license.location"), "prl_location","ContractSvc.value.prl.fields.location", "ContractSvc.savePrl('location',1)", "ContractSvc.savePrl('location',2)", "ContractSvc.savePrl('location',3,#desc_type)", "ContractSvc.savePrl('location',4)")}
+
+@*  认证机构  *@
+@{parts._line(MSG("professional_license.organization"), "prl_organization","ContractSvc.value.prl.fields.organization", "ContractSvc.savePrl('organization',1)", "ContractSvc.savePrl('organization',2)", "ContractSvc.savePrl('organization',3,#desc_type)", "ContractSvc.savePrl('organization',4)")}
+
+<div class="m-t-xl">
+  <h4>
+    @CustomersCtrl.msg("contract.extra_gathering")
+  </h4>
+</div>
+@*  认证日期  *@
+@{parts._prl_extra_gathering(MSG("professional_license.issue_date"), "issue_date")}
+@*  认证内容  *@
+@{parts._prl_extra_gathering(MSG("professional_license.license_type"), "license_type")}
+@*  所在国  *@
+@{parts._prl_extra_gathering(MSG("professional_license.location"), "location")}
+@*  认证机构  *@
+@{parts._prl_extra_gathering(MSG("professional_license.organization"), "organization")}
+@*  有效期至  *@
+@{parts._prl_extra_gathering(MSG("professional_license.expire_date"), "expire_date")}
+@*  证书编号  *@
+@{parts._prl_extra_gathering(MSG("professional_license.license_number"), "license_number")}
+@*  联系方式  *@
+@{parts._prl_extra_gathering(MSG("professional_license.contact_info"), "contact_info")}
+@*  附件照片  *@
+@{parts._prl_extra_gathering(MSG("professional_license.images"), "images")}
+
+

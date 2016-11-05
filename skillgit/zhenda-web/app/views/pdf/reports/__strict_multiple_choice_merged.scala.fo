@@ -1,0 +1,31 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  背景调查核实项目, 合并单元格用 (工作履历核实)
+*@
+@(prefix: String, check: ExtraCheck.StrictMultipleChoice, rowspan: Int = 0, comment: Xml = Xml(""), rating: Option[Level] = Some(Level.Unknown))(implicit messages: Messages)
+
+@if(rowspan > 0) {
+  @__panel_row(
+    __panel_cell(MSG(s"$prefix.${check.basicName}"), Seq("text-strong"), colspan = 2),
+    __panel_cell(__rating(rating), Seq("text-center")),
+    __panel_cell(comment, rowspan = rowspan, pre_line = true)
+  )()
+} else {
+  @__panel_row(
+    __panel_cell(MSG(s"$prefix.${check.basicName}"), Seq("text-strong"), colspan = 2),
+    __panel_cell(__rating(rating), Seq("text-center"))
+  )()
+}

@@ -1,0 +1,44 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit req: MaybeUserRequest[_], messages: Messages, env: Environment)
+
+@layouts.base(MSG("Send notification to all users")){
+
+<div class="row" ng-controller="NotifyCtrl">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <form ng-submit="send(message)">
+      <legend>Send a notification to all users</legend>
+
+      <div class="form-group">
+        <input type="text" class="form-control"
+          placeholder="Enter your message"
+          ng-model="message">
+      </div>
+
+      <button type="submit" class="btn btn-primary">@MSG("Send")</button>
+    </form>
+  </div>
+</div>
+
+}()(js)
+
+@js = {
+  <script type="text/javascript">
+    angular.module('notification', [])
+      .controller('NotifyCtrl', [ '$scope', '$http', function($scope, $http){
+        $scope.send = function(msg) {
+          $http.post('/experimental/notifications/send', {notify : msg})
+        }
+      }]);
+
+    angular.module('app').requires.push('notification');
+  </script>
+}

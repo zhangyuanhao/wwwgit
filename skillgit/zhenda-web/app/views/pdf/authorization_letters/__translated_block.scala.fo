@@ -1,0 +1,24 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import java.util.Locale
+
+@*
+  多语言内容
+*@
+@(block: Map[Lang, String], attrs: Map[Locale, Seq[String]] = Map())
+
+@block.get(Lang(Locale.ENGLISH)).map { value =>
+  <fo:block @attribute_sets((attrs.getOrElse(Locale.ENGLISH, Nil)):_*)>@value</fo:block>
+}
+
+@block.get(Lang(Locale.CHINESE)).map { value =>
+  <fo:block @attribute_sets((attrs.getOrElse(Locale.CHINESE, Nil)):_*)>@value</fo:block>
+}

@@ -1,0 +1,143 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import common._
+@import reports._
+
+@(checks_set:ChecksSet)(implicit messages: Messages)
+
+  @* 在checksSet中查找是否有法院诉讼记录 *@
+  @CourtRecordsChecks.findIn(checks_set).map { court_records =>
+    @court_records.remaining.status match {
+      case false => {
+        <div ng-show="show_all || @BackgroundReportsCtrl.showOrNot(court_records.rating, court_records.review_result.passed)">
+          @_report_panel(
+            "court_records",
+            "fa-gavel",
+            MSG(CourtRecordsCheck.basicName),
+            BackgroundReportsCtrl.showOrNot(court_records.rating, court_records.review_result.passed),
+            Some(reports.common._panel_label(court_records.rating, court_records.review_result.passed, false, court_records.toRecheck)),
+            BackgroundReportsCtrl.getPanelType(court_records.rating, court_records.review_result.passed, false)
+            ){
+            @court_records.review_result.passed match {
+              case Some(true) => {
+              @* 调查内容已经通过审核 *@
+                @CourtRecordsCheck.Records.findIn(court_records).map { records =>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 object-check">
+                      @records.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+                        <div class="table-responsive">
+                          <table class="table table-hover">
+                            <thead>
+                              <tr>
+                                <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                                  @MSG("court_records.classification")
+                                </th>
+                                <th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                  @MSG("court_records.court_date")
+                                </th>
+                                <th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                  @MSG("court_records.court")
+                                </th>
+                                <th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                                  @MSG("court_records.party")
+                                </th>
+                                <th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                  @MSG("court_records.disposition")
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @fact.length match {
+                                case 0 => {
+                                <tr class="ng-cloak">
+                                  <td>
+                                    @BackgroundReportsCtrl.msg("court_records.none")
+                                  </td>
+                                  <td>
+                                    -
+                                  </td>
+                                  <td>
+                                    -
+                                  </td>
+                                  <td>
+                                    -
+                                  </td>
+                                  <td>
+                                    -
+                                  </td>
+                                </tr>
+                                }
+                                case _ => {
+                                  @fact.map { record =>
+                                    <tr class="ng-cloak">
+                                      <td>
+                                        @record.classification.self
+                                      </td>
+                                      <td>
+                                        @DateTimeFormat("date.format.long").print(record.court_date)
+                                      </td>
+                                      <td>
+                                        @record.court.map { court =>
+                                          @court.self
+                                        }
+                                      </td>
+                                      <td>
+                                        @record.party.self
+                                      </td>
+                                      <td>
+                                        @record.disposition.self
+                                      </td>
+                                    </tr>
+                                  }
+                                }
+                              }
+                            </tbody>
+                          </table>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+                @reports.common._comment(court_records.comments)
+              }
+              case _ => {
+                @* 调查内容尚未通过审核 *@
+                @reports.common._not_passed()
+              }
+            }
+          }
+        </div>
+      }
+      case _ => {
+      @* 待查 *@
+        <div ng-show="show_all">
+          @_report_panel(
+            "court_records",
+            "fa-gavel",
+            MSG(CourtRecordsCheck.basicName),
+            "false",
+            Some(reports.common._panel_label(None, court_records.review_result.passed, court_records.remaining.status, None)),
+            BackgroundReportsCtrl.getPanelType(None, court_records.review_result.passed, court_records.remaining.status)
+            ){
+              @court_records.review_result.passed match {
+                case Some(true) => {
+                  @reports.common._reason_for_remaining(CourtRecordsChecks.RemainingReason, court_records.remaining)
+                }
+                case _ => {
+                  @reports.common._not_passed()
+                }
+              }
+          }
+        </div>
+      }
+    }
+  }

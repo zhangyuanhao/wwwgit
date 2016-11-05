@@ -1,0 +1,63 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(index: Int, ngPath: String)(implicit messages: Messages)
+
+<div class="row">
+  <div class="col-xs-6">
+    <div class="checkbox checkbox-success"
+      @if(index == 1){
+        ng-disabled="!OrderSvc.options_set.education.list[0].education_details || read_only"
+      }else{
+        ng-disabled="read_only"
+      }>
+      <input type="checkbox" id="education.@(index)" class="styled" ng-model="@(ngPath).education_details.selected"
+        @if(index == 1){
+          ng-disabled="!OrderSvc.options_set.education.list[0].education_details || read_only"
+        }else{
+          ng-disabled="read_only"
+        }
+        ng-click="OrderSvc.toggleEducation(@index)">
+      <label for="education.@(index)">
+        <span class="service-set-title service-set-lg">
+          @MSG("education.education_details", index)
+        </span>
+      </label>
+    </div>
+  </div>
+  <div class="col-xs-6">
+    <div class="pull-right">
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline" style="margin-top:10px"
+        @if(index == 1){
+          ng-disabled="!OrderSvc.options_set.education.list[0].education_details || read_only"
+        } else {
+          ng-disabled="read_only"
+        }>
+        <input type="checkbox" id="education_verif.@(index)" class="styled" ng-model="@(ngPath).education_details.selected"
+        @if(index == 1){
+          ng-disabled="!OrderSvc.options_set.education.list[0].education_details || read_only"
+        } else {
+          ng-disabled="read_only"
+        }
+        ng-click="OrderSvc.toggleEducation(@index)">
+        <label for="education_verif.@(index)">
+          @CustomerUserOrdersCtrl.msg("service.education")
+        </label>
+      </div>
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline" style="margin-top:10px" ng-disabled="!@(ngPath).education_details || read_only">
+        <input type="checkbox" id="degree_verif.@(index)" class="styled" ng-model="@(ngPath).degree.selected"
+        ng-disabled="!@(ngPath).education_details || read_only">
+        <label for="degree_verif.@(index)">
+          @CustomerUserOrdersCtrl.msg("service.degree")
+        </label>
+      </div>
+    </div>
+  </div>
+</div>

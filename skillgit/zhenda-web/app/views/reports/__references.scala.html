@@ -1,0 +1,86 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.infogathering._
+@import models.business.checks._
+@import models.business.references._
+@import views.ClassFormats._
+
+@(reference:ReferenceCheckList)(implicit messages: Messages)
+
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+  @* 证明人来源 *@
+  <div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <label>@MSG(s"${ReferenceCheckList.basicName}.source") : </label>
+      @reference.source match {
+        case Some(source) => {
+          <span>@Reference.Source.msg(source)</span>
+          @reference.reason_for_changing.map { reason =>
+            ( @reason.format )
+          }
+        }
+        case None => {
+          <span>@MSG("not_provided")</span>
+        }
+      }
+    </div>
+  </div>
+  @defining(reference.current.map(r => r.translate(messages.lang).getOrElse(r.origin))) { referenceInfo =>
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <label>@MSG(s"${ReferenceCheckList.basicName}.name") : </label>
+      @* 证明人姓名 *@
+      @ReferenceGathering.BasicInfo.findIn(referenceInfo).map(_.provide.name) match {
+        case Some(name) => {
+          <span>@name.self</span>
+        }
+        case None => {
+          <span>@MSG("not_provided")</span>
+        }
+      }
+    </div>
+    @* 证明人职位 *@
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <label>@MSG(s"${ReferenceCheckList.basicName}.position_title") : </label>
+      @ReferenceGathering.BasicInfo.findIn(referenceInfo).map(_.provide.position_title) match {
+        case Some(title) => {
+          <span>@{s"${title.department.map(_.self).getOrElse("")} ${title.job_title.self}" }</span>
+        }
+        case None => {
+          <span>@MSG("not_provided")</span>
+        }
+      }
+    </div>
+  </div>
+  <div class="row">
+    @* 共事关系 *@
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <label>@MSG(s"${ReferenceCheckList.basicName}.relationship.1") : </label>
+      @ReferenceGathering.Relationship.findIn(referenceInfo).map(_.provide) match {
+        case Some(relationship) => {
+          <span>@relationship.format</span>
+        }
+        case None => {}
+      }
+    </div>
+    @* 共事时间 *@
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      <label>@MSG(s"${ReferenceCheckList.basicName}.how_long.1") : </label>
+      @ReferenceGathering.HowLong.findIn(referenceInfo).map(_.provide) match {
+        case Some(how_long) => {
+          <span>@how_long.format</span>
+        }
+        case None => {}
+      }
+    </div>
+  </div>
+  }
+</div>

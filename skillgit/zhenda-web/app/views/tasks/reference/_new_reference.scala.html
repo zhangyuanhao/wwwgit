@@ -1,0 +1,35 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit message: Messages)
+
+<script type="text/ng-template" id="NewReference.html">
+  @reference_setting
+</script>
+
+@reference_setting = {
+  <form name="form" novalidate>
+    <div class="modal-header">
+      <button type="button" class="close" aria-label="Close" ng-click="cancel()">
+        <span aria-hn="true">&times;</span>
+      </button>
+      <h4 class="modal-title">@MSG("references.reference_info")</h4>
+    </div>
+    @{_reference("new")}
+    <div class="modal-footer">
+      <button class="btn btn-primary btn-sm" type="submit" ng-click="form.$valid ? nnew() : ''" autofocus>
+        @MSG("ok")
+      </button>
+      <button class="btn btn-link btn-sm" ng-click="cancel()">
+        @MSG("close")
+      </button>
+    </div>
+  </form>
+}

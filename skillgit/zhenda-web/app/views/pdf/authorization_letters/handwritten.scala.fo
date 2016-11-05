@@ -1,0 +1,70 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.infogathering._
+
+@*
+  手写授权书
+*@
+@(letter: Authorization.Handwritten)(implicit messages: Messages, env: Environment)
+
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" font-family="Microsoft YaHei">
+  <fo:layout-master-set>
+
+    @* 页面定义 *@
+    <fo:simple-page-master master-name="page-one" @attribute_sets("page-one")>
+      @* 主要内容定义 *@
+      <fo:region-body @attribute_sets("region-body")/>
+      @* 页眉定义 *@
+      <fo:region-before @attribute_sets("header")/>
+      @* 页脚定义 *@
+      <fo:region-after @attribute_sets("footer")/>
+    </fo:simple-page-master>
+
+    @* 页面流定义 *@
+    <fo:page-sequence-master master-name="basic-psm">
+      <fo:repeatable-page-master-alternatives>
+        <fo:conditional-page-master-reference master-reference="page-one"/>
+      </fo:repeatable-page-master-alternatives>
+    </fo:page-sequence-master>
+  </fo:layout-master-set>
+
+  @* 页面流 *@
+  <fo:page-sequence master-reference="basic-psm">
+
+    @* 页眉 *@
+    <fo:static-content flow-name="xsl-region-before">
+      @_header(letter)
+
+      @* 页脚默认内容占位 *@
+      <fo:block/>
+    </fo:static-content>
+
+    @* 页脚 *@
+    <fo:static-content flow-name="xsl-region-after">
+      @_footer(letter)
+
+      @* 页脚默认内容占位 *@
+      <fo:block/>
+    </fo:static-content>
+
+    @* 主要内容 *@
+    <fo:flow flow-name="xsl-region-body">
+      @* 正文部分 *@
+      @_blocks(letter)
+      @* 填写部分 *@
+      @_inputs(letter)
+
+      @* 默认内容占位 *@
+      <fo:block/>
+    </fo:flow>
+  </fo:page-sequence>
+
+</fo:root>

@@ -1,0 +1,51 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+
+<div class="ibox">
+  <div class="ibox-title">
+    <div class="row">
+      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        <div class="form-group">
+          <label>@CustomerUserOrdersCtrl.msg("from_month")</label>
+          @ng._input_month_picker("OrderListSvc.start_date_picker", "OrderListSvc.start_date")
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        <div class="form-group">
+          <label>@CustomerUserOrdersCtrl.msg("to_month")</label>
+          @ng._input_month_picker("OrderListSvc.end_date_picker", "OrderListSvc.end_date")
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        @ng._select("action",
+          '_label        -> CustomerUserOrdersCtrl.msg("by_action"),
+          '_inline       -> false,
+          "ng-model".s   -> "OrderListSvc.action",
+          "ng-change".s  -> "index()",
+          "ng-options".s -> "action as text for (action, text) in OrderListSvc.actions_def"
+        )()
+      </div>
+    </div>
+  </div>
+  <div class="ibox-content">
+    @{__common_table()}
+
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        @ng._pager("OrderListSvc.links", jump = false)
+      </div>
+    </div>
+  </div>
+</div>

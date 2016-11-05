@@ -1,0 +1,87 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(degree: String, idx: Int, extra_gathered:String)(implicit message: Messages)
+
+@import common._
+
+<div class="row m-t-xl">
+  <div class="col-xs-12">
+    <div class="section-header">
+      <h4>@MSG("service.degree_verif")</h4>
+    </div>
+  </div>
+</div>
+
+@*  学校名称  *@
+@{parts._line(MSG("education_details.institution"), s"${degree}.checks.institution", Some(edit_institution("zh")), Some(edit_institution("en")), None, true)}
+
+@*  获取日期  *@
+@{parts._line_interval(MSG("degree.date_of_award"), s"${degree}.checks.date_of_award", MSG("date.format.long"), Some(edit_award_date("zh")), Some(edit_award_date("en")), "date", true)}
+
+@*  学习专业  *@
+@{parts._line(MSG("education_details.major"), s"${degree}.checks.major", Some(edit_major("zh")), Some(edit_major("en")), None, true)}
+
+@*  学位类别  *@
+@{parts._line(MSG("degree.degree_type"), s"${degree}.checks.degree_type", Some(edit_degree_type("zh")), Some(edit_degree_type("en")), None, true)}
+
+@{parts._line_comment(TasksCtrl.msg("degree.comment"), s"${degree}.comments", "degree_comment", "edu_form")}
+
+@edit_institution(language: String) = {
+  @ng._form_control(s"degree_institution_$language",
+    '_formname           -> "edu_form",
+    '_label              -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline             -> false,
+    'maxLength           -> 255,
+    'minLength           -> 2,
+    "empty-to-null".s    -> None,
+    "ng-model".s         -> s"${degree}.checks.institution.provided.translated.${language}",
+    "uib-typeahead".s    -> "institution as institution.name for institution in getInstitutions($viewValue)",
+    "ng-model-options".s -> "{debounce: 400}"
+  )
+}
+
+@edit_award_date(language: String) = {
+  <div class="form-group">
+    <label>@TasksCtrl.msg(s"provided.edit.$language")</label>
+    @ng._input_date_picker(s"degree_award_date_$language",
+      '_formname               -> "edu_form",
+      "ng-model".s             -> s"${degree}.checks.date_of_award.provided.translated.${language}",
+      "datepicker-options".s   -> s"TaskSvc.date_picker.education${idx}.degree_award_date_${language}.date_options",
+      "is-open".s              -> s"TaskSvc.date_picker.education${idx}.degree_award_date_${language}.opened",
+      "uib-datepicker-popup".s -> MSG("date.format.long"),
+      "localdate-to-string".s  -> None,
+      '_click                  -> s"TaskSvc.date_picker.education${idx}.degree_award_date_${language}.open()"
+    )
+  </div>
+}
+
+@edit_major(language: String) = {
+  @ng._form_control(s"degree_major_$language",
+    '_formname        -> "edu_form",
+    '_label           -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline          -> false,
+    'maxLength        -> 255,
+    'minLength        -> 2,
+    "empty-to-null".s -> None,
+    "ng-model".s      -> s"${degree}.checks.major.provided.translated.${language}"
+  )
+}
+
+@edit_degree_type(language: String) = {
+  @ng._form_control(s"degree_type_$language",
+    '_formname        -> "edu_form",
+    '_label           -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline          -> false,
+    'maxLength        -> 255,
+    "empty-to-null".s -> None,
+    "ng-model".s      -> s"${degree}.checks.degree_type.provided.translated.${language}"
+  )
+}

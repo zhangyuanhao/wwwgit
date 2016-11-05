@@ -1,0 +1,33 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+
+<div class="ibox">
+  <div class="ibox-title">
+    <div class="row">
+      <div class="col-xs-8 col-sm-6">
+        @ng._search("keyword", CustomerUserOrdersCtrl)
+      </div>
+    </div>
+  </div>
+  <div class="ibox-content">
+    @{__common_table()}
+
+    <div class="row" ng-show="OrderListSvc.condition_status == 'all_orders'">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        @ng._pager("OrderListSvc.links", jump = false)
+      </div>
+    </div>
+  </div>
+</div>

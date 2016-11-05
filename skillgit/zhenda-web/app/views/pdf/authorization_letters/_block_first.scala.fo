@@ -1,0 +1,25 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import java.util.Locale
+
+@*
+  正文第一段
+*@
+@(block: Map[Lang, String])
+
+@defining(
+  Map(
+    Locale.ENGLISH -> Seq("block-first-row-en"),
+    Locale.CHINESE -> Seq("block-first-row-zh")
+  )
+) { attrs =>
+  @__translated_block(block, attrs)
+}

@@ -1,0 +1,87 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services._
+
+@(level:Option[Level], pass: Option[Boolean], remaining: Boolean, to_recheck: Option[Boolean])(
+implicit messages: Messages)
+
+@pass match {
+  case Some(true) => {
+    @remaining match {
+      case true => {
+        <div class="text-center panel-lable">
+          <span class="label label-default">
+            @BackgroundReportsCtrl.msg("show.model.remaining")
+          </span>
+        </div>
+      }
+      case false => {
+        @to_recheck match {
+          case Some(true) => {
+            <div class="text-center panel-lable">
+              <span class="label label-default">
+                @BackgroundReportsCtrl.msg("show.model.to_recheck")
+              </span>
+            </div>
+          }
+          case _ => {}
+        }
+        <div class="text-center panel-lable">
+          @level match {
+            case Some(Level.A) => {
+              <span class="label label-success">
+                @BackgroundReportsCtrl.msg("show.model.success")
+              </span>
+            }
+            case Some(Level.A10) => {
+              <span class="label label-success">
+                @BackgroundReportsCtrl.msg("show.model.success")
+              </span>
+            }
+            case Some(Level.A20) => {
+              <span class="label label-success">
+                @BackgroundReportsCtrl.msg("show.model.success")
+              </span>
+            }
+            case Some(Level.B) => {
+              <span class="label label-info">
+                @BackgroundReportsCtrl.msg("show.model.info")
+              </span>
+            }
+            case Some(Level.C) => {
+              <span class="label label-warning">
+               @BackgroundReportsCtrl.msg("show.model.warning")
+              </span>
+            }
+            case Some(Level.D) => {
+              <span class="label label-danger">
+                @BackgroundReportsCtrl.msg("show.model.danger")
+              </span>
+            }
+            case Some(Level.Na) => {}
+            case _ => {
+              <span class="label label-default">
+                @BackgroundReportsCtrl.msg("show.model.default")
+              </span>
+            }
+          }
+        </div>
+      }
+    }
+  }
+  case _ => {
+    <div class="text-center panel-lable">
+      <span class="label label-default">
+        @BackgroundReportsCtrl.msg("show.model.default")
+      </span>
+    </div>
+  }
+}

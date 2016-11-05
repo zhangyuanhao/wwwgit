@@ -1,0 +1,224 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import common._
+@import helper._
+@import views.EnumToJson
+@import models.business.reports._
+
+@(customer: Customer, pager: Pager)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@layouts.base(CustomersCtrl.msg("invoice.title", customer.info.name)) {
+
+<div class="row ng-cloak" ng-controller="InvoiceCtrl">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+    <div class="row page-heading white-bg">
+      <h2>
+        <i class="fa fa-black-tie fa-lg fa-fw"></i>
+        @CustomersCtrl.msg("invoice.head")
+        <small>@customer.info.name</small>
+      </h2>
+    </div>
+
+    <div class="row wrapper-content">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+        <div class="ibox">
+          <div class="ibox-title p-xs">
+            <div class="row">
+              <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                @ng._input_month_picker("InvoiceSvc.date_picker", "InvoiceSvc.search_date")
+              </div>
+              <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                @ng._select("action",
+                  "ng-model".s   -> "InvoiceSvc.action",
+                  "ng-change".s  -> "index()",
+                  "ng-options".s -> "action as text for (action, text) in InvoiceSvc.actions_def"
+                )()
+              </div>
+            </div>
+          </div>
+          <div class="ibox-content">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="table-responsive">
+                  <table class="table table-hover table-bordered" style="white-space: nowrap;">
+                    <thead>
+                      <tr>
+                        <th>
+                          @CustomersCtrl.msg("invoice.customer")
+                        </th>
+                        <th>
+                          @CustomersCtrl.msg("invoice.created_by")
+                        </th>
+                        <th>
+                          @CustomersCtrl.msg("invoice.candidate")
+                        </th>
+                        <th>
+                          @CustomersCtrl.msg("invoice.langs")
+                        </th>
+                        <th>
+                          @CustomersCtrl.msg("invoice.service_set")
+                        </th>
+                        <th>
+                          @CustomersCtrl.msg("invoice.expedite")
+                        </th>
+                        <th>
+                          @CustomersCtrl.msg("invoice.created_at")
+                        </th>
+                        <th>
+                          @CustomersCtrl.msg("invoice.finished_at")
+                        </th>
+                        <th>
+                          @CustomersCtrl.msg("invoice.report_level")
+                        </th>
+                        <th ng-repeat="(key, value) in dictionary.metrics">
+                          {{value}}
+                        </th>
+                        <th></th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody class="ng-cloak" ng-repeat="om in InvoiceSvc.orders">
+                      <tr>
+                        <td>
+                          <span>{{om.customer.name}}</span>
+                        </td>
+                        <td>
+                          <span>{{om.created_by.personal_name | personalName:"@messages.lang.language"}}</span>
+                        </td>
+                        <td>
+                          <span>{{om.candidate_info.personal_name | personalName:"@messages.lang.language"}}</span>
+                        </td>
+                        <td>
+                          <span> {{InvoiceSvc.dictionary.lang[om.report_langs[0]]}} </span>
+                        </td>
+                        <td>
+                          <span ng-if="om.attributes.PackageName">
+                            {{om.attributes.PackageName}}
+                          </span>
+                        </td>
+                        <td>
+                          <span ng-if="om.attributes.Expedited">
+                            @MSG("yes")
+                          </span>
+                          <span ng-if="!om.attributes.Expedited">
+                            @MSG("no")
+                          </span>
+                        </td>
+                        <td>
+                          <span>{{om.datetime_metrics.datetime_0 | date:"@MSG("date.format.long")"}}</span>
+                        </td>
+                        <td>
+                          <span>{{om.datetime_metrics.datetime_3 | date:"@MSG("date.format.long")"}}</span>
+                        </td>
+                        <td>
+                          <span ng-if="om.levels.report === 'A' || om.levels.report === 'A10' || om.levels.report === 'A20'">
+                            @CustomersCtrl.msg("invoice.levelA")
+                          </span>
+                          <span ng-if="om.levels.report === 'B'">
+                            @CustomersCtrl.msg("invoice.levelB")
+                          </span>
+                          <span ng-if="om.levels.report === 'C'">
+                            @CustomersCtrl.msg("invoice.levelC")
+                          </span>
+                          <span ng-if="om.levels.report === 'D'">
+                            @CustomersCtrl.msg("invoice.levelD")
+                          </span>
+                          <span ng-if="om.levels.report !== 'A' && om.levels.report !== 'A10' &&
+                                       om.levels.report !== 'A20' && om.levels.report !== 'B' &&
+                                       om.levels.report !== 'C' && om.levels.report !== 'D'">
+                            @CustomersCtrl.msg("invoice.unknown")
+                          </span>
+                        </td>
+                        <td ng-repeat="(key, value) in dictionary.metrics" class="text-right">
+                          {{om.counts.checks[key]}}
+                        </td>
+                        <td>
+                          <a ng-href="{{jsRoutes.controllers.BackgroundReportsCtrl.show(om.id).url}}"
+                            type="button" class="btn btn-primary btn-xs" target="_blank">
+                            <i class="fa fa-search"></i>
+                            @CustomersCtrl.msg("invoice.report")
+                          </a>
+                        </td>
+                        <td>
+                          <a ng-href="{{ jsRoutes.controllers.EmployeeOrdersCtrl.history(om.id,'Support').url }}"
+                            type="button" class="btn btn-primary btn-xs" target="_blank">
+                            <i class="fa fa-history"></i>
+                            @CustomersCtrl.msg("invoice.history")
+                          </a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                @ng._pager("InvoiceSvc.links", jump = false)
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+}(libs.webjars("css", "awesome-bootstrap-checkbox"),
+  libs.assets("css", "orders/show")
+)(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "customers/invoice"),
+  jsRoutes,
+  controller
+)
+
+@controller = {
+<script>
+  views.customers.invoice.run(['InvoiceSvc', function(InvoiceSvc) {
+    InvoiceSvc.customer_id = '@customer.id'
+    InvoiceSvc.options     = {
+      page     : @Pager.first.pageNum,
+      pageSize : @Pager.first.pageSize,
+      nextPage : '',
+      prevPage : ''
+    };
+    InvoiceSvc.dictionary.lang = @Html(EnumToJson.LangsDef.toJson);
+    InvoiceSvc.dictionary.metrics = @Html(CheckCounts.Metric.toJson());
+    InvoiceSvc.dictionary.metrics =
+      _.omit(InvoiceSvc.dictionary.metrics,
+              'ref_employment_details',
+              'ref_work_performance',
+              'ref_employment_details-work_performance');
+    InvoiceSvc.dictionary.currency = @Html(EnumToJson.CurrencyCodesDef.toJson);
+    InvoiceSvc.actions_def = {
+      "FinallyCompleted" : '@MSG("order.search_by.FinallyCompleted")',
+      "Cancel"           : '@MSG("order.search_by.Cancel")'
+    };
+  }]);
+</script>
+}
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.BackgroundReportsCtrl.show,
+    routes.javascript.EmployeeOrdersCtrl.history
+  )
+}

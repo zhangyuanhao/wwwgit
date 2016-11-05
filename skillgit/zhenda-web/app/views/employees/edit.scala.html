@@ -1,0 +1,131 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(employee: Employee)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+
+@layouts.base(EmployeesCtrl.msg("edit.title")){
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa zd-users3 fa-lg fa-fw"></i>
+      @EmployeesCtrl.msg("edit.head")
+      <small>@EmployeesCtrl.msg("edit.head.small")</small>
+    </h2>
+  </div>
+
+  <div class="row wrapper-content ng-cloak" ng-controller="EditCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <form name="form" novalidate>
+        <div class="ibox">
+          <div class="ibox-content">
+            @{_individual_info()}
+
+            @{_personal_info()}
+
+            <div class="row" >
+              <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                @ng._form_group_static("status",
+                '_inline -> false,
+                '_label  -> EmployeesCtrl.msg("employee.status")
+                ){
+                  <div class="btn-group">
+                    <label class="btn btn-default" ng-model="status"
+                      uib-btn-radio="'hired'" ng-click="rehire()">
+                      <i class="fa fa-user fa-fw text-success"></i>
+                      @EmployeesCtrl.msg("employee.status.hired")
+                    </label>
+                    <label class="btn btn-default" ng-model="status"
+                      uib-btn-radio="'leave_of_absence'">
+                      <i class="fa fa-bed fa-fw text-warning"></i>
+                      @EmployeesCtrl.msg("employee.status.leave_of_absence")
+                    </label>
+                    <label class="btn btn-default" ng-model="status"
+                      uib-btn-radio="'resigned'" ng-click="resign()">
+                      <i class="fa fa-user-times fa-fw text-danger"></i>
+                      @EmployeesCtrl.msg("employee.status.resigned")
+                    </label>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="row" ng-show="status == 'leave_of_absence'">
+              <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                @ng._select("leave_type",
+                  '_label        -> EmployeesCtrl.msg("leave_type"),
+                  '_inline       -> false,
+                  "ng-model".s   -> "EmployeeSvc.employee.leave_of_absence",
+                  "ng-options".s -> "key as type for (key, type) in EmployeeSvc.dictionary.leave_type"
+                ){
+                  <option value="">@EmployeesCtrl.msg("edit.leave_of_absence_type")</option>
+                }
+              </div>
+            </div>
+            @{_employment_info()}
+          </div>
+          <div class="ibox-footer">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right">
+                <button type="submit" class="btn btn-primary" ng-click="save()"
+                  ng-disabled="form.$invalid || EmployeeSvc.noRoles()">
+                  <i class="fa fa-save"></i>
+                  @MSG("save")
+                </button>
+                <a class="btn btn-link" href="@routes.EmployeesCtrl.index()">
+                  @MSG("cancel")
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}(
+  libs.webjars("css", "awesome-bootstrap-checkbox"),
+  libs.assets("css", "employees/new")
+  )(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "api_internal/individuals"),
+  libs.assets("js", "api_internal/employees"),
+  libs.assets("js", "api_internal/users"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "ui.address"),
+  libs.assets("js", "employees/edit"),
+  libs.assets("js", "employees/employees_svc"),
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+  )
+}
+
+@controller = {
+  <script>
+    views.employees.employee_svc.run(['EmployeeSvc', function(EmployeeSvc) {
+      EmployeeSvc.initRoles(@Html(Employee.Role.toJson));
+      EmployeeSvc.levels_def                 = @Html(EmployeesCtrl.LevelOfRoleDef.toJson);
+      EmployeeSvc.roles_levels_def           = @Html(EmployeesCtrl.LevelOfRoleDef.toAllRolesJson);
+      EmployeeSvc.dictionary.hire_status     = @Html(HireStatus.toJson());
+      EmployeeSvc.dictionary.hire_type       = @Html(HireType.toJson());
+      EmployeeSvc.dictionary.employee_status = @Html(Employee.Status.toJson());
+      EmployeeSvc.dictionary.leave_type      = @Html(LeaveOfAbsenceType.toJson());
+      EmployeeSvc.id                         = '@employee.id.eid';
+      EmployeeSvc.dictionary.message         = {
+        'msg.saved'   : '@EmployeesCtrl.message("msg.saved")'
+      };
+    }]);
+  </script>
+}

@@ -1,0 +1,55 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(ngModel: String, task_type: String)(implicit messages: Messages)
+
+<div class="row ng-cloak">
+  <div class="col-xs-12">
+    <div class="ibox">
+      <div class="ibox-title">
+        @TasksCtrl.msg("order_info")
+      </div>
+      <div class="ibox-content">
+        <p>
+          <strong>@MSG("client") : </strong>
+          {{ @(ngModel).customer.name }}
+        </p>
+        <p>
+          <strong>@MSG("candidate") : </strong>
+          {{ @(ngModel).candidate_info.personal_name | personalName:"@messages.lang.language" }}
+        </p>
+        <p>
+          <strong>@MSG("telephone") : </strong>
+          {{ @(ngModel).candidate_info.phone }}
+        </p>
+        <p ng-if="@(ngModel).candidate_info.email">
+          <strong>@MSG("email") : </strong>
+          <a href="{{'mailto:' + @(ngModel).candidate_info.email}}">{{@(ngModel).candidate_info.email}}</a>
+        </p>
+        <p ng-if="@(ngModel).candidate_info.message_for_employees">
+          <strong>@TasksCtrl.msg("message_from_customer") : </strong>
+          {{ @(ngModel).candidate_info.message_for_employees }}
+        </p>
+      </div>
+    </div>
+    <div ng-if="@(ngModel).authorization && '@task_type' === 'task'">
+      <div class="ibox">
+        <div class="ibox-content">
+          <i class="fa fa-2x fa-fw fa-file-pdf-o"></i>
+          <a ng-href="{{jsRoutes.controllers.EmployeeOrdersCtrl.showAuthorizationPDF(@(ngModel).id,true).url}}"
+            target="_blank">
+            @TasksCtrl.msg("authorization.view")
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

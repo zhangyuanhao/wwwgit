@@ -1,0 +1,41 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit message: Messages)
+
+<div class="row text-right m-t-xl m-b-sm">
+  <div class="col-xs-12">
+    <button class="btn btn-danger m-b-xs" ng-click="showReviewComment('complained')"
+      ng-if="TaskSvc.order.statuses[0] === 'CustomerComplained' &&
+              (TaskSvc.task.status === 'ReviewBasicallyPassed' ||
+              TaskSvc.task.status === 'ReviewFinallyPassed')">
+      <i class="fa fa-gavel fa-lg fa-fw"></i>
+      @TasksCtrl.msg("complained")
+    </button>
+    <button class="btn btn-danger m-b-xs" ng-click="showReviewComment('reject')"
+      ng-if="TaskSvc.task.status === 'ReviewRequested'">
+      <i class="fa fa-times fa-lg fa-fw"></i>
+      @TasksCtrl.msg("reject")
+    </button>
+    <button class="btn btn-primary m-b-xs" ng-click="showReviewComment('partiallyPass')"
+      ng-if="TaskSvc.task.status === 'ReviewRequested'">
+      <i class="fa fa-info fa-lg fa-fw"></i>
+      @TasksCtrl.msg("partially_pass")
+    </button>
+    <button class="btn btn-primary m-b-xs" ng-click="showReviewComment('basicallyPass')">
+      <i class="fa fa-info fa-lg fa-fw"></i>
+      @TasksCtrl.msg("basically_pass")
+    </button>
+    <button class="btn btn-success m-b-xs" ng-click="showReviewComment('finallyPass')">
+      <i class="fa fa-check fa-lg fa-fw"></i>
+      @TasksCtrl.msg("pass")
+    </button>
+  </div>
+</div>

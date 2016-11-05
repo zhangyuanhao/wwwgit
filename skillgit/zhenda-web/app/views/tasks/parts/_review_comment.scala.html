@@ -1,0 +1,62 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(title: String, withMistakes: Boolean)(implicit message: Messages)
+
+<div class="panel panel-info ng-cloak">
+  <div class="panel-body">
+    <div class="section-header">
+      <h4>@title</h4>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="form-control-static">
+          <textarea class="form-control" rows="3" ng-model="TaskSvc.task_comment" empty-to-null></textarea>
+        </div>
+      </div>
+    </div>
+
+    @if(withMistakes){
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="ibox">
+            <div class="ibox-content">
+              <div class="form-group">
+                <h4>@TasksCtrl.msg("review.mistake")</h4>
+                <div ng-repeat="(key, value) in TaskSvc.dictionary.mistake_def"
+                  ng-init="mistake_index = $index">
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                      <div class="checkbox checkbox-primary checkbox-inline">
+                        <input type="checkbox" id="{{key}}" class="styled" ng-true-value="'{{key}}'"
+                          ng-model="TaskSvc.mistakes[mistake_index]">
+                        <label for="{{key}}">
+                          {{value}}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="row text-right">
+      <div class="col-xs-12">
+        <button class="btn btn-primary" ng-click="saveReviewComment()">@MSG("confirm")</button>
+        <button class="btn btn-default" ng-click="cancelReviewComment()">@MSG("cancel")</button>
+      </div>
+    </div>
+  </div>
+</div>

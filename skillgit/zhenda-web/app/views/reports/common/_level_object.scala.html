@@ -1,0 +1,35 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services._
+
+@(level:Option[Level])(implicit messages: Messages)
+
+@level match {
+  case Some(Level.A) => {
+    <i class="fa fa-check-circle fa-fw fa-lg" style="color:#5cb85c"></i>
+  }
+  case Some(Level.A20) => {
+    <i class="fa fa-exclamation fa-fw fa-lg" style="color:#f0ad4e"></i>
+  }
+  case Some(Level.B) => {
+    <i class="fa fa-info-circle fa-fw fa-lg" style="color:#5bc0de"></i>
+  }
+  case Some(Level.C) => {
+    <i class="fa fa-exclamation-circle fa-fw fa-lg" style="color:#f0ad4e"></i>
+  }
+  case Some(Level.D) => {
+    <i class="fa fa-minus-circle fa-fw fa-lg" style="color:#d9534f"></i>
+  }
+  case Some(Level.Na) => {
+    <i class="fa fa-minus fa-fw fa-lg"></i>
+  }
+  case  _ => {}
+}

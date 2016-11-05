@@ -1,0 +1,115 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+
+@layouts.base(EmployeesCtrl.msg("new.title")){
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa zd-users3 fa-lg fa-fw"></i>
+      @EmployeesCtrl.msg("new.head")
+      <small>@EmployeesCtrl.msg("new.head.small")</small>
+    </h2>
+  </div>
+
+  <div class="row wrapper-content ng-cloak">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <form name="form" ng-controller="NewCtrl" novalidate ng-submit="create(user)">
+        <div class="ibox">
+          <div class="ibox-content">
+            <div class="row">
+              <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                @ng._form_control("email",
+                  'maxLength    -> 64,
+                  'email        -> None,
+                  'placeholder  -> GroupsCtrl.msg("user.email.placeholder"),
+                  Symbol("uib-typeahead") -> "user as user.email for user in getUsers($viewValue)",
+                  'autocomplete -> "off",
+                  'required     -> "required",
+                  Symbol("ng-model") -> "user",
+                  Symbol("ng-model-options") -> "{debounce: 400}"
+                )
+              </div>
+            </div>
+
+            <div class="row" ng-show="user.id">
+             <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                <div class="form-group">
+                  <label>@MSG("user.user_name") : </label>
+                  <span>{{ user.user_name }}</span>
+                </div>
+              </div>
+            </div>
+
+            @{_individual_info()}
+
+            @{_personal_info()}
+
+            @{_employment_info()}
+          </div>
+          <div class="ibox-footer">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right">
+                <button type="submit" class="btn btn-primary"
+                  ng-disabled="form.$invalid || EmployeeSvc.noRoles()">
+                  <i class="fa fa-save"></i>
+                  @MSG("create")
+                </button>
+                <a class="btn btn-link" href="@routes.EmployeesCtrl.index()">
+                  @MSG("cancel")
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}(
+  libs.webjars("css", "awesome-bootstrap-checkbox"),
+  libs.assets("css", "employees/new")
+  )(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "api_internal/individuals"),
+  libs.assets("js", "api_internal/employees"),
+  libs.assets("js", "api_internal/users"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "ui.address"),
+  libs.assets("js", "employees/nnew"),
+  libs.assets("js", "employees/employees_svc"),
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+  )
+}
+
+@controller = {
+  <script>
+    views.employees.employee_svc.run(['EmployeeSvc', function(EmployeeSvc) {
+      EmployeeSvc.initRoles(@Html(Employee.Role.toJson));
+      EmployeeSvc.language                   = '@messages.lang.language';
+      EmployeeSvc.levels_def                 = @Html(EmployeesCtrl.LevelOfRoleDef.toJson);
+      EmployeeSvc.roles_levels_def           = @Html(EmployeesCtrl.LevelOfRoleDef.toAllRolesJson);
+      EmployeeSvc.dictionary.hire_status     = @Html(HireStatus.toJson());
+      EmployeeSvc.dictionary.hire_type       = @Html(HireType.toJson());
+      EmployeeSvc.dictionary.employee_status = @Html(Employee.Status.toJson());
+      EmployeeSvc.dictionary.message         = {
+        'msg.created'   : '@EmployeesCtrl.message("msg.created")'
+      };
+    }]);
+  </script>
+}

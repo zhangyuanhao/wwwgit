@@ -1,0 +1,191 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(pager: Pager, sort: Seq[SortField])(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(GroupsCtrl.msg("title")) {
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa fa-group fa-lg fa-fw"></i>
+      @GroupsCtrl.msg("head")
+    </h2>
+  </div>
+
+  <div class="row wrapper-content" ng-controller="GroupsCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+      <div class="ibox">
+        <div class="ibox-content">
+          <div class="row">
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="table-responsive">
+                <table class="table table-hover table-ellipsis">
+                  <thead>
+                    <tr>
+                      <th class="hidden-xs hidden-sm hidden-md col-lg-3">
+                        @MSG("id")
+                      </th>
+                      <th class="col-xs-5 col-sm-4 col-md-4 col-lg-3">
+                        @MSG("name")
+                      </th>
+                      <th class="hidden-xs col-sm-3 col-md-3 col-lg-3">
+                        @MSG("description")
+                      </th>
+                      <th class="col-xs-3 col-sm-2 col-md-2 col-lg-2">
+                        @MSG("layout")
+                      </th>
+                      <th class="col-xs-1 text-right">
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="ng-cloak" ng-repeat="grp in GroupListSvc.values">
+                      <td class="hidden-xs hidden-sm hidden-md">
+                        <a ng-if="!grp.is_internal" ng-href="{{jsRoutes.controllers.GroupsCtrl.show(grp.id).url}}">
+                          <code>{{ grp.id }}</code>
+                        </a>
+                        <code ng-if="grp.is_internal" class="bg-primary">{{ grp.id }}</code>
+                      </td>
+
+                      <td>
+                        <div class="hidden-lg pull-left" style="margin-right:5px;">
+                          <a ng-if="!grp.is_internal" ng-href="{{jsRoutes.controllers.GroupsCtrl.show(grp.id).url}}">
+                            <i class="fa fa-info-circle fa-lg text-info"></i>
+                          </a>
+                          <i ng-if="grp.is_internal" class="fa fa-info-circle fa-lg"></i>
+                        </div>
+
+                        <a href="#" editable-text="grp.group_name" buttons="no"
+                          onbeforesave="checkName($data)"
+                          onaftersave="grp.$save()">
+                          {{ grp.group_name }}
+                        </a>
+                      </td>
+
+                      <td class="hidden-xs">
+                        {{ grp.description }}
+                      </td>
+
+                      <td>
+                        @ng._select("layout",
+                          "ng-model".s   -> "grp.layout",
+                          "ng-change".s  -> "setLayout(grp.id, grp.layout)",
+                          "ng-options".s -> "k as v for (k,v) in Layouts"
+                        )()
+                      </td>
+
+                      <td>
+                        <button type="button" class="btn form-inline-btn pull-right"
+                          ng-show="!grp.is_internal"
+                          ng-click="confirm(grp)">
+                          <i class="fa fa-trash-o fa-lg"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              @ng._pager("GroupListSvc.links", jump = false)
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+      <div class="ibox">
+        <div class="ibox-content">
+          <div class="row">
+            <form name="form" novalidate>
+              <div class="col-xs-12 col-sm-4 col-md-12 col-lg-12">
+                @ng._form_control("name",
+                  'maxLength    -> 64,
+                  'minLength    -> 2,
+                  'tabindex     -> 1,
+                  'placeholder  -> GroupsCtrl.msg("name.placeholder"),
+                  'autocomplete -> "off",
+                  "ng-model".s  -> "group.group_name"
+                )
+              </div>
+              <div class="col-xs-12 col-sm-4 col-md-12 col-lg-12">
+                @ng._form_control("description",
+                  'tabindex    -> 2,
+                  'placeholder -> GroupsCtrl.msg("description.placeholder"),
+                  "ng-model".s -> "group.description"
+                )
+              </div>
+              <div class="col-xs-12 col-sm-4 col-md-12 col-lg-12">
+                <button type="submit" class="btn btn-primary pull-right"
+                  ng-click="create(group)"
+                  ng-disabled="form.$invalid || !group.group_name">
+                  <i class="fa fa-plus"></i>
+                  @GroupsCtrl.msg("new.group")
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}(
+  libs.webjars("css", "xeditable")
+)(
+  libs.webjars("js", "angular-resource"),
+  libs.webjars("js", "xeditable"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/groups"),
+  libs.assets("js", "groups/index"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.GroupsCtrl.show,
+    api_internal.routes.javascript.GroupsCtrl.checkName
+  )
+}
+
+@controller = {
+  <script>
+    views.groups.index.run(['GroupListSvc', function(GroupListSvc) {
+      GroupListSvc.Layouts = @Html(Layouts.toJson);
+      GroupListSvc.options = {
+        page     : @pager.pageNum,
+        pageSize : @pager.pageSize,
+        sort     : @Html(SortField.toJson(sort)),
+        nextPage : '@Html(routes.GroupsCtrl.index(pager.next, sort).toString)',
+        prevPage : '@Html(routes.GroupsCtrl.index(pager.prev, sort).toString)'
+      };
+      GroupListSvc.confirmDelete = {
+        title              : '@MSG("confirm.delete.title")',
+        text               : '@MSG("confirm.delete.text")',
+        type               : 'warning',
+        showCancelButton   : true,
+        confirmButtonText  : '@MSG("confirm.delete.btn_confirm")',
+        cancelButtonText   : '@MSG("confirm.delete.btn_cancel")',
+        confirmButtonClass : 'btn btn-lg btn-danger',
+        cancelButtonClass  : 'btn btn-lg btn-default',
+        buttonsStyling     : false
+      };
+    }]);
+  </script>
+}

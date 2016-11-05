@@ -1,0 +1,134 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(pager: Pager, sort:Seq[SortField])(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(BusinessEntitiesCtrl.msg("index.title")) {
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa fa-building fa-lg fa-fw"></i>
+      @BusinessEntitiesCtrl.msg("index.head")
+      <small>@BusinessEntitiesCtrl.msg("index.small_head")</small>
+    </h2>
+  </div>
+
+  <div class="row wrapper-content" ng-controller="BusinessEntitiesCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div class="ibox">
+        <div class="ibox-title">
+          <div class="row">
+            <div class="col-xs-8 col-sm-6">
+              @ng._search("keyword", BusinessEntitiesCtrl)
+            </div>
+            <div class="col-xs-4 col-sm-6 text-right">
+              <a href="@routes.BusinessEntitiesCtrl.nnew()" class="btn btn-primary">
+                <i class="fa fa-plus fa-fw"></i>
+                @BusinessEntitiesCtrl.msg("new.business_entity")
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="table-responsive">
+                <table class="table table-hover table-condensed">
+                  <thead>
+                    <tr>
+                      <th class="col-xs-5 col-sm-4 col-md-4">
+                        @MSG("name")
+                      </th>
+                      <th class="col-xs-3 col-sm-2 col-md-2">
+                        @MSG("telephone")
+                      </th>
+                      <th class="hidden-xs col-sm-4 col-md-4">
+                        @MSG("address")
+                      </th>
+                      <th class="col-xs-2 col-sm-1 col-md-1">
+                        @MSG("status")
+                      </th>
+                      <th class="col-xs-2 col-sm-1 col-md-1 text-right">
+                        @MSG("operation")
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="ng-cloak" ng-repeat="be in List.values">
+                      <td class="col-xs-5 col-sm-4 col-md-4">
+                        {{ be.name }}
+                      </td>
+                      <td class="col-xs-3 col-sm-2 col-md-2">
+                        {{ be.phone }}
+                      </td>
+                      <td class="hidden-xs col-sm-4 col-md-4">
+                        {{ be.business_license.registered_office | address : List.dictionary.countries }}
+                      </td>
+                      <td class="col-xs-2 col-sm-1 col-md-1">
+                        {{ List.dictionary.be_status[be.status] }}
+                      </td>
+                      <td class="col-xs-2 col-sm-1 col-md-1">
+                        <a class="pull-right" ng-href="{{jsRoutes.controllers.BusinessEntitiesCtrl.edit(be.id).url}}">
+                          <i class="fa fa-edit fa-lg text-warning"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="row">
+                <div class="col-xs-12">
+                  @ng._pager("List.links")
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/business_entities"),
+  libs.assets("js", "business_entities/index"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.BusinessEntitiesCtrl.edit
+  )
+}
+
+@controller = {
+  <script>
+    views.business_entities.index.run(['BusinessEntityList', function(BusinessEntityList) {
+      BusinessEntityList.options = {
+        page     : @pager.pageNum,
+        pageSize : @pager.pageSize,
+        sort     : @Html(SortField.toJson(sort)),
+        nextPage : '@Html(routes.BusinessEntitiesCtrl.index(pager.next).toString)',
+        prevPage : '@Html(routes.BusinessEntitiesCtrl.index(pager.prev).toString)'
+      };
+
+      BusinessEntityList.dictionary.be_status = @Html(BusinessEntity.Status.toJson());
+      BusinessEntityList.dictionary.countries = @Html(CountryCode.toJson());
+    }]);
+  </script>
+}

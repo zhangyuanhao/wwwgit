@@ -1,0 +1,26 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(ngModel:String)(implicit messages: Messages)
+
+<div class="form-group">
+  <div class="input-group">
+    <input type="text" class="form-control"
+      id="search-individuals"
+      placeholder="@IndividualsCtrl.msg("search.placeholder")"
+      autocomplete="off"
+      ng-model="@ngModel">
+    <span class="input-group-btn">
+      <button type="submit" class="btn btn-default">
+        <i class="fa fa-search fa-lg"></i>
+      </button>
+    </span>
+  </div>
+</div>

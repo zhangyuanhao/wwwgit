@@ -1,0 +1,137 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(ills: String)(implicit messages: Messages)
+
+@import common._
+
+@ng._panel_collapse("TaskSvc.task_info.ill",
+                   "fa-ban",
+                    MSG("illegal_organization_records"),
+                    Some(parts._checkbox_of_remaining(
+                    s"!${ills}.not_provided",
+                    s"${ills}.remaining.status"
+                    ))){
+  <div ng-if="@(ills).remaining.status">
+    @parts._reason_of_remaining(
+      "ill",
+      "TaskSvc.dictionary.reason_def.ill",
+      s"${ills}.remaining"
+      )
+  </div>
+
+  <div ng-if="!@(ills).remaining.status">
+    <div class="row">
+      <div class="col-xs-12">
+        @{parts._line_of_truth(s"${ills}.checks.records", false)}
+      </div>
+    </div>
+
+    <div ng-repeat="ill in @(ills).checks.records.facts.translated.zh.primary.fact track by $index">
+      @ill_show("ill", "zh")
+    </div>
+
+    <div ng-repeat="ill in @(ills).checks.records.facts.translated.en.primary.fact track by $index">
+      @ill_show("ill", "en")
+    </div>
+
+    <div ng-controller="IllCtrl">
+      <div class="row m-b-sm">
+        <div class="col-xs-12">
+          <button class="btn btn-primary btn-xs" ng-click="newIll('zh')" ng-if="TaskSvc.lang.zh">
+            @TasksCtrl.msg("add_record.zh")
+          </button>
+          <button class="btn btn-primary btn-xs" ng-click="newIll('en')" ng-if="TaskSvc.lang.en">
+            @TasksCtrl.msg("add_record.en")
+          </button>
+        </div>
+      </div>
+      <div class="slide-animate-container">
+        <div class="slide-animate" ng-include="input_page"></div>
+      </div>
+    </div>
+
+    @*  非法组织记录备注  *@
+    <div class="row m-t-md">
+      <div class="col-xs-12">
+        @{parts._line_comment(TasksCtrl.msg("ill_comment"), s"${ills}.comments", "ill_comment")}
+      </div>
+    </div>
+  </div>
+}
+
+@ill_show(ill: String, language: String) = {
+  <div class="panel panel-info ng-cloak">
+    <div class="panel-body p-xxs">
+      <div class="row m-b-sm">
+        <div class="col-xs-6">
+          <strong class="text-success">
+            @TasksCtrl.msg(s"record.$language")
+          </strong>
+        </div>
+        <div class="col-xs-6">
+          <button type="button" class="close pull-right" ng-click="TaskSvc.illRemove($index, '@language')">
+            <i class="fa fa-fw fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-ix-12 col-xs-6">
+          <p><strong>@MSG("illegal_organization_records.search") : </strong> {{ TaskSvc.dictionary.ill_searchs[@(ill).search] }}</p>
+        </div>
+        <div class="col-ix-12">
+          <p><strong>@MSG("illegal_organization_records.result") : </strong> {{ @(ill).result }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<script type="text/ng-template" id="illInputZh.html">
+  @ill_input("zh")
+</script>
+
+<script type="text/ng-template" id="illInputEn.html">
+  @{ill_input("en")}
+</script>
+
+@ill_input(language: String) = {
+  <div class="panel panel-default panel-border">
+    <div class="panel-body">
+      <form name="ill_form" novalidate>
+        <div class="row m-b-sm">
+          <div class="col-xs-12">
+            <strong>@TasksCtrl.msg(s"record.$language")</strong>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-is-6">
+            @ng._select("search",
+              "ng-model".s   -> "ill.search",
+              "ng-options".s -> "key as type for (key, type) in TaskSvc.dictionary.ill_searchs"
+            )()
+          </div>
+          <div class="col-xs-12 col-is-12">
+            <div class="form-group">
+              <label class="sr-only">@MSG("illegal_organization_records.result")</label>
+              <textarea class="form-control" rows="1" ng-model="ill.result" placeholder="@MSG("illegal_organization_records.result")" maxLength="512" empty-to-null></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="row text-right">
+          <div class="col-xs-12">
+            <button type="submit" class="btn btn-primary btn-sm" ng-click="ill_form.$valid ? addIll('@language') : ''">@MSG("ok")</button>
+            <button class="btn btn-link btn-sm" ng-click="cancelIll()">@MSG("cancel")</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}

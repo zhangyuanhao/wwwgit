@@ -1,0 +1,73 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+<div class="ibox">
+  <div class="ibox-content top-border">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th class="candidate-info-width">
+                  @CustomerUserOrdersCtrl.msg("index.candidate_info")
+                </th>
+                <th>
+                   @CustomerUserOrdersCtrl.msg("order.status")
+                </th>
+                <th class="report-btn-width">
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="ng-cloak" ng-repeat="order in OrderListSvc.orders"
+                ng-class="order.resource.indexOf('orders') > -1? 'bg-danger' : ''">
+                <td>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                      <a ng-href="{{jsRoutes.controllers.CustomerUserOrdersCtrl.show(order.id).url}}"
+                        target="_blank">
+                        {{ order.candidate_info.personal_name | personalName:"@messages.lang.language" }}
+                      </a>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
+                      {{ order.candidate_info.phone }}
+                    </div>
+                  </div>
+                </td>
+                <td>
+                   <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-6">
+                      @{__risk_level()}
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-7 col-lg-6 order-date">
+                      @CustomerUserOrdersCtrl.msg("order.completed_on")
+                      {{ order.finally_completed_at | date:"@MSG("date.format.long")" }}
+                    </div>
+                  </div>
+                </td>
+                <td class="text-right">
+                  <a ng-href="{{jsRoutes.controllers.BackgroundReportsCtrl.show(order.id).url}}"
+                    type="button" class="btn btn-default btn-xs ">
+                    <i class="fa fa-search"></i>
+                    @CustomerUserOrdersCtrl.msg("order.view")
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

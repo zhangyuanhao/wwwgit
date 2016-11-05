@@ -1,0 +1,279 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(textType: String, name: String)(implicit env: Environment)
+
+@import routes.Assets._
+
+@defining( """angular-i18n-(.+)""".r ) { angular_i18n_pattern =>
+@defining( """pace-theme-(.+)-(.+)""".r ) { pace_theme_pattern =>
+@textType match {
+  case "css" => {
+    @name match {
+
+      case "bootstrap" => {
+        @css(
+          "lib/bootstrap/dist/css/bootstrap.css",
+          "lib/bootstrap/dist/css/bootstrap.min.css")
+        @*css(
+          "lib/bootstrap/css/bootstrap-responsive.css",
+          "lib/bootstrap/css/bootstrap-responsive.min.css")*@
+      }
+
+      case "font-awesome" => {
+        @css(
+          "lib/font-awesome/css/font-awesome.css",
+          "lib/font-awesome/css/font-awesome.min.css")
+      }
+
+      case "animate.css" => {
+        @css(
+          "lib/animate.css/animate.css",
+          "lib/animate.css/animate.min.css")
+      }
+
+      case "xeditable" => {
+        @css(
+          "lib/angular-xeditable/dist/css/xeditable.css",
+          "lib/angular-xeditable/dist/css/xeditable.css")
+      }
+
+      case "handsontable" => {
+        @css(
+          "lib/handsontable/dist/handsontable.full.css",
+          "lib/handsontable/dist/handsontable.full.min.css")
+      }
+
+      case "metis-menu" => {
+        @css(
+          "lib/metisMenu/dist/metisMenu.css",
+          "lib/metisMenu/dist/metisMenu.min.css")
+      }
+
+      case pace_theme_pattern(style, color) => {
+        @css(
+          s"lib/pace/themes/$color/pace-theme-$style.css",
+          s"lib/pace/themes/$color/pace-theme-$style.css")
+      }
+
+      case "sweet-alert-2" => {
+        @css(
+          "lib/sweetalert2/dist/sweetalert2.css",
+          "lib/sweetalert2/dist/sweetalert2.min.css")
+      }
+
+      case "awesome-bootstrap-checkbox" => {
+        @css(
+          "lib/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css",
+          "lib/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css")
+      }
+    }
+  }
+  case "js" => {
+    @name match {
+
+      case "bootstrap" => {
+        @js(
+          "lib/jquery/dist/jquery.js",
+          "lib/jquery/dist/jquery.min.js")
+        @js(
+          "lib/bootstrap/dist/js/bootstrap.js",
+          "lib/bootstrap/dist/js/bootstrap.min.js")
+      }
+
+      case "jquery" => {
+        @js(
+          "lib/jquery/dist/jquery.js",
+          "lib/jquery/dist/jquery.min.js")
+      }
+
+      case "backbone" => {
+        @*js(
+          "lib/underscorejs/underscore.js",
+          "lib/underscorejs/underscore.min.js")*@
+        @*js(
+          "lib/backbonejs/backbone.js",
+          "lib/backbonejs/backbone.min.js")*@
+      }
+
+      case "underscore" => {
+        @js(
+          "lib/underscore/underscore.js",
+          "lib/underscore/underscore-min.js")
+      }
+
+      case "angular-scroll" => {
+        @js(
+          "lib/angular-scroll/angular-scroll.js",
+          "lib/angular-scroll/angular-scroll.min.js")
+      }
+
+      case "holder" => {
+        @js(
+          "lib/holderjs/holder.js",
+          "lib/holderjs/holder.js")
+      }
+
+      case "xeditable" => {
+        @js(
+          "lib/angular-xeditable/dist/js/xeditable.js",
+          "lib/angular-xeditable/dist/js/xeditable.min.js")
+      }
+
+      case "angular" => {
+        @js(
+          "lib/angular/angular.js",
+          "lib/angular/angular.min.js")
+      }
+
+      case "angular-resource" => {
+        @js(
+          "lib/angular-resource/angular-resource.js",
+          "lib/angular-resource/angular-resource.min.js")
+      }
+
+      case "angular-sanitize" => {
+        @js(
+          "lib/angular-sanitize/angular-sanitize.js",
+          "lib/angular-sanitize/angular-sanitize.min.js")
+      }
+
+      case angular_i18n_pattern(locale) => {
+        @js(
+          s"lib/angular-i18n/angular-locale_${locale.toLowerCase}.js",
+          s"lib/angular-i18n/angular-locale_${locale.toLowerCase}.js")
+      }
+
+      case "angular-animate" => {
+        @js(
+          "lib/angular-animate/angular-animate.js",
+          "lib/angular-animate/angular-animate.min.js")
+      }
+
+      case "angular-cookies" => {
+        @js(
+          "lib/angular-cookies/angular-cookies.js",
+          "lib/angular-cookies/angular-cookies.min.js")
+      }
+
+      case "angular-bootstrap" => {
+        @js(
+          "lib/angular-bootstrap/ui-bootstrap.js",
+          "lib/angular-bootstrap/ui-bootstrap.min.js")
+      }
+
+      case "angular-bootstrap-tpls" => {
+        @js(
+          "lib/angular-bootstrap/ui-bootstrap-tpls.js",
+          "lib/angular-bootstrap/ui-bootstrap-tpls.min.js")
+      }
+
+      case "ng-flow" => {
+        @js(
+          "lib/ng-flow/dist/ng-flow-standalone.js",
+          "lib/ng-flow/dist/ng-flow-standalone.min.js")
+      }
+
+      case "echarts" => {
+        @js(
+          "lib/echarts/dist/echarts.js",
+          "lib/echarts/dist/echarts.min.js")
+      }
+
+      case "ng-handsontable" => {
+        @js(
+          "lib/ngHandsontable/dist/ngHandsontable.js",
+          "lib/ngHandsontable/dist/ngHandsontable.min.js")
+      }
+
+      case "handsontable" => {
+        @js(
+          "lib/handsontable/dist/handsontable.full.js",
+          "lib/handsontable/dist/handsontable.full.min.js")
+      }
+
+      case "angular-ui-router" => {
+        @js(
+          "lib/angular-ui-router/release/angular-ui-router.js",
+          "lib/angular-ui-router/release/angular-ui-router.min.js")
+      }
+
+      case "state-events" => {
+        @js(
+          "lib/angular-ui-router/release/stateEvents.js",
+          "lib/angular-ui-router/release/stateEvents.min.js")
+      }
+
+      case "metis-menu" => {
+        @js(
+          "lib/metisMenu/dist/metisMenu.js",
+          "lib/metisMenu/dist/metisMenu.min.js")
+      }
+
+      case "pace" => {
+        @js(
+          "lib/pace/pace.js",
+          "lib/pace/pace.min.js")
+      }
+
+      case "sweet-alert-2" => {
+        @js(
+          "lib/sweetalert2/dist/sweetalert2.js",
+          "lib/sweetalert2/dist/sweetalert2.min.js")
+      }
+
+      case "signature_pad" => {
+        @js(
+          "lib/signature_pad/signature_pad.js",
+          "lib/signature_pad/signature_pad.min.js")
+      }
+
+      case "jquery-ui" => {
+        @js(
+          "ui/jquery.ui.core.js",
+          "minified/jquery.ui.core.min.js")
+        @js(
+          "ui/jquery.ui.widget.js",
+          "minified/jquery.ui.widget.min.js")
+        @js(
+          "ui/jquery.ui.mouse.js",
+          "minified/jquery.ui.mouse.min.js")
+        @js(
+          "ui/jquery.ui.draggable.js",
+          "minified/jquery.ui.draggable.min.js")
+      }
+
+    }
+  }
+}}}
+
+@css(name: String, minified: String) = {
+  @if(env.mode == play.api.Mode.Dev){
+    @stylesheet(name)
+  } else {
+    @stylesheet(minified)
+  }
+}
+
+@js(name: String, minified: String) = {
+  @if(env.mode == play.api.Mode.Dev){
+    @javascript(name)
+  } else {
+    @javascript(minified)
+  }
+}
+
+@stylesheet(path: String) = {
+  <link rel='stylesheet' href='@at(path)'>
+}
+
+@javascript(path: String) = {
+  <script type='text/javascript' src='@at(path)'></script>
+}

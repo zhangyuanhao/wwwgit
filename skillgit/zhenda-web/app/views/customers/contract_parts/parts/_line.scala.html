@@ -1,0 +1,160 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(title: String, id: String, ngModel: String, saveLine: String, saveLevels: String, saveDesc: String, saveRemindTill: String, saveOpinions: Option[String] = None, disable: Boolean = false)(implicit message: Messages)
+
+<div class="row row-line">
+  <div class="col-xs-12 col-sm-12 col-md-4">
+    <div class="checkbox checkbox-success">
+      <input type="checkbox" id="@(id).select" class="styled" ng-model="@(ngModel).select" ng-click="@saveLine" ng-disabled="@disable && @(ngModel).select">
+      <label for="@(id).select">
+        @title
+      </label>
+    </div>
+  </div>
+  <div class="col-xs-12 col-sm-12 col-md-8">
+    <div class="checkbox checkbox-info checkbox-circle checkbox-inline" style="margin-top:10px; margin-bottom:10px;">
+      <input type="checkbox" id="@(id).level_D" class="styled" ng-model="@(ngModel).level_D"
+      ng-disabled="!@(ngModel).select" ng-click="@saveLevels">
+      <label for="@(id).level_D">
+        @MSG("level.D")
+      </label>
+    </div>
+    <div class="checkbox checkbox-info checkbox-circle checkbox-inline" style="margin-top:10px; margin-bottom:10px;">
+      <input type="checkbox" id="@(id).level_C" class="styled" ng-model="@(ngModel).level_C"
+      ng-disabled="!@(ngModel).select" ng-click="@saveLevels">
+      <label for="@(id).level_C">
+        @MSG("level.C")
+      </label>
+    </div>
+    <div class="checkbox checkbox-info checkbox-circle checkbox-inline" style="margin-top:10px; margin-bottom:10px;">
+      <input type="checkbox" id="@(id).level_B" class="styled" ng-model="@(ngModel).level_B"
+      ng-disabled="!@(ngModel).select" ng-click="@saveLevels">
+      <label for="@(id).level_B">
+        @MSG("level.B")
+      </label>
+    </div>
+    <div class="checkbox checkbox-info checkbox-circle checkbox-inline" style="margin-top:10px; margin-bottom:10px;">
+      <input type="checkbox" id="@(id).level_A" class="styled" ng-model="@(ngModel).level_A"
+      ng-disabled="!@(ngModel).select" ng-click="@saveLevels">
+      <label for="@(id).level_A">
+        @MSG("level.A")
+      </label>
+    </div>
+    <div class="checkbox checkbox-info checkbox-circle checkbox-inline" style="margin-top:10px; margin-bottom:10px;">
+      <input type="checkbox" id="@(id).level_NA" class="styled" ng-model="@(ngModel).level_Na"
+      ng-disabled="!@(ngModel).select" ng-click="@saveLevels">
+      <label for="@(id).level_NA">
+        @MSG("level.Na")
+      </label>
+    </div>
+    <div class="checkbox checkbox-info checkbox-circle checkbox-inline" style="margin-top:10px; margin-bottom:10px;">
+      <input type="checkbox" id="@(id).level_A20" class="styled" ng-model="@(ngModel).level_A20"
+      ng-disabled="!@(ngModel).select" ng-click="@saveLevels">
+      <label for="@(id).level_A20">
+        @MSG("level.A20")
+      </label>
+    </div>
+    <div class="checkbox checkbox-info checkbox-circle checkbox-inline" style="margin-top:10px; margin-bottom:10px;">
+      <input type="checkbox" id="@(id).level_A10" class="styled" ng-model="@(ngModel).level_A10"
+      ng-disabled="!@(ngModel).select" ng-click="@saveLevels">
+      <label for="@(id).level_A10">
+        @MSG("level.A10")
+      </label>
+    </div>
+  </div>
+  @saveOpinions.map{ saveFunction=>
+     <div class="col-xs-12 col-sm-6 col-md-4 col-md-offset-4">
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline" style="margin-top:10px; margin-bottom:10px;">
+        <input type="checkbox" id="@(id).opinion_yes" class="styled" ng-model="@(ngModel).opinion_yes"
+        ng-disabled="!@(ngModel).select" ng-click="@saveFunction">
+        <label for="@(id).opinion_yes">
+          @MSG("opinion.yes")
+        </label>
+      </div>
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline" style="margin-top:10px; margin-bottom:10px;">
+        <input type="checkbox" id="@(id).opinion_no" class="styled" ng-model="@(ngModel).opinion_no"
+        ng-disabled="!@(ngModel).select" ng-click="@saveFunction">
+        <label for="@(id).opinion_no">
+          @MSG("opinion.no")
+        </label>
+      </div>
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline" style="margin-top:10px; margin-bottom:10px;">
+        <input type="checkbox" id="@(id).opinion_unknown" class="styled" ng-model="@(ngModel).opinion_unknown"
+        ng-disabled="!@(ngModel).select" ng-click="@saveFunction">
+        <label for="@(id).opinion_unknown">
+          @MSG("opinion.unknown")
+        </label>
+      </div>
+    </div>
+  }
+
+  <div ng-show="@(ngModel).level_D">
+    <div class="col-xs-12 col-sm-12 col-md-6">
+      <textarea class="form-control m-b-sm" rows="3" ng-model="@(ngModel).desc_D" ng-disabled="!@(ngModel).select"
+      placeholder="@CustomersCtrl.msg("contract.desc.danger")" ng-change=@{saveDesc.replace("#desc_type","'D'")}></textarea>
+    </div>
+  </div>
+  <div ng-show="@(ngModel).level_C">
+    <div class="col-xs-12 col-sm-12 col-md-6">
+      <textarea class="form-control m-b-sm" rows="3" ng-model="@(ngModel).desc_C" ng-disabled="!@(ngModel).select"
+      placeholder="@CustomersCtrl.msg("contract.desc.warning")" ng-change=@{saveDesc.replace("#desc_type","'C'")}></textarea>
+    </div>
+  </div>
+  <div ng-show="@(ngModel).level_B">
+    <div class="col-xs-12 col-sm-12 col-md-6">
+      <textarea class="form-control m-b-sm" rows="3" ng-model="@(ngModel).desc_B" ng-disabled="!@(ngModel).select"
+      placeholder="@CustomersCtrl.msg("contract.desc.info")" ng-change=@{saveDesc.replace("#desc_type","'B'")}></textarea>
+    </div>
+  </div>
+  <div ng-show="@(ngModel).level_A">
+    <div class="col-xs-12 col-sm-12 col-md-6">
+      <textarea class="form-control m-b-sm" rows="3" ng-model="@(ngModel).desc_A" ng-disabled="!@(ngModel).select"
+      placeholder="@CustomersCtrl.msg("contract.desc.success")" ng-change=@{saveDesc.replace("#desc_type","'A'")}></textarea>
+    </div>
+  </div>
+  <div ng-show="@(ngModel).level_Na">
+    <div class="col-xs-12 col-sm-12 col-md-6">
+      <textarea class="form-control m-b-sm" rows="3" ng-model="@(ngModel).desc_Na" ng-disabled="!@(ngModel).select"
+      placeholder="@CustomersCtrl.msg("contract.desc.Na")" ng-change=@{saveDesc.replace("#desc_type","'Na'")}></textarea>
+    </div>
+  </div>
+  <div ng-show="@(ngModel).level_A20">
+    <div class="col-xs-12 col-sm-12 col-md-6">
+      <textarea class="form-control m-b-sm" rows="3" ng-model="@(ngModel).desc_A20" ng-disabled="!@(ngModel).select"
+      placeholder="@CustomersCtrl.msg("contract.desc.A20")" ng-change=@{saveDesc.replace("#desc_type","'A20'")}></textarea>
+    </div>
+  </div>
+  <div ng-show="@(ngModel).level_A10">
+    <div class="col-xs-12 col-sm-12 col-md-6">
+      <textarea class="form-control m-b-sm" rows="3" ng-model="@(ngModel).desc_A10" ng-disabled="!@(ngModel).select"
+      placeholder="@CustomersCtrl.msg("contract.desc.A10")" ng-change=@{saveDesc.replace("#desc_type","'A10'")}></textarea>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-sm-6 col-md-4 pull-right">
+    <div class="input-group">
+      <input type="text" class="form-control m-b-sm"
+       uib-datepicker-popup="@MSG("date.format.long")"
+       ng-model="@(ngModel).remind_till"
+       datepicker-options="@(ngModel).datepicker.date_options"
+       is-open="@(ngModel).datepicker.opened"
+       ng-disabled="!@(ngModel).select"
+       show-button-bar="false"
+       localdate-to-string
+       ng-change="@saveRemindTill"/>
+      <span class="input-group-btn">
+        <button type="button" class="btn btn-primary m-b-sm" ng-disabled="!@(ngModel).select" ng-click="@(ngModel).datepicker.open()">
+          <i class="fa fa-calendar"></i>
+        </button>
+      </span>
+    </div>
+  </div>
+</div>

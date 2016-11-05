@@ -1,0 +1,47 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(referenceType: String, performance: String)(implicit message: Messages)
+
+<div class="row m-t-xl">
+  <div class="col-xs-12">
+    <div class="section-header strong">
+      <h4>@MSG("service.employment_performance_verif")</h4>
+    </div>
+  </div>
+</div>
+@*  突出优点  *@
+@{parts._line_of_opinion(referenceType, "strengths", s"${performance}.strengths")}
+@*  缺点或劣势  *@
+@{parts._line_of_opinion(referenceType, "weaknesses", s"${performance}.weaknesses")}
+@*  前瞻性思维  *@
+@{parts._line_of_opinion(referenceType, "future_thinking", s"${performance}.future_thinking")}
+@*  领导及管理  *@
+@{parts._line_of_opinion(referenceType, "leadership_and_management", s"${performance}.leadership_and_management")}
+@*  专业知识及技能  *@
+@{parts._line_of_opinion(referenceType, "professional_knowledge", s"${performance}.professional_knowledge")}
+@*  工作态度  *@
+@{parts._line_of_opinion(referenceType, "working_attitude", s"${performance}.working_attitude")}
+@*  压力管理  *@
+@{parts._line_of_opinion(referenceType, "stress_management", s"${performance}.stress_management")}
+@*  人际关系  *@
+@{parts._line_of_opinion(referenceType, "interpersonal_relationships", s"${performance}.interpersonal_relationships")}
+@*  总体评分  *@
+<div class="row" ng-show="@(performance).rating" m-t-md>
+  <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-5">
+    <div class="form-control-static">
+    <label>@MSG("work_performance.total_rating")</label>
+      <div class="input-group">
+        <input type="number" class="form-control" ng-model="@(performance).rating.judgement" placeholder="@MSG("work_performance.rating.placeholder")">
+        <span class="input-group-addon">@MSG("work_performance.rating_unit")</span>
+      </div>
+    </div>
+  </div>
+</div>

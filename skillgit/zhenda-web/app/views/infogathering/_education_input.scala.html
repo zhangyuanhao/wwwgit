@@ -1,0 +1,201 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+@import common._
+
+<div class="panel panel-default ng-cloak">
+  <div class="panel-body">
+    <form name="edu_form" novalidate>
+      <div class="row">
+        <div class="col-xs-12">
+          <div ng-if="education_idx === 0" class="f-text-danger" style="margin-bottom:20px">
+            <h4>@InfoGatheringCtrl.msg("education_details",0)</h4>
+          </div>
+          <div ng-if="education_idx === 1" class="f-text-danger" style="margin-bottom:20px">
+            <h4>@InfoGatheringCtrl.msg("education_details",1)</h4>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="form-group">
+            <label>@MSG("education_details.interval")</label>
+            <div class="row">
+              <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                  <div class="col-xs-12">
+                    @ng._input_date_picker("education_start_date",
+                      '_formname               -> "edu_form",
+                      "ng-model".s             -> "education_data.education_details.interval.start",
+                      "datepicker-options".s   -> "date_picker.edu_start_date.date_options",
+                      "is-open".s              -> "date_picker.edu_start_date.opened",
+                      "uib-datepicker-popup".s -> MSG("date.format.long"),
+                      "localdate-to-string".s  -> None,
+                      'required                -> true,
+                      'placeholder             -> MSG("education_details.start_date"),
+                      '_click                  -> "date_picker.edu_start_date.open()"
+                    )
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                  <div class="col-xs-12">
+                    @ng._input_date_picker("education_graduation_date",
+                      '_formname               -> "edu_form",
+                      "ng-model".s             -> "education_data.education_details.interval.end",
+                      "datepicker-options".s   -> "date_picker.edu_graduation_date.date_options",
+                      "is-open".s              -> "date_picker.edu_graduation_date.opened",
+                      "uib-datepicker-popup".s -> MSG("date.format.long"),
+                      "localdate-to-string".s  -> None,
+                      'required                -> true,
+                      'placeholder             -> MSG("education_details.graduation_date"),
+                      '_click                  -> "date_picker.edu_graduation_date.open()"
+                    )
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+          @ng._form_control("institution",
+            '_formname                 -> "edu_form",
+            '_label                    -> MSG("education_details.institution"),
+            '_inline                   -> false,
+            'maxLength                 -> 64,
+            'minLength                 -> 2,
+            'required                  -> true,
+            Symbol("ng-model")         -> "education_data.education_details.institution",
+            Symbol("uib-typeahead")          -> "institution as institution.name for institution in getInstitutions($viewValue)",
+            Symbol("ng-model-options") -> "{debounce: 400}"
+          )
+        </div>
+
+        <div class="col-xs-12" ng-if="education_data.education_details.address">
+          <div class="form-group">
+            <label>@MSG("education_details.address")</label>
+            <address ng-model="education_data.education_details.address" countries="{{Svc.dictionary.countries}}" show-city="false" show-street="false" province-required require-invalid="education_info.address_invalid">
+            </address>
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-8">
+          @ng._form_control("major",
+            '_formname          -> "edu_form",
+            '_label             -> MSG("education_details.major"),
+            '_inline            -> false,
+            'maxLength          -> 64,
+            'minLength          -> 2,
+            'required           -> true,
+            Symbol("ng-model")  -> "education_data.education_details.major"
+          )
+        </div>
+
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label>@MSG("education_details.education_level")</label>
+            <select class="form-control" ng-model="education_data.education_details.education_level"
+              ng-options="key as type for (key, type) in Svc.dictionary.education_levels">
+            </select>
+          </div>
+        </div>
+
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label>@MSG("education_details.mode_of_study")</label>
+            <select class="form-control" ng-model="education_data.education_details.mode_of_study"
+              ng-options="key as type for (key, type) in Svc.dictionary.study_modes">
+            </select>
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-8">
+          @ng._form_control("diploma_number",
+            '_formname           -> "edu_form",
+            '_label              -> InfoGatheringCtrl.msg("diploma_number"),
+            '_inline             -> false,
+            'maxLength           -> 64,
+            'minLength           -> 5,
+            'required            -> true,
+            Symbol("ng-model")   -> "education_data.education_details.diploma_number"
+          )
+        </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <upload-image title="@MSG("upload.diploma_image")" name="diploma" module-name="image" module-index="{{education_idx}}" ng-model="education_data.education_details.diploma_images" src-fn="Svc.getLoadUrl(fName)" thumbnail-fn="Svc.getThumbnailloadUrl(fName)" upload-fn="Svc.getUploadUrl(fName)">
+          </upload-image>
+        </div>
+
+        <div ng-if="education_data.degree || !education_data.education_details.degree_awarded">
+          <div class="col-xs-12">
+            @ng._form_group_static("degree_awarded",
+              '_formname -> "edu_form",
+              '_inline   -> false,
+              '_label    -> InfoGatheringCtrl.msg("degree_awarded")
+            ){
+              <div class="btn-group">
+                <label class="btn btn-default" ng-model="education_data.education_details.degree_awarded" uib-btn-radio="true" ng-click="initDegree()">
+                  <i class="fa fa-check fa-lg text-success"></i>
+                  @MSG("yes")
+                </label>
+                <label class="btn btn-default" ng-model="education_data.education_details.degree_awarded" uib-btn-radio="false">
+                  <i class="fa fa-times fa-lg text-danger"></i>
+                  @MSG("no")
+                </label>
+              </div>
+            }
+          </div>
+
+          <div class="col-xs-12 col-sm-6" ng-if="education_data.education_details.degree_awarded">
+            <div class="form-group">
+              <label>@MSG("degree.date_of_award")</label>
+              @ng._input_date_picker("education_award_date",
+                '_formname               -> "edu_form",
+                "ng-model".s             -> "education_data.degree.date_of_award",
+                "datepicker-options".s   -> "date_picker.awarded_date.date_options",
+                "is-open".s              -> "date_picker.awarded_date.opened",
+                "uib-datepicker-popup".s -> MSG("date.format.long"),
+                "localdate-to-string".s  -> None,
+                'required                -> true,
+                '_click                  -> "date_picker.awarded_date.open()"
+              )
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6" ng-if="education_data.education_details.degree_awarded">
+            @ng._form_control("degree_type",
+              '_formname           -> "edu_form",
+              '_label              -> MSG("degree.degree_type"),
+              '_inline             -> false,
+              'maxLength           -> 64,
+              'minLength           -> 2,
+              'required            -> true,
+              Symbol("ng-model")   -> "education_data.degree.degree_type"
+            )
+          </div>
+
+          <div class="col-xs-12" ng-if="education_data.education_details.degree_awarded">
+            <upload-image title="@MSG("upload.degree_image")" name="degree" module-name="image" module-index="{{education_idx}}" ng-model="education_data.degree.degree_images" src-fn="Svc.getLoadUrl(fName)" thumbnail-fn="Svc.getThumbnailloadUrl(fName)" upload-fn="Svc.getUploadUrl(fName)">
+            </upload-image>
+          </div>
+        </div>
+      </div>
+
+      <div class="row text-right">
+        <div class="col-xs-12">
+          <button type="submit" class="btn btn-primary" ng-click="edu_form.$valid ? saveEducation() : ''">@MSG("save")</button>
+          <button class="btn btn-default" ng-click="cancelEducation()">@MSG("cancel")</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

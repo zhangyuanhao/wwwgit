@@ -1,0 +1,30 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+<div class="ibox">
+  <div class="ibox-title text-left">
+    <a type="button" class="btn btn-link p-none"
+      ng-click="isCollapsed = !isCollapsed">
+      <strong>@MSG("account_executives")</strong>
+    </a>
+  </div>
+  <div class="ibox-content ng-cloak no-padding" uib-collapse="isCollapsed">
+    <div class="list-group" ng-repeat="ae in OrderListSvc.account_executives">
+      <span class="list-group-item">
+        {{ae.last_name + ' ' +ae.first_name + ' :'}}
+        <i class="fa fa-phone fa-fw fa-lg"></i>
+        {{ae.work_phone}}
+      </span>
+    </div>
+  </div>
+</div>

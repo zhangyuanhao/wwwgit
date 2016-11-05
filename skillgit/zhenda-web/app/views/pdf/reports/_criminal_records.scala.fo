@@ -1,0 +1,99 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  报告正文 -- 犯罪记录信息核实
+*@
+@(checks_set:ChecksSet)(implicit messages: Messages)
+
+@* 报告中是否存在此模块 *@
+@CriminalRecordsChecks.findIn(checks_set).map{ criminal_records =>
+  @if(!criminal_records.review_result.passed_?) {
+    @* 未通过审核 *@
+    @__panel_explanation(MSG("service.criminal_records_verif"), MSG("views.background_reports.pdf.review_not_passed"))
+  } else {
+    @if(criminal_records.remaining.status) {
+      @* 待查 *@
+      @__panel_explanation(MSG("service.criminal_records_verif"), __remaining(criminal_records.remaining, CriminalRecordsChecks.RemainingReason).toString)
+    } else {
+      <fo:table @attribute_sets("panel", "panel-block", "margin-bottom-sm", s"${messages.lang.code}-panel")>
+        <fo:table-column column-width="19%"/>
+        <fo:table-column column-width="16%"/>
+        <fo:table-column column-width="21%"/>
+        <fo:table-column column-width="23%"/>
+        <fo:table-column column-width="21%"/>
+
+        <fo:table-body>
+          @* 标题 *@
+          @__panel_header(MSG("service.criminal_records_verif"), colspan = 5)
+          @* 说明 *@
+          @CriminalRecordsCheck.Records.findIn(criminal_records).map { records =>
+            @records.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+              @__panel_row(
+                __panel_cell(BackgroundReportsCtrl.msg("criminal_records.head", fact.length), colspan = 5)
+              )()
+            }
+          }
+
+          @* 表格中列内容 *@
+          @CriminalRecordsCheck.Records.findIn(criminal_records).map { records =>
+            @records.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+              @if(fact.isEmpty) {
+                @* 表格中列标题 *@
+                @criminal_title
+                @__panel_row(
+                  __panel_cell(MSG("not_exists"), Seq("text-center")),
+                  __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"), Seq("text-center")),
+                  __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"), Seq("text-center")),
+                  __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"), Seq("text-center")),
+                  __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"), Seq("text-center"))
+                )()
+              } else {
+                @fact.map { cri =>
+                  @* 表格中列标题 *@
+                  @criminal_title
+
+                  @__panel_row(
+                    __panel_cell(cri.classification.self, Seq("text-center")),
+                    __panel_cell(cri.offense.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")), Seq("text-center")),
+                    __panel_cell(cri.imprisoned_on.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")), Seq("text-center")),
+                    __panel_cell(cri.authority.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")), Seq("text-center")),
+                    __panel_cell(cri.released_from_prison_on.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")), Seq("text-center"))
+                  )()
+                  @__panel_row(
+                    __panel_cell(MSG("criminal_records.case_summary"), Seq("text-center", "text-strong")),
+                    __panel_cell(cri.case_summary.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")), colspan = 4)
+                  )()
+                }
+              }
+            }
+          }
+
+          @* 备注 *@
+          @__panel_comment(criminal_records.comments, colspan = 5)
+        </fo:table-body>
+      </fo:table>
+    }
+  }
+}
+
+@criminal_title = {
+  @__panel_row(
+    __panel_cell(MSG("criminal_records.classification"), Seq("text-center", "text-strong")),
+    __panel_cell(MSG("criminal_records.offense"), Seq("text-center", "text-strong")),
+    __panel_cell(MSG("criminal_records.imprisoned_on"), Seq("text-center", "text-strong")),
+    __panel_cell(MSG("criminal_records.authority"), Seq("text-center", "text-strong")),
+    __panel_cell(MSG("criminal_records.released_from_prison_on"), Seq("text-center", "text-strong"))
+  )()
+}

@@ -1,0 +1,50 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit req: MaybeUserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+
+@layouts.base(MSG("Start Chat")){
+
+  <div class="row" ng-controller="ChatCtrl">
+    <div class="form-group col-xs-12 col-sm-6">
+      <label for="">@MSG("Send To")</label>
+      <input type="text" class="form-control" required ng-model="message.to">
+    </div>
+
+    <div class="form-group col-xs-12 col-sm-6">
+      <label for="">@MSG("Text")</label>
+      <div class="input-group">
+        <input type="text" class="form-control" required ng-model="message.text">
+        <span class="input-group-btn">
+          <button class="btn btn-primary" type="button"
+            ng-click="send(message)">
+            Send
+          </button>
+        </span>
+      </div>
+    </div>
+
+    <div class="row ng-cloak" ng-repeat="record in history track by $index">
+      <div ng-if="record.to != null" class="col-sm-6">
+        <pre class="pull-left">{{ record | json }}</pre>
+      </div>
+      <div ng-if="record.from != null" class="col-sm-6 col-sm-offset-6">
+        <pre class="pull-right">{{ record | json }}</pre>
+      </div>
+    </div>
+
+  </div>
+
+}()(
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "experimental/chat")
+)

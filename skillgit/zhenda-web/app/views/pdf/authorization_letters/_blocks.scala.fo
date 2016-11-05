@@ -1,0 +1,31 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import java.util.Locale
+@import models.business.infogathering._
+
+@*
+  授权书 -- 正文
+*@
+@(letter: Authorization.Handwritten)
+
+@defining(letter.letter_def.content.blocks) { blocks =>
+  <fo:block @attribute_sets("line")/>
+  @if(blocks.nonEmpty) {
+    @* 第一段 *@
+    @blocks.headOption.map { first =>
+      @_block_first(first)
+    }
+    @* 其余段 *@
+    @blocks.tail.map { other =>
+      @_block_rest(other)
+    }
+  }
+}

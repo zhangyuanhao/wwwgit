@@ -1,0 +1,37 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(itemName: String, ngModel: String)(implicit message: Messages)
+
+<div ng-show="@ngModel">
+  <div class="line-header">
+    <div class="row">
+      <div class="col-xs-12">
+        <span class="column-header">
+          <strong>@MSG(s"work_performance.${itemName}")</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12 col-is-6" ng-if="TaskSvc.lang.zh">
+      <div class="form-control-static">
+        <textarea class="form-control" rows="5" ng-model="@(ngModel).judgements.zh" placeholder="@MSG("report.lang.zh")" max-length="512" empty-to-null></textarea>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-is-6" ng-if="TaskSvc.lang.en">
+      <div class="form-control-static">
+        <textarea class="form-control" rows="5" ng-model="@(ngModel).judgements.en" placeholder="@MSG("report.lang.en")" max-length="512" empty-to-null></textarea>
+      </div>
+    </div>
+  </div>
+</div>

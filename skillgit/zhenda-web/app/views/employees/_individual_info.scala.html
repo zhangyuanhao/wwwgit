@@ -1,0 +1,42 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+<div class="row" ng-show="individual.id">
+  <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+    <div class="form-group">
+      <label>@EmployeesCtrl.msg("employee.name") : </label>
+      <span>{{ individual.personal_name | personalName:"@messages.lang.language" }}</span>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+    <div class="form-group">
+      <label>@MSG("identity.gender") : </label>
+      <span>{{ individual.gender }}</span>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+    <div class="form-group">
+      <label>@MSG("identity.date_of_birth") : </label>
+      <span>{{ individual.date_of_birth | date: "@MSG("date.format.long")" }}</span>
+    </div>
+  </div>
+
+  <div class="col-xs-12">
+    <div class="form-group">
+      <label>@MSG("resident_id_record.id_card_number") : </label>
+      <span>{{ individual.id_card_number_detail }}</span>
+    </div>
+  </div>
+
+</div>

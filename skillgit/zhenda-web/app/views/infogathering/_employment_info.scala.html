@@ -1,0 +1,189 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+@import common._
+
+<div ng-if="Svc.value.employment.list.length > 0">
+  <div ng-repeat="employ in Svc.value.employment.list track by $index">
+    <div class="panel panel-info ng-cloak">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-7">
+            <h4 class="f-text-success">
+              <span ng-if="$index===0">
+                <i class="fa fa-suitcase fa-lg"></i>
+                @InfoGatheringCtrl.msg("employment_details",0)
+              </span>
+              <span ng-if="$index > 0">
+                <i class="fa fa-suitcase fa-lg"></i>
+                @InfoGatheringCtrl.msg("employment_details",1)
+              </span>
+            </h4>
+          </div>
+          <div class="col-xs-5 text-right">
+            <button type="button" class="btn btn-primary btn-xs" ng-click="editEmployment($index)">
+              <i class="fa fa-edit"></i>
+              @MSG("edit")
+            </button>
+            <span ng-if="$index > 0">
+              <button type="button" class="btn btn-danger btn-xs" ng-click="Svc.employmentDelete($index)">
+                <i class="fa fa-trash-o"></i>
+                @MSG("delete")
+              </button>
+            </span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("employment_details.employer_name1") : </strong> {{ employ.fields.employer_name }}</p>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("employment_details.address") : </strong> {{ employ.fields.address | address : Svc.dictionary.countries }}</p>
+          </div>
+          <div ng-if="employ.fields.interval_optional_end">
+            <div class="col-xs-12 col-sm-6">
+              <p><strong>@InfoGatheringCtrl.msg("employment.interval") : </strong> {{ employ.fields.interval_optional_end | interval : "@MSG("format.interval")" : "@MSG("month.format.long")" : "@MSG("until_now")" }}</p>
+            </div>
+          </div>
+          <div ng-if="employ.fields.interval">
+            <div class="col-xs-12 col-sm-6">
+              <p><strong>@InfoGatheringCtrl.msg("employment.interval") : </strong> {{ employ.fields.interval | interval : "@MSG("format.interval")" : "@MSG("month.format.long")" : "@MSG("until_now")" }}</p>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("employment_details.employer_telephone")  : </strong> {{ employ.fields.telephone }}</p>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("employment_details.hire_type")  : </strong>{{ Svc.dictionary.hire_types[employ.fields.hire_type] }}</p>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@InfoGatheringCtrl.msg("employment.position_title") : </strong>{{ employ.fields.position_title | jobTitle }}</p>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("employment_details.employee_number")  : </strong>{{ employ.fields.employee_number }}</p>
+          </div>
+          <div class="col-xs-12">
+            <p><strong>@MSG("employment_details.major_responsibility")  : </strong>{{ employ.fields.major_responsibility }}</p>
+          </div>
+          <div class="col-xs-12">
+            <p><strong>@MSG("employment_details.performance_description")  : </strong>{{ employ.fields.performance_description }}</p>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@InfoGatheringCtrl.msg("employment.salary")  : </strong>{{ employ.fields.earnings[0].data.rate.amount | ten_thousand }} <strong>@MSG("CNY.ten_thousand")</strong></p>
+          </div>
+          <div class="col-xs-12">
+            <p><strong>@MSG("employment_details.reason_for_leaving")  : </strong>{{ employ.fields.reason_for_leaving }}</p>
+          </div>
+          <div ng-if="$index===0">
+            <div class="col-xs-12 col-sm-6">
+              <span ng-if="employ.fields.handed_over === 'true'">
+                <p><strong>@InfoGatheringCtrl.msg("handed_over.already")</strong></p>
+              </span>
+              <span ng-if="employ.fields.handed_over === 'false'">
+                <p><strong>@InfoGatheringCtrl.msg("handed_over.not_yet")</strong></p>
+              </span>
+            </div>
+            <span ng-if="!employ.fields.still_employed">
+              <div class="col-xs-12 col-sm-6">
+                <p><strong>@InfoGatheringCtrl.msg("interview.permit")</strong></p>
+              </div>
+            </span>
+            <span ng-if="employ.fields.still_employed">
+              <div class="col-xs-12">
+                <p>@InfoGatheringCtrl.msg("interview.since") <strong>{{ employ.fields.no_check_until | date:"@MSG("date.format.long")" }}</strong>@InfoGatheringCtrl.msg("interview.postfix")</p>
+              </div>
+            </span>
+          </div>
+          <div class="col-xs-12">
+            <p><strong>@InfoGatheringCtrl.msg("references") : </strong></p>
+          </div>
+          <div ng-if="employ.references.PersonnelOfficer">
+            @reference("employ.references.PersonnelOfficer")
+          </div>
+          <div ng-if="employ.references.Supervisor">
+            @reference("employ.references.Supervisor")
+          </div>
+          <div ng-if="employ.references.Additional1">
+            @reference("employ.references.Additional1")
+          </div>
+          <div ng-if="employ.references.Additional2">
+            @reference("employ.references.Additional2")
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-animate-container">
+      <div class="slide-animate" ng-include="employments_display[$index]"></div>
+    </div>
+  </div>
+  <div ng-if="Svc.blank.sections.employment.range.total > Svc.value.employment.list.length">
+    <div class="row" style="margin-bottom:20px">
+      <div class="col-xs-12 col-sm-10 col-sm-offset-1">
+        <div class="checkbox checkbox-success">
+          <input type="checkbox" id="no_more_employ" class="styled"
+            ng-model="Svc.value.employment.no_more" ng-click="noMoreEmployment()">
+          <label for="no_more_employ">
+            <span class="service-set-title service-set-lg" style="font-size: 16px;">
+              @InfoGatheringCtrl.msg("no_more_employment")
+            </span>
+          </label>
+        </div>
+        <button type="button" class="btn btn-primary btn-block" ng-click="newEmployment(Svc.value.employment.list.length)" ng-disabled="Svc.value.employment.no_more">
+          <i class="fa fa-suitcase fa-lg fa-fw"></i>
+          @InfoGatheringCtrl.msg("employment_details",1)
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div ng-if="Svc.value.employment.list.length === 0">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="checkbox checkbox-success">
+        <input type="checkbox" id="no_more_employ_0" class="styled"
+          ng-model="Svc.value.employment.no_more" ng-click="noMoreEmployment()">
+        <label for="no_more_employ_0">
+          <span class="service-set-title service-set-lg" style="font-size: 16px;">
+            @InfoGatheringCtrl.msg("no_more_employment")
+          </span>
+        </label>
+      </div>
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="newEmployment(0)" ng-disabled="Svc.value.employment.no_more">
+        <i class="fa fa-suitcase fa-lg fa-fw"></i>
+        @InfoGatheringCtrl.msg("employment_info")
+      </button>
+    </div>
+  </div>
+</div>
+
+@reference(ngModel: String) = {
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="col-xs-12 col-sm-6">
+        <p><strong>@MSG("identity.name") : </strong>{{@(ngModel).basic_info.name}}</p>
+      </div>
+      <div class="col-xs-12 col-sm-6">
+        <p><strong>@InfoGatheringCtrl.msg("employment.position_title") : </strong>{{@(ngModel).basic_info.position_title | jobTitle}}</p>
+      </div>
+      <div class="col-xs-12 col-sm-6">
+        <p><strong>@InfoGatheringCtrl.msg("reference.contact_info") : </strong>{{@(ngModel).basic_info.phone}}</p>
+      </div>
+      <div class="col-xs-12 col-sm-6">
+        <p><strong>@MSG("email") : </strong>{{@(ngModel).basic_info.email}}</p>
+      </div>
+      <div class="col-xs-12" ng-if="@(ngModel).basic_info.comment">
+        <p><strong>@MSG("comment") : </strong>{{@(ngModel).basic_info.comment}}</p>
+      </div>
+    </div>
+  </div>
+}

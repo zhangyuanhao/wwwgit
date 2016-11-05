@@ -1,0 +1,69 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import models.business.reports._
+@import views.ClassFormats._
+@import common._
+
+@(report:BackgroundReport)(implicit messages: Messages)
+
+@_report_panel("report_info", "fa-info-circle", BackgroundReportsCtrl.msg("report_info")){
+
+  <div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <label>@MSG("client.1") : </label>
+          <span>@report.customer_name</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+          <label>@MSG("candidate.1") : </label>
+          <span>@report.candidate_info.personal_name.format</span>
+        </div>
+
+        @IdentityChecks.findIn(report.content).flatMap(IdentityCheck.BasicInfo.findIn(_).flatMap(_.provided)).map { provided =>
+          <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <label>@MSG("identity.gender.1") : </label>
+            <span>@MSG(s"Gender.${provided.translate(messages.lang).getOrElse(provided.origin).self.gender.toString}")</span>
+          </div>
+
+          <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <label>@MSG("identity.nationality.1") : </label>
+            <span>@MSG(s"Country.${provided.translate(messages.lang).getOrElse(provided.origin).self.nationality.code}")</span>
+          </div>
+        }
+      </div>
+
+      @IdentityChecks.findIn(report.content).flatMap(IdentityCheck.BasicInfo.findIn(_).flatMap(_.provided)).map { provided =>
+        <div class="row">
+          <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <label>@MSG("identity.document_type") : </label>
+            <span>@MSG(s"IdDocType.${provided.translate(messages.lang).getOrElse(provided.origin).self.id_doc_nbr.basicName}")</span>
+          </div>
+
+          <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+            <label>@MSG("identity.document_number") : </label>
+            <span>@provided.translate(messages.lang).getOrElse(provided.origin).self.id_doc_nbr.number</span>
+          </div>
+        </div>
+      }
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <button type="button" class="btn btn-default pull-right"  ng-click="switchShow()">{{show_type}}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

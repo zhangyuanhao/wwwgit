@@ -1,0 +1,34 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@layoutsOpt   = @{req.maybeUser.toOption.flatMap(_.attributes[List[String]]("layouts"))}
+@baseAdmin    = @{views.html.layouts.base_admin.getClass.getCanonicalName}
+@baseEmployee = @{views.html.layouts.base_employee.getClass.getCanonicalName}
+@baseCustomer = @{views.html.layouts.base_customer.getClass.getCanonicalName}
+
+@layoutsOpt match {
+  case Some(layouts) => {
+    @{
+      if(layouts.contains(baseAdmin))
+        logged_in_admin()
+      else if(layouts.contains(baseEmployee))
+        logged_in_employee()
+      else if(layouts.contains(baseCustomer))
+        logged_in_customers()
+      else
+        logged_in_normal()
+    }
+  }
+  case None => {
+    @dashboard_user()
+  }
+}

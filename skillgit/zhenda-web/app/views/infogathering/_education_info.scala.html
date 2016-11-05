@@ -1,0 +1,129 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+@import common._
+
+<div ng-if="Svc.value.education.list.length > 0">
+  <div ng-repeat="edu in Svc.value.education.list track by $index">
+    <div class="panel panel-info ng-cloak">
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-7">
+            <h4 class="f-text-success">
+              <span ng-if="$index===0">
+                <i class="fa fa-graduation-cap fa-lg"></i>
+                @InfoGatheringCtrl.msg("education_details",0)
+              </span>
+              <span ng-if="$index > 0">
+                <i class="fa fa-graduation-cap fa-lg"></i>
+                @InfoGatheringCtrl.msg("education_details",1)
+              </span>
+            </h4>
+          </div>
+          <div class="col-xs-5 text-right">
+            <button type="button" class="btn btn-primary btn-xs" ng-click="editEducation($index)">
+              <i class="fa fa-edit"></i>
+              @MSG("edit")
+            </button>
+            <span ng-if="$index > 0">
+              <button type="button" class="btn btn-danger btn-xs" ng-click="Svc.educationDelete($index)">
+                <i class="fa fa-trash-o"></i>
+                @MSG("delete")
+              </button>
+            </span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("education_details.start_date") : </strong> {{ edu.education_details.interval.start | date:"@MSG("date.format.long")"}}</p>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("education_details.graduation_date") : </strong> {{ edu.education_details.interval.end | date:"@MSG("date.format.long")"}}</p>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("education_details.institution") : </strong> {{ edu.education_details.institution }}</p>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("education_details.address") : </strong> {{ edu.education_details.address | address : Svc.dictionary.countries}}</p>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("education_details.major")  : </strong> {{ edu.education_details.major }}</p>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("education_details.education_level")  : </strong>{{ Svc.dictionary.education_levels[edu.education_details.education_level] }}</p>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("education_details.mode_of_study")  : </strong>{{ Svc.dictionary.study_modes[edu.education_details.mode_of_study] }}</p>
+          </div>
+          <div class="col-xs-12 col-sm-6">
+            <p><strong>@MSG("education_details.diploma_number")  : </strong>{{ edu.education_details.diploma_number }}</p>
+          </div>
+          <div ng-if="edu.education_details.degree_awarded && edu.degree">
+            <div class="col-xs-12 col-sm-6">
+              <p><strong>@MSG("degree.date_of_award")  : </strong>{{ edu.degree.date_of_award | date:"@MSG("date.format.long")"}}</p>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+              <p><strong>@MSG("degree.degree_type")  : </strong>{{ edu.degree.degree_type }}</p>
+            </div>
+          </div>
+          <div ng-if="!edu.education_details.degree_awarded">
+            <div class="col-xs-12 col-sm-6">
+              <strong>@InfoGatheringCtrl.msg("degree_not_awarded")</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-animate-container">
+      <div class="slide-animate" ng-include="educations_display[$index]"></div>
+    </div>
+  </div>
+  <div ng-if="Svc.blank.sections.education.range.total > Svc.value.education.list.length">
+    <div class="row">
+      <div class="col-xs-12 col-sm-10 col-sm-offset-1">
+        <div class="checkbox checkbox-success">
+          <input type="checkbox" id="no_more_edu_1" class="styled"
+            ng-model="Svc.value.education.no_more" ng-click="noMoreEducation()">
+          <label for="no_more_edu_1">
+            <span class="service-set-title service-set-lg" style="font-size: 16px;">
+              @InfoGatheringCtrl.msg("no_more_education")
+            </span>
+          </label>
+        </div>
+        <button type="button" class="btn btn-primary btn-block" ng-click="newEducation(1)" ng-disabled="Svc.value.education.no_more">
+          <i class="fa fa-graduation-cap fa-lg fa-fw"></i>
+          @InfoGatheringCtrl.msg("other_education_info")
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div ng-if="Svc.value.education.list.length === 0">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="checkbox checkbox-success">
+        <input type="checkbox" id="no_more_edu_0" class="styled"
+          ng-model="Svc.value.education.no_more" ng-click="noMoreEducation()">
+        <label for="no_more_edu_0">
+          <span class="service-set-title service-set-lg" style="font-size: 16px;">
+            @InfoGatheringCtrl.msg("no_more_education")
+          </span>
+        </label>
+      </div>
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="newEducation(0)" ng-disabled="Svc.value.education.no_more">
+        <i class="fa fa-graduation-cap fa-lg fa-fw"></i>
+        @InfoGatheringCtrl.msg("education_info")
+      </button>
+    </div>
+  </div>
+</div>

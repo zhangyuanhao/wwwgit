@@ -1,0 +1,181 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import common._
+@(operate_type: String)(implicit message: Messages)
+
+<div class="modal-body p-sm">
+  <div class="row">
+    <div class="col-xs-12">
+      @if(operate_type.equals("edit")){
+        <div class="radio radio-success radio-inline">
+          <input type="radio" name="source" id="provided" value="Provided" ng-model="reference.source" ng-click="loadReference()">
+          <label for="provided">
+            @MSG("Reference.Source.Provided")
+          </label>
+        </div>
+      }
+      <div class="radio radio-success radio-inline">
+        <input type="radio" name="source" id="supplemented" value="Supplemented" ng-model="reference.source" ng-click="loadReference()">
+        <label for="supplemented">
+          @MSG("Reference.Source.Supplemented")
+        </label>
+      </div>
+      <div class="radio radio-success radio-inline">
+        <input type="radio" name="source" id="roundByUs" value="FoundByUs" ng-model="reference.source" ng-click="loadReference()">
+        <label for="roundByUs">
+          @MSG("Reference.Source.FoundByUs")
+        </label>
+      </div>
+    </div>
+  </div>
+  <br>
+
+  <div class="row">
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.zh && reference.source!=='Provided'">
+      <div class="form-group">
+        <label class="sr-only">@MSG("references.reason")</label>
+        <input type="text" class="form-control" name="reason" ng-model="reference.reason_for_changing.zh" placeholder="@MSG("references.reason.placeholder")" empty-to-null>
+      </div>
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.en && reference.source!=='Provided'">
+      <div class="form-group">
+        <label class="sr-only">@MSG("references.reason")</label>
+        <input type="text" class="form-control" name="reason" ng-model="reference.reason_for_changing.en" placeholder="@MSG("references.reason.placeholder")" empty-to-null>
+      </div>
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.zh">
+      @ng._form_control("referenceName_zh",
+        'placeholder    -> MSG("references.name"),
+        'minLength      -> 2,
+        'maxLength      -> 64,
+        'required       -> true,
+        "ng-model".s    -> "reference.current.translated.zh.basic_info.name"
+      )
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.en">
+      @ng._form_control("referenceName_en",
+        'placeholder    -> MSG("references.name"),
+        'minLength      -> 2,
+        'maxLength      -> 64,
+        'required       -> true,
+        "ng-model".s    -> "reference.current.translated.en.basic_info.name"
+      )
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.zh">
+      @ng._form_control("referencePhone_zh",
+        'placeholder      -> MSG("telephone"),
+        '_type            -> "tel",
+        'pattern          -> Telephone.regex,
+        '_pattern_msg_key -> "error.telephone_number",
+        'required         -> true,
+        "ng-model".s      -> "reference.current.translated.zh.basic_info.phone"
+      )
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.en">
+      @ng._form_control("referencePhone_en",
+        'placeholder      -> MSG("telephone"),
+        '_type            -> "tel",
+        'pattern          -> Telephone.regex,
+        '_pattern_msg_key -> "error.telephone_number",
+        'required         -> true,
+        "ng-model".s      -> "reference.current.translated.en.basic_info.phone"
+      )
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.zh">
+      @ng._form_control("referenceEmail_zh",
+        'placeholder      -> MSG("email"),
+        '_type            -> "email",
+        'email            -> None,
+        'autocomplete     -> "off",
+        "ng-model".s      -> "reference.current.translated.zh.basic_info.email",
+        "empty-to-null".s -> None
+      )
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.en">
+      @ng._form_control("referenceEmail_en",
+        'placeholder      -> MSG("email"),
+        '_type            -> "email",
+        'email            -> None,
+        'autocomplete     -> "off",
+        "ng-model".s      -> "reference.current.translated.en.basic_info.email",
+        "empty-to-null".s -> None
+      )
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.zh">
+      @ng._form_control("referenceJobTitle_zh",
+        'placeholder    -> MSG("references.position_title.job_title"),
+        'maxLength      -> 64,
+        'required       -> true,
+        "ng-model".s    -> "reference.current.translated.zh.basic_info.position_title.job_title"
+      )
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.en">
+      @ng._form_control("referenceJobTitle_en",
+        'placeholder    -> MSG("references.position_title.job_title"),
+        'maxLength      -> 64,
+        'required       -> true,
+        "ng-model".s    -> "reference.current.translated.en.basic_info.position_title.job_title"
+      )
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.zh">
+      @ng._form_control("referenceDepartment_zh",
+        'maxLength        -> 64,
+        'placeholder      -> MSG("references.position_title.department"),
+        "empty-to-null".s -> None,
+        "ng-model".s      -> "reference.current.translated.zh.basic_info.position_title.department"
+      )
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.en">
+      @ng._form_control("referenceDepartment_en",
+        'maxLength        -> 64,
+        'placeholder      -> MSG("references.position_title.department"),
+        "empty-to-null".s -> None,
+        "ng-model".s      -> "reference.current.translated.en.basic_info.position_title.department"
+      )
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.zh && reference.source!=='Provided'">
+      <div class="form-group">
+        <label class="sr-only">@MSG("references.relationship")</label>
+        <input type="text" class="form-control" name="relationship_zh" ng-model="reference.current.translated.zh.relationship" placeholder="@MSG("references.relationship")" empty-to-null>
+      </div>
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.en && reference.source!=='Provided'">
+      <div class="form-group">
+        <label class="sr-only">@MSG("references.relationship")</label>
+        <input type="text" class="form-control" name="relationship_en" ng-model="reference.current.translated.en.relationship" placeholder="@MSG("references.relationship")" empty-to-null>
+      </div>
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.zh && reference.source!=='Provided'">
+      <div class="form-group">
+        <label class="sr-only">@MSG("references.how_long")</label>
+        <input type="text" class="form-control" name="how_long_zh" ng-model="reference.current.translated.zh.how_long" placeholder="@MSG("references.how_long")" empty-to-null>
+      </div>
+    </div>
+    <div class="col-xs-12 col-is-6 col-sm-6" ng-if="TaskSvc.lang.en && reference.source!=='Provided'">
+      <div class="form-group">
+        <label class="sr-only">@MSG("references.how_long")</label>
+        <input type="text" class="form-control" name="how_long_en" ng-model="reference.current.translated.en.how_long" placeholder="@MSG("references.how_long")" empty-to-null>
+      </div>
+    </div>
+    <div class="col-xs-12" ng-if="TaskSvc.lang.zh">
+      <div class="form-group">
+        <label class="sr-only">@MSG("comment")</label>
+        <textarea class="form-control" name="reference_comment_zh" rows="1" ng-model="reference.current.translated.zh.basic_info.comment"  placeholder="@MSG("comment")" max-length="512" empty-to-null></textarea>
+      </div>
+    </div>
+    <div class="col-xs-12" ng-if="TaskSvc.lang.en">
+      <div class="form-group">
+        <label class="sr-only">@MSG("comment")</label>
+        <textarea class="form-control" name="reference_comment_en" rows="1" ng-model="reference.current.translated.en.basic_info.comment"  placeholder="@MSG("comment")" max-length="512" empty-to-null></textarea>
+      </div>
+    </div>
+  </div>
+</div>

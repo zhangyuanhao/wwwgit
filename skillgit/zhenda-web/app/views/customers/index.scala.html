@@ -1,0 +1,150 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(pager: Pager, sort:Seq[SortField])(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(CustomersCtrl.msg("index.title")) {
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa fa-black-tie fa-lg fa-fw"></i>
+      @CustomersCtrl.msg("index.head")
+    </h2>
+  </div>
+
+  <div class="row wrapper-content" ng-controller="CustomerListCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div class="ibox">
+        <div class="ibox-title">
+          <div class="row">
+            <div class="col-xs-8 col-sm-6">
+              @ng._search("keyword", CustomersCtrl)
+            </div>
+            <div class="col-xs-4 col-md-6 text-right">
+              <a class="btn btn-primary" href="@routes.CustomersCtrl.nnew()">
+                <i class="fa fa-plus fa-fw"></i>
+                @CustomersCtrl.msg("new.customer")
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="table-responsive">
+                <table class="table table-hover table-condensed">
+                  <thead>
+                    <tr>
+                      <th class="col-xs-5 col-sm-5 col-md-5">
+                        @MSG("name")
+                      </th>
+                      <th class="hidden-xs hidden-sm col-md-2">
+                        @MSG("telephone")
+                      </th>
+                      <th class="col-xs-3 col-sm-3 col-md-2 text-center">
+                        @CustomersCtrl.msg("invoice.head")
+                      </th>
+                      <th class="col-xs-4 col-sm-4 col-md-3 text-right">
+                        @MSG("operation")
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="ng-cloak" ng-repeat="customer in List.values">
+                      <td class="col-xs-5 col-sm-5 col-md-5">
+                        {{ customer.name }}
+                      </td>
+                      <td class="hidden-xs hidden-sm col-md-2">
+                        {{ customer.phone }}
+                      </td>
+                      <td class="col-xs-3 col-sm-3 col-md-2 text-center">
+                        <div class="btn-group">
+                          <a ng-href="{{jsRoutes.controllers.CustomersCtrl.invoice(customer.id,@Pager.first).url}}">
+                            <i class="fa fa-fw fa-lg fa-credit-card text-warning"></i>
+                          </a>
+                        </div>
+                      </td>
+                      <td class="col-xs-4 col-sm-4 col-md-3">
+                        <div class="btn-toolbar pull-right">
+                          <div class="btn-group">
+                            <a ng-href="{{jsRoutes.controllers.CustomersCtrl.edit(customer.id).url}}">
+                              <i class="fa fa-fw fa-lg fa-edit text-warning"></i>
+                            </a>
+                          </div>
+                          <div class="btn-group">
+                            <a ng-href="{{jsRoutes.controllers.CustomersCtrl.hrs(customer.id,@Pager.first).url}}">
+                              <i class="fa fa-fw fa-lg fa-user-plus text-warning"></i>
+                            </a>
+                          </div>
+                          <div class="btn-group">
+                            <a ng-href="{{jsRoutes.controllers.CustomersCtrl.contract(customer.id).url}}">
+                              <i class="fa fa-fw fa-lg fa-file-text text-warning"></i>
+                            </a>
+                          </div>
+                          <div class="btn-group">
+                            <a ng-href="{{jsRoutes.controllers.CustomersCtrl.preferences(customer.id).url}}">
+                              <i class="fa fa-fw fa-lg fa-cogs text-warning"></i>
+                            </a>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12">
+              @ng._pager("List.links")
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "customers/index"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.CustomersCtrl.edit,
+    routes.javascript.CustomersCtrl.hrs,
+    routes.javascript.CustomersCtrl.contract,
+    routes.javascript.CustomersCtrl.preferences,
+    routes.javascript.CustomersCtrl.invoice
+  )
+}
+
+@controller = {
+  <script>
+    views.customers.index.run(['CustomerList', function(CustomerList) {
+      CustomerList.options = {
+        page     : @pager.pageNum,
+        pageSize : @pager.pageSize,
+        sort     : @Html(SortField.toJson(sort)),
+        nextPage : '@Html(routes.CustomersCtrl.index(pager.next).toString)',
+        prevPage : '@Html(routes.CustomersCtrl.index(pager.prev).toString)'
+      };
+    }]);
+  </script>
+}

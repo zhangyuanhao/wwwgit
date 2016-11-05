@@ -1,0 +1,69 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+@import common._
+@import employee_orders._
+  <div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>
+                <h4>
+                  @EmployeeOrdersCtrl.msg("head")
+                </h4>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="ng-cloak" ng-repeat="order in EmployeeOrdersSvc.orders">
+            @{parts.common._tags()}
+            <tr class="bg-info">
+              @{parts.common._order_info()}
+            </tr>
+            <tr uib-collapse="order.isConfirmCollapse" class="no-animate">
+              <td>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  @{parts.common._confirm_area()}
+                </div>
+              </td>
+            </tr>
+            <tr uib-collapse="!order.isConfirmCollapse" class="no-animate">
+              <td>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right">
+
+                  <a type="button" class="btn btn-primary btn-xs"
+                    ng-href="/tasks/{{order.tasks[EmployeeOrdersSvc.task_type]}}?type={{EmployeeOrdersSvc.task_type}}"
+                    target="_blank">
+                    <i class="fa fa-edit"></i>
+                    @EmployeeOrdersCtrl.msg("start")
+                  </a>
+
+                  <a type="button" class="btn btn-primary btn-xs"
+                    ng-href="{{ jsRoutes.controllers.EmployeeOrdersCtrl.history(order.id, EmployeeOrdersSvc.task_type).url }}"
+                    target="_blank">
+                    <i class="fa fa-history"></i>
+                    @EmployeeOrdersCtrl.msg("show_log")
+                  </a>
+
+                  <button type="button" class="btn btn-default btn-xs"
+                    ng-click="EmployeeOrdersSvc.confirm(order, 'abandon')">
+                    <i class="fa fa-undo"></i>
+                    @EmployeeOrdersCtrl.msg("abandon")
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>

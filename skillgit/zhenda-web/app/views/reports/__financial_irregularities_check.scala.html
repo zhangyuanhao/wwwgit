@@ -1,0 +1,98 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import models.business.services._
+@import models.business.services.definitions._
+
+@(class_type: String, check: Check.Strict2[PersonalBasicInfo, List[AnnouncedPenalty.Head]])(
+implicit messages: Messages)
+
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 object-check">
+    <h5>
+      <span>
+        @MSG(s"${FinancialIrregularitiesCheck.basicName}.${class_type}")
+      </span>
+      <span class="pull-right">
+        @reports.common._level_object(check.rating)
+      </span>
+    </h5>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+              @MSG(s"announced_penalty.comment.${class_type}")
+            </th>
+            <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+              @MSG("announced_penalty.number")
+            </th>
+            <th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+              @MSG("announced_penalty.issue_date")
+            </th>
+            <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+              @MSG("announced_penalty.classification")
+            </th>
+          </tr>
+        </thead>
+      @check.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+
+        @fact.length match {
+          case 0 => {
+        <tbody>
+          <tr>
+            <td>
+              @MSG("not_exists")
+            </td>
+            <td>
+              -
+            </td>
+            <td>
+              -
+            </td>
+            <td>
+              -
+            </td>
+          </tr>
+        </tbody>
+          }
+          case _ => {
+        <tbody>
+          @fact.map { fact =>
+            <tr>
+              <td>
+                @fact.comment.map { comment =>
+                  <pre class="pre-comment">@comment.self</pre>
+                }
+                @fact.url.map { url =>
+                  <a href="@url.self">@MSG("announced_penalty.url")</a>
+                }
+              </td>
+              <td>
+                @fact.number.self
+              </td>
+              <td>
+                @DateTimeFormat(messages("date.format.long")).print(fact.issue_date)
+              </td>
+              <td>
+                @fact.classification.self
+              </td>
+            </tr>
+          }
+        </tbody>
+          }
+        }
+      }
+      </table>
+    </div>
+    @reports.common._comment(check.comments)
+  </div>
+</div>

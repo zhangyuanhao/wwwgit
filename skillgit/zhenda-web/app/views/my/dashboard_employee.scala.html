@@ -1,0 +1,46 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(MSG("dashboard")) {
+
+  <div class="row ng-cloak" ng-controller="TaskCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+      <div class="page-header">
+        <h1>
+          <i class="fa fa-folder fa-lg fa-fw"></i>
+          @MSG("dashboard")
+          <small>@EmployeeOrdersCtrl.msg("head")</small>
+        </h1>
+      </div>
+
+    </div>
+  </div>
+
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "api_internal/individuals"),
+  libs.assets("js", "api_internal/employees"),
+  jsRoutes
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+
+  )
+}

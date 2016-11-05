@@ -1,0 +1,125 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(pager: Pager, sort:Seq[SortField])(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(IndividualsCtrl.msg("index.title")) {
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa zd-organization fa-lg fa-fw"></i>
+      @IndividualsCtrl.msg("index.head")
+      <small>@IndividualsCtrl.msg("index.small_head")</small>
+    </h2>
+  </div>
+
+  <div class="row wrapper-content" ng-controller="IndividualsCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div class="ibox">
+        <div class="ibox-title">
+          <div class="row">
+            <div class="col-xs-8 col-sm-6">
+              @ng._search("keyword", IndividualsCtrl)
+            </div>
+            <div class="col-xs-4 col-sm-6 text-right">
+              <a href="@routes.IndividualsCtrl.nnew()" class="btn btn-primary">
+                <i class="fa fa-plus fa-fw"></i>
+                @IndividualsCtrl.msg("new.individual")
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="table-responsive">
+                <table class="table table-hover table-ellipsis">
+                  <thead>
+                    <tr>
+                      <th class="col-xs-3">
+                        @MSG("identity.name")
+                      </th>
+                      <th class="col-xs-7 col-is-4">
+                        @MSG("resident_id_record.id_card_number")
+                      </th>
+                      <th class="col-xs-2 col-is-1 text-center">
+                        @MSG("identity.gender")
+                      </th>
+                      <th class="hidden-xs col-is-4 text-right">
+                        @MSG("identity.date_of_birth")
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="ng-cloak" ng-repeat="individual in IndividualList.values">
+                      <td>
+                        <a href="{{jsRoutes.controllers.IndividualsCtrl.edit(individual.id).url}}">
+                          {{ individual.personal_name | personalName:"@messages.lang.language" }}
+                        </a>
+                      </td>
+                      <td>
+                        {{ individual.id_card_nr[0] }}
+                      </td>
+                      <td class="text-center">
+                        @ng._icon_gender("individual.gender")
+                      </td>
+                      <td class="hidden-xs text-right">
+                        {{ individual.date_of_birth }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div ng-hide="keyword !== ''">
+                <div class="row">
+                  <div class="col-xs-12">
+                    @ng._pager("IndividualList.links")
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "api_internal/individuals"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "individuals/index"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.IndividualsCtrl.edit
+  )
+}
+
+@controller = {
+  <script>
+    views.individuals.index.run(['IndividualList', function(IndividualList) {
+      IndividualList.options = {
+        page     : @pager.pageNum,
+        pageSize : @pager.pageSize,
+        sort     : @Html(SortField.toJson(sort)),
+        nextPage : '@Html(routes.IndividualsCtrl.index(pager.next).toString)',
+        prevPage : '@Html(routes.IndividualsCtrl.index(pager.prev).toString)'
+      };
+    }]);
+  </script>
+}

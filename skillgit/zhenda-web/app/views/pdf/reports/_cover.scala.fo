@@ -1,0 +1,48 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.reports._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  报告封面
+*@
+@(report: BackgroundReport)(implicit messages: Messages, env: Environment)
+
+@defining(imageToDataURI(s"public/images/fact-logo.png")) { data =>
+  <fo:block @attribute_sets("logo", "text-center")>
+    <fo:external-graphic src="url(@data)" @attribute_sets("logo-image") />
+  </fo:block>
+}
+
+<fo:block @attribute_sets("report-title")>
+  @report.customer.card.name
+</fo:block>
+
+<fo:block @attribute_sets("report-title")>
+  @report.candidate_info.personal_name.format
+</fo:block>
+
+<fo:block>
+  <fo:footnote>
+    <fo:inline></fo:inline>
+    <fo:footnote-body>
+      <fo:block @attribute_sets(s"${messages.lang.code}-disclaimer")>
+        <fo:block @attribute_sets(s"${messages.lang.code}-disclaimer-head")>
+          @BackgroundReportsCtrl.msg("pdf.cover.announcement")
+        </fo:block>
+        <fo:block @attribute_sets(s"${messages.lang.code}-disclaimer-body")>
+          @BackgroundReportsCtrl.msg("pdf.cover.announcement_content", report.customer.card.name, report.candidate_info.personal_name.format)
+        </fo:block>
+      </fo:block>
+    </fo:footnote-body>
+  </fo:footnote>
+</fo:block>

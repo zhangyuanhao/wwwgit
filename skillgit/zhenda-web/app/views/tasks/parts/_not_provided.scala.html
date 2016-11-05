@@ -1,0 +1,28 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(title: String, ngModel: String)(implicit message: Messages)
+
+<div class="ibox">
+  <div class="ibox-title">
+    <div class="row">
+      <div class="col-xs-12 col-sm-10 col-sm-offset-1">
+        <pre>
+          <span style="text-align:center">
+            <h3>@title</h3>
+          </span>
+        </pre>
+      </div>
+    </div>
+
+    @*  备注  *@
+    @{_line_comment(MSG("comment"), s"${ngModel}.comments", "not_provided_comment")}
+  </div>
+</div>

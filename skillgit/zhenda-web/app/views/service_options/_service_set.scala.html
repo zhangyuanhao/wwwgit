@@ -1,0 +1,127 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services.definitions.PurchasedServices
+@import models.business.services.definitions.SellingService
+
+@(p_s: PurchasedServices)(implicit messages: Messages)
+
+<div class="tabs-container">
+  <uib-tabset class="tabs-right">
+    @if(p_s.purchased(SellingService.Name.Identity)) {
+      <uib-tab>
+        <uib-tab-heading>
+          <i class="fa zd-vcard fa-lg fa-fw"></i>
+          <span>@MSG("service.identity_related")</span>
+        </uib-tab-heading>
+        <div class="tab-pane">
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-xs-12">
+                @{_singleton_verif("identity", MSG("service.identity_verif"), "OrderSvc.options_set.identity.selected", "read_only")}
+                @if(p_s.purchased(SellingService.Name.CriminalRecords)) {
+                  @{_singleton_verif("crr", MSG("service.criminal_records_verif"), "OrderSvc.options_set.criminal_records.selected", "read_only || !OrderSvc.options_set.identity.selected")}
+                }
+                @if(p_s.purchased(SellingService.Name.ConflictOfBusinessInterest)) {
+                  @{_singleton_verif("cbi", MSG("service.conflict_of_business_interest_verif"), "OrderSvc.options_set.conflict_of_business_interest.selected", "read_only || !OrderSvc.options_set.identity.selected")}
+                }
+                @if(p_s.purchased(SellingService.Name.IllegalOrganizationRecords)) {
+                  @{_singleton_verif("ior", MSG("service.illegal_organization_records_verif"), "OrderSvc.options_set.illegal_organization_records.selected", "read_only || !OrderSvc.options_set.identity.selected")}
+                }
+                @if(p_s.purchased(SellingService.Name.CourtRecords)) {
+                  @{_singleton_verif("cr", MSG("service.court_records_verif"), "OrderSvc.options_set.court_records.selected", "read_only || !OrderSvc.options_set.identity.selected")}
+                }
+                @if(p_s.purchased(SellingService.Name.FinancialIrregularities)) {
+                  @{_singleton_verif("fi", MSG("service.financial_irregularities_verif"), "OrderSvc.options_set.financial_irregularities.selected", "read_only || !OrderSvc.options_set.identity.selected")}
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </uib-tab>
+    }
+    @if(p_s.purchased(SellingService.Name.EducationDetails)) {
+      <uib-tab>
+        <uib-tab-heading>
+          <i class="fa fa-institution fa-lg fa-fw"></i>
+          <span>@MSG("service.education")</span>
+        </uib-tab-heading>
+        <div class="tab-pane">
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-xs-12 col-is-12">
+                @{_education_verif(0,"OrderSvc.options_set.education.list[0]")}
+              </div>
+              <div class="col-xs-12 col-is-12">
+                @{_education_verif(1,"OrderSvc.options_set.education.list[1]")}
+              </div>
+            </div>
+          </div>
+        </div>
+      </uib-tab>
+    }
+    @if(p_s.purchased(SellingService.Name.EmploymentDetails)) {
+      <uib-tab>
+        <uib-tab-heading>
+          <i class="fa fa-suitcase fa-lg fa-fw"></i>
+          <span>@MSG("service.employment")</span>
+        </uib-tab-heading>
+        <div class="tab-pane">
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="form-group" ng-class="(submit_form.within_years.$dirty || submit_form.total.$dirty) && (submit_form.within_years.$invalid || submit_form.total.$invalid) ? 'has-error' : ''">
+                  <h5 class="form-control-static in-line">@CustomerUserOrdersCtrl.msg("service.employment_msg_1")</h5>
+                  <input type="number" name="within_years" class="form-control in-line" style="width: 80px;" ng-model="OrderSvc.options_set.employment.range.within_years" ng-disabled="read_only" pattern="^[1-9]\d*$" max="60">
+                  <h5 class="form-control-static in-line">@CustomerUserOrdersCtrl.msg("service.employment_msg_2")</h5>
+                  <input type="number" name="total" class="form-control in-line" style="width: 80px;" ng-model="OrderSvc.options_set.employment.range.total" ng-disabled="read_only" pattern="^[1-9]\d*$" max="10">
+                  <h5 class="form-control-static in-line">@CustomerUserOrdersCtrl.msg("service.employment_msg_3")</h5>
+                  <span ng-show="submit_form.within_years.$error.pattern || submit_form.total.$error.pattern" class="help-block ng-cloak">
+                    @MSG("error.integer")
+                  </span>
+                  <span ng-show="submit_form.within_years.$error.max" class="help-block ng-cloak">
+                    @CustomerUserOrdersCtrl.msg("with_in_years.max")
+                  </span>
+                  <span ng-show="submit_form.total.$error.max" class="help-block ng-cloak">
+                    @CustomerUserOrdersCtrl.msg("totally_companies.max")
+                  </span>
+                </div>
+              </div>
+
+              <div class="col-xs-12">
+                <h4 class="form-control-static">@CustomerUserOrdersCtrl.msg("service.interview_detail")</h4>
+              </div>
+
+              <div class="col-xs-12 col-is-12 col-lg-6">
+                @{_employment_verif(0, "OrderSvc.options_set.employment.list[0]")}
+              </div>
+              <div class="col-xs-12 col-is-12 col-lg-6 " >
+                @{_employment_verif(1,"OrderSvc.options_set.employment.list[1]")}
+              </div>
+            </div>
+          </div>
+        </div>
+      </uib-tab>
+    }
+    @if(p_s.purchased(SellingService.Name.ProfessionalLicense)) {
+      <uib-tab>
+        <uib-tab-heading>
+          <i class="fa zd-medal2 fa-lg fa-fw"></i>
+          <span>@MSG("service.professional_licenses")</span>
+        </uib-tab-heading>
+        <div class="tab-pane">
+          <div class="panel-body">
+            @{_singleton_verif("pl", MSG("service.professional_licenses_verif"), "OrderSvc.options_set.professional_licenses.list[0].selected", "read_only")}
+          </div>
+        </div>
+      </uib-tab>
+    }
+  </uib-tabset>
+</div>

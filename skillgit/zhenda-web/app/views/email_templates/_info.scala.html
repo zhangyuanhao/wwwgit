@@ -1,0 +1,40 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(tmpl: EmailTemplate, updated_by:User, created_by:User)(
+implicit messages: Messages)
+
+@common._form_group_static("id"){
+  @tmpl.id
+}
+
+<div class="row">
+  <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+    @common._form_group_static("updated_by") {
+      <a href="{{'mailto:' + '@(updated_by.email)'}}">@updated_by.email</a>
+    }
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+    @common._form_group_static("updated_at") {
+      @DateTimeFormat("datetime.format.long").print(tmpl.updated_at)
+    }
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+    @common._form_group_static("created_by") {
+      <a href="{{'mailto:' + '@(created_by.email)'}}">@created_by.email</a>
+    }
+  </div>
+
+  <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+    @common._form_group_static("created_at") {
+      @DateTimeFormat("datetime.format.long").print(tmpl.created_at)
+    }
+  </div>
+</div>

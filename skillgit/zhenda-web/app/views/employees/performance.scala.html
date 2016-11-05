@@ -1,0 +1,71 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit req: UserRequest[_], messages: Messages, env: Environment)
+@import common._
+@import helper._
+@import models.business.reports._
+
+@layouts.base(EmployeesCtrl.msg("performance.title")) {
+
+<div class="row ng-cloak" ng-controller="PerformanceCtrl">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+    <div class="row page-heading white-bg">
+      <h2>
+        <i class="fa fa-jpy fa-lg fa-fw"></i>
+        @EmployeesCtrl.msg("performance.head")
+      </h2>
+    </div>
+
+    <div class="ibox">
+      <div class="ibox-title p-xs">
+        <div class="row">
+          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            @ng._input_month_picker("PerformanceSvc.date_picker", "PerformanceSvc.search_date")
+          </div>
+        </div>
+      </div>
+      <div class="ibox-content">
+        <div class="row">
+          <div class="col-xs-12">
+            <div>
+              <div id="hot_table"
+                class="hot handsontable htColumnHeaders"
+                style="width:100%; height:100%; overflow:hidden;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+}(
+  libs.webjars("css", "handsontable")
+  )(
+  libs.webjars("js", "angular-resource"),
+  libs.webjars("js", "handsontable"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/employees"),
+  libs.assets("js", "employees/performance"),
+  controller
+)
+
+@controller = {
+<script>
+  views.employees.performance.run(['PerformanceSvc', function(PerformanceSvc) {
+    PerformanceSvc.dictionary.nick_name = '@EmployeesCtrl.msg("performance.employee_name")';
+    PerformanceSvc.dictionary.metrics_def = @Html(EmployeePerformance.Metric.toJson());
+  }]);
+</script>
+}

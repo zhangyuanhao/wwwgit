@@ -1,0 +1,89 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services._
+@import models.business.checks._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  报告正文 -- 专业资格信息核实
+*@
+@(checks_set:ChecksSet)(implicit messages: Messages)
+
+@ProfessionalLicenseChecks.findIn(checks_set).map { o =>
+@o.list.map { check_list =>
+@* 候选人提供了专业资格相关信息 *@
+@if(!check_list.not_provided.status) {
+<fo:table @attribute_sets("panel", "panel-block", "margin-bottom-sm", s"${messages.lang.code}-panel")>
+  @* 布局 *@
+  @__panel_layout1()
+
+  <fo:table-body>
+    @* 标题 *@
+    @__panel_header(MSG("service.professional_licenses_verif"))
+      @* 表格中列标题 *@
+      @__panel_column_headers1()
+
+      @defining(
+        check_list.checks.collect { case chk: Check.Strict[_] => chk.asInstanceOf[Check.Strict[_]] }
+      ){ checks =>
+        @* 已经通过审核 *@
+        @if(check_list.review_result.passed_?) {
+          @* 不是待查状态 *@
+          @if(!check_list.remaining.status) {
+            @* 核实内容 *@
+            @checks.map { check =>
+              @__strict_check(check_list.basicName, check)
+            }
+
+            @* 备注信息 *@
+            @__panel_comment(check_list.comments)
+          }
+
+          @* 待查状态 *@
+          @if(check_list.remaining.status) {
+            @* 核实内容 *@
+            @defining(
+              __remaining(check_list.remaining, ProfessionalLicenseCheckList.RemainingReason)
+            ){ comment =>
+            @checks.headOption.map { head =>
+              @__strict_check_merged(check_list.basicName, head, checks.length, comment)
+            }}
+            @checks.tail.map { other =>
+              @__strict_check_merged(check_list.basicName, other)
+            }
+          }
+        }
+
+        @* 未通过审核 *@
+        @if(!check_list.review_result.passed_?) {
+          @* 核实内容 *@
+          @defining(BackgroundReportsCtrl.msg("pdf.review_not_passed")){ comment =>
+          @checks.headOption.map { head =>
+            @__strict_check_merged(check_list.basicName, head, checks.length, comment)
+          }}
+          @checks.tail.map { other =>
+            @__strict_check_merged(check_list.basicName, other)
+          }
+        }
+
+      }
+  </fo:table-body>
+</fo:table>
+    } else {
+    @* 候选人未提供专业资格相关信息 *@
+    @__panel_explanation(
+      MSG("service.professional_licenses_verif"),
+      if (!check_list.review_result.passed_?) BackgroundReportsCtrl.msg("professional_license.none.comment")
+      else check_list.not_provided.comments.format
+    )
+  }
+}}

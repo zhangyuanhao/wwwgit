@@ -1,0 +1,366 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services.definitions.PurchasedServices
+@import service_options._
+@import common._
+@import helper._
+
+@(id:UUID, task_type:String, purchased_services: PurchasedServices)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@layouts.base(EmployeeOrdersCtrl.msg("history.title")) {
+
+  <div class="row ng-cloak" ng-controller="HistoryCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div class="row page-heading white-bg">
+        <h2>
+          <i class="fa fa-history fa-lg fa-fw"></i>
+          @EmployeeOrdersCtrl.msg("history.head")
+        </h2>
+      </div>
+
+      <div class="ibox m-t-xl">
+        <div class="ibox-title">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <h3>@EmployeeOrdersCtrl.msg("order_info") :</h3>
+            </div>
+          </div>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label>@EmployeeOrdersCtrl.msg("order_info.customer") :</label>
+              <span>{{ HistorySvc.order.customer.name }}</span>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label>@EmployeeOrdersCtrl.msg("order_info.hr") :</label>
+              <span> {{ HistorySvc.order.created_by.card.personal_name | personalName:"@messages.lang.language" }} </span>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label>@EmployeeOrdersCtrl.msg("order_info.created_at") :</label>
+              <span>{{ HistorySvc.order.created_at | date:"@MSG("date.format.long")" }}</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label>@EmployeeOrdersCtrl.msg("order_info.candidate") :</label>
+              <span>{{ HistorySvc.order.candidate_info.personal_name | personalName:"@messages.lang.language" }}</span>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label>@EmployeeOrdersCtrl.msg("order_info.email") :</label>
+              <a href="{{'mailto:' + istorySvc.order.candidate_info.email}}">
+                {{istorySvc.order.candidate_info.email}}
+              </a>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+              <label>@EmployeeOrdersCtrl.msg("order_info.phone") :</label>
+              <span>{{ HistorySvc.order.candidate_info.phone }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ibox m-t-xl">
+        <div class="ibox-title">
+          <div>
+            <h3>@EmployeeOrdersCtrl.msg("history.service_set") :</h3>
+          </div>
+        </div>
+        <div class="ibox-content">
+          <div class="row" ng-if="HistorySvc.order.attributes.PackageName">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <label>@CustomerUserOrdersCtrl.msg("order.service_set") : </label>
+              <span> {{HistorySvc.order.attributes.PackageName}} </span>
+            </div>
+          </div>
+          <div class="row m-t-sm">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              @{_service_set(purchased_services)}
+            </div>
+          </div>
+
+          <div class="row" ng-show="HistorySvc.order.candidate_info.message_for_candidate">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <label>@EmployeeOrdersCtrl.msg("history.to_candidate") :</label>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              {{HistorySvc.order.candidate_info.message_for_candidate}}
+            </div>
+          </div>
+
+          <div class="row m-t-sm" ng-show="HistorySvc.order.candidate_info.message_for_employees">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <label>@EmployeeOrdersCtrl.msg("history.to_employee") :</label>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              {{HistorySvc.order.candidate_info.message_for_employees}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ibox m-t-xl">
+        <div class="ibox-title">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <h3>@EmployeeOrdersCtrl.msg("actors") :</h3>
+            </div>
+          </div>
+        </div>
+        <div class="ibox-content">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3"
+                ng-show="HistorySvc.order.assignees.Support !== undefined">
+                <label>@EmployeeOrdersCtrl.msg("actors.support") :</label>
+                <span> {{ HistorySvc.order.assignees.Support.card.personal_name | personalName:"@messages.lang.language" }}</span>
+              </div>
+              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3"
+                ng-show="HistorySvc.order.assignees.Review !== undefined">
+                <label>@EmployeeOrdersCtrl.msg("actors.reviewer") :</label>
+                <span> {{ HistorySvc.order.assignees.Review.card.personal_name | personalName:"@messages.lang.language" }}</span>
+              </div>
+              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3"
+                ng-show="HistorySvc.order.assignees.Qualification !== undefined">
+                <label>@EmployeeOrdersCtrl.msg("actors.qualification") :</label>
+                <span> {{ HistorySvc.order.assignees.Qualification.card.personal_name | personalName:"@messages.lang.language" }}</span>
+              </div>
+              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3"
+                ng-show="HistorySvc.order.assignees.Employment !== undefined">
+                <label>@EmployeeOrdersCtrl.msg("actors.employment") :</label>
+                <span> {{ HistorySvc.order.assignees.Employment.card.personal_name | personalName:"@messages.lang.language" }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ibox m-t-xl">
+        <div class="ibox-title">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <h3>@EmployeeOrdersCtrl.msg("history.order") :</h3>
+            </div>
+          </div>
+        </div>
+        <div class="ibox-content">
+          <div class="row" ng-show="HistorySvc.order_events">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                  <thead>
+                    <tr>
+                      <th class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        @MSG("task.history.happened_on")
+                      </th>
+                      <th class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        @MSG("task.history.information")
+                      </th>
+                      <th class="col-xs-3  col-sm-3 col-md-3 col-lg-3 ">
+                       @MSG("task.history.mistake")
+                      </th>
+                      <th class="col-xs-3  col-sm-3 col-md-3 col-lg-3 ">
+                       @MSG("task.history.comment")
+                      </th>
+                      <th class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                       @MSG("task.history.operator")
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="ng-cloak" ng-repeat="event in HistorySvc.order_events">
+                      <td class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        {{event.happened_at | date:"@MSG("datetime.format.long")"}}
+                      </td>
+                      <td class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        {{HistorySvc.dictionary['order']['actions'][event.action]}}
+                      </td>
+                      <td class="col-xs-3  col-sm-3 col-md-3 col-lg-3 ">
+                        <ul class="list-in-table">
+                          <li ng-repeat="mistake in event.mistakes">
+                            {{HistorySvc.dictionary.mistake_def[mistake]}}
+                          </li>
+                        </ul>
+                      </td>
+                      <td class="col-xs-3  col-sm-3 col-md-3 col-lg-3 ">
+                        {{event.comment}}
+                      </td>
+                      <td class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        {{ '[' + HistorySvc.dictionary['order']['operator'][event.principal.role] + '] ' + event.full_name}}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ibox m-t-xl">
+        <div class="ibox-title">
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <h3>@EmployeeOrdersCtrl.msg("history.task") :</h3>
+            </div>
+          </div>
+        </div>
+        <div class="ibox-content">
+          <div class="row"
+            ng-show="HistorySvc.tasks_events.qualification && HistorySvc.task_type !== 'Employment'">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="row page-header" ng-show="HistorySvc.task_type !== 'Qualification'">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
+                  <h3>@MSG("task.history.qualification")</h3>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                  <thead>
+                    <tr>
+                      <th class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        @MSG("task.history.happened_on")
+                      </th>
+                      <th class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        @MSG("task.history.information")
+                      </th>
+                      <th class="col-xs-3  col-sm-3 col-md-3 col-lg-3 ">
+                       @MSG("task.history.mistake")
+                      </th>
+                      <th class="col-xs-3  col-sm-3 col-md-3 col-lg-3 ">
+                       @MSG("task.history.comment")
+                      </th>
+                      <th class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                       @MSG("task.history.operator")
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="ng-cloak" ng-repeat="event in HistorySvc.tasks_events.qualification">
+                      <td class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        {{event.happened_at | date:"@MSG("datetime.format.long")"}}
+                      </td>
+                      <td class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        {{HistorySvc.dictionary['task']['actions'][event.action]}}
+                      </td>
+                      <td class="col-xs-3  col-sm-3 col-md-3 col-lg-3 ">
+                        <ul class="list-in-table">
+                          <li ng-repeat="mistake in event.mistakes">
+                            {{HistorySvc.dictionary.mistake_def[mistake]}}
+                          </li>
+                        </ul>
+                      </td>
+                      <td class="col-xs-3  col-sm-3 col-md-3 col-lg-3 ">
+                        {{event.comment}}
+                      </td>
+                      <td class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        {{'[' + HistorySvc.dictionary['task']['operator'][event.principal.role] + '] ' + event.principal.info.nickname}}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="row"
+            ng-show="HistorySvc.tasks_events.employment && HistorySvc.task_type !== 'Qualification'">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="row page-header" ng-show="HistorySvc.task_type !== 'Employment'">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
+                  <h3>@MSG("task.history.employment")</h3>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                  <thead>
+                    <tr>
+                      <th class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        @MSG("task.history.happened_on")
+                      </th>
+                      <th class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        @MSG("task.history.information")
+                      </th>
+                      <th class="col-xs-3  col-sm-3 col-md-3 col-lg-3 ">
+                       @MSG("task.history.mistake")
+                      </th>
+                      <th class="col-xs-3  col-sm-3 col-md-3 col-lg-3 ">
+                       @MSG("task.history.comment")
+                      </th>
+                      <th class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                       @MSG("task.history.operator")
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="ng-cloak" ng-repeat="event in HistorySvc.tasks_events.employment">
+                      <td class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        {{event.happened_at | date:"@MSG("datetime.format.long")"}}
+                      </td>
+                      <td class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        {{HistorySvc.dictionary['task']['actions'][event.action]}}
+                      </td>
+                      <td class="col-xs-3  col-sm-3 col-md-3 col-lg-3 ">
+                        <ul class="list-in-table">
+                          <li ng-repeat="mistake in event.mistakes">
+                            {{HistorySvc.dictionary.mistake_def[mistake]}}
+                          </li>
+                        </ul>
+                      </td>
+                      <td class="col-xs-3  col-sm-3 col-md-3 col-lg-3 ">
+                        {{event.comment}}
+                      </td>
+                      <td class="col-xs-2  col-sm-2 col-md-2 col-lg-2 ">
+                        {{ '[' + HistorySvc.dictionary['task']['operator'][event.principal.role] + '] ' + event.principal.info.nickname}}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+}(libs.webjars("css", "awesome-bootstrap-checkbox"),
+  libs.assets("css", "orders/show")
+)(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/employee_orders"),
+  libs.assets("js", "api_internal/tasks"),
+  libs.assets("js", "api_internal/orders"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "employee_orders/history"),
+  libs.assets("js", "orders/order_svc"),
+  controller
+)
+
+@controller = {
+<script>
+    views.employee_orders.history.run(['HistorySvc', function(HistorySvc) {
+      HistorySvc.id                          = '@id';
+      HistorySvc.task_type                   = '@task_type';
+      HistorySvc.language                    = '@messages.lang.language';
+      HistorySvc.dictionary.task.actions     = @Html(Task.Action.toJson());
+      HistorySvc.dictionary.task.operator    = @Html(Task.Principal.Role.toJson());
+      HistorySvc.dictionary.task.status_def  = @Html(Task.Status.toJson());
+      HistorySvc.dictionary.order.status_def = @Html(Order.Status.toJson());
+      HistorySvc.dictionary.order.actions    = @Html(Order.Action.toJson());
+      HistorySvc.dictionary.order.operator   = @Html(Order.Principal.Role.toJson());
+      HistorySvc.dictionary.mistake_def      = @Html(EmployeeMistake.toJson());
+    }]);
+</script>
+}

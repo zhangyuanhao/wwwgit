@@ -1,0 +1,31 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import views.ClassFormats._
+
+@*
+  报告正文 -- 学习经历
+*@
+@(checks_set: ChecksSet)(implicit messages: Messages)
+
+@* 报告中是否存在此模块 *@
+@EducationChecks.findIn(checks_set).map { checks =>
+
+  @* 逐段显示学习经历 *@
+  @checks.list.zipWithIndex.map { case (check_list, idx) =>
+
+    @* 学历信息核实 *@
+    @_education_details(check_list, check_list.education_details, idx)
+
+    @* 学位信息核实 *@
+    @_degree(check_list, check_list.degree, idx)
+  }
+}

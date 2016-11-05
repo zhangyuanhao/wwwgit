@@ -1,0 +1,188 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(cous: String)(implicit messages: Messages)
+
+@import common._
+
+@ng._panel_collapse("TaskSvc.task_info.court",
+                   "fa-gavel",
+                    MSG("court_records"),
+                    Some(parts._checkbox_of_remaining(
+                    s"!${cous}.not_provided",
+                    s"${cous}.remaining.status"
+                    ))){
+  <div ng-if="@(cous).remaining.status">
+    @parts._reason_of_remaining(
+      "cou",
+      "TaskSvc.dictionary.reason_def.cou",
+      s"${cous}.remaining"
+      )
+  </div>
+
+  <div ng-if="!@(cous).remaining.status">
+    <div class="row">
+      <div class="col-xs-12">
+        @{parts._line_of_truth(s"${cous}.checks.records", false)}
+      </div>
+    </div>
+
+    <div ng-repeat="cou in @(cous).checks.records.facts.translated.zh.primary.fact track by $index">
+      @court_show("cou", "zh")
+    </div>
+
+    <div ng-repeat="cou in @(cous).checks.records.facts.translated.en.primary.fact track by $index">
+      @court_show("cou", "en")
+    </div>
+
+    <div ng-controller="CourtCtrl">
+      <div class="row m-b-sm">
+        <div class="col-xs-12">
+          <button class="btn btn-primary btn-xs" ng-click="newCourt('zh')" ng-if="TaskSvc.lang.zh">
+            @TasksCtrl.msg("add_record.zh")
+          </button>
+          <button class="btn btn-primary btn-xs" ng-click="newCourt('en')" ng-if="TaskSvc.lang.en">
+            @TasksCtrl.msg("add_record.en")
+          </button>
+        </div>
+      </div>
+      <div class="slide-animate-container">
+        <div class="slide-animate" ng-include="input_page"></div>
+      </div>
+    </div>
+
+    @*  法院诉讼记录模块备注  *@
+    <div class="row m-t-md">
+      <div class="col-xs-12">
+        @{parts._line_comment(TasksCtrl.msg("cou_comment"), s"${cous}.comments", "cou_comment")}
+      </div>
+    </div>
+  </div>
+}
+
+@court_show(cou: String, language: String) = {
+  <div class="panel panel-info ng-cloak">
+    <div class="panel-body p-xxs">
+      <div class="row m-b-sm">
+        <div class="col-xs-6">
+          <strong class="text-success">
+            @TasksCtrl.msg(s"record.$language")
+          </strong>
+        </div>
+        <div class="col-xs-6">
+          <button type="button" class="close pull-right" ng-click="TaskSvc.courtRemove($index, '@language')">
+            <i class="fa fa-fw fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("court_records.classification") : </strong> {{ @(cou).classification }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("court_records.court_date") : </strong> {{ @(cou).court_date | date : "@MSG("date.format.long")"}}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("court_records.court") : </strong> {{ @(cou).court }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("court_records.party") : </strong> {{ @(cou).party }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+          <p><strong>@MSG("court_records.disposition") : </strong>{{ @(cou).disposition }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<script type="text/ng-template" id="courtInputZh.html">
+  @court_input("zh")
+</script>
+
+<script type="text/ng-template" id="courtInputEn.html">
+  @{court_input("en")}
+</script>
+
+@court_input(language: String) = {
+  <div class="panel panel-default panel-border">
+    <div class="panel-body">
+      <form name="court_form" novalidate>
+        <div class="row m-b-sm">
+          <div class="col-xs-12">
+            <strong class="text-primary">
+              @TasksCtrl.msg(s"record.$language")
+            </strong>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            @ng._form_control("classification",
+              '_formname   -> "court_form",
+              'maxLength   -> 255,
+              'placeholder -> MSG("court_records.classification"),
+              'required    -> true,
+              "ng-model".s -> "court.classification"
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            <div class="form-group">
+              <label class="sr-only">@TasksCtrl.msg("court_records.court_date")</label>
+              @ng._input_date_picker("court_date",
+                '_formname               -> "court_form",
+                "ng-model".s             -> "court.court_date",
+                "datepicker-options".s   -> "court_info.court_date_picker.date_options",
+                "is-open".s              -> "court_info.court_date_picker.opened",
+                "uib-datepicker-popup".s -> MSG("date.format.long"),
+                '_click                  -> "court_info.court_date_picker.open()",
+                'required                -> None,
+                "localdate-to-string".s  -> None,
+                'placeholder             -> MSG("court_records.court_date")
+              )
+            </div>
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            @ng._form_control("court",
+              '_formname        -> "court_form",
+              'maxLength        -> 255,
+              'placeholder      -> MSG("court_records.court"),
+              "ng-model".s      -> "court.court",
+              "empty-to-null".s -> None
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            @ng._form_control("party",
+              '_formname   -> "court_form",
+              'maxLength   -> 255,
+              'placeholder -> MSG("court_records.party"),
+              'required    -> true,
+              "ng-model".s -> "court.party"
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-4">
+            @ng._form_control("disposition",
+              '_formname   -> "court_form",
+              'maxLength   -> 255,
+              'placeholder -> MSG("court_records.disposition"),
+              'required    -> true,
+              "ng-model".s -> "court.disposition"
+            )
+          </div>
+        </div>
+        <div class="row text-right">
+          <div class="col-xs-12">
+            <button type="submit" class="btn btn-primary btn-sm" ng-click="court_form.$valid ? addCourt('@language') : ''">@MSG("ok")</button>
+            <button class="btn btn-link btn-sm" ng-click="cancelCourt()">@MSG("cancel")</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}

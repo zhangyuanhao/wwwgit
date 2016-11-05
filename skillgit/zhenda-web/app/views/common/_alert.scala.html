@@ -1,0 +1,27 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(style:String, emphasis:Boolean=false, dismissible:Boolean=false)(
+content: Html = Html(""))(implicit messages: Messages)
+
+<div class="alert alert-@style @if(dismissible){alert-dismissible}" role="alert">
+  @if(dismissible) {
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  }
+  @if(emphasis) {
+    @style match {
+      case "danger" | "warning" => {<i class="fa fa-warning"></i>}
+      case "" => {}
+    }
+    <strong>@MSG(s"alert.$style.title")</strong>
+  } @content
+</div>

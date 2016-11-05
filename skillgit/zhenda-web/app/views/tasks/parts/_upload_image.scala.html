@@ -1,0 +1,111 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(moudelName: String, moudelIndex: String, attachments: String)(
+implicit messages: Messages)
+
+<div class="row" ng-show="@(attachments).length || TaskSvc.layout_type === 'task'">
+  <div class="col-xs-12 col-sm-12">
+    <label>@TasksCtrl.msg("attachment")</label>
+  </div>
+</div>
+
+<div ng-repeat="attachment in @attachments"
+  ng-init="file_index = $index">
+  <div class="row">
+    <div class="col-xs-12 col-sm-4 col-md-4">
+      <div flow-init
+           flow-files-submitted="uploadAttachment($flow, '@moudelName', @moudelIndex, file_index)"
+           flow-upload-started="startAttachmentUpload('@moudelName', @moudelIndex, file_index)"
+           flow-file-success="onAttachmentUploaded($message, '@moudelName', @moudelIndex, file_index)"
+           flow-file-error="onAttachmentFailed($message, '@moudelName', @moudelIndex, file_index)">
+
+        <div class="thumbnail text-center" ng-show="attachment.filename">
+          <img ng-src="{{ TaskSvc.attachmentThumbnail('@moudelName', @moudelIndex, file_index) }}"/>
+          <div class="caption">
+            <p>
+              <a ng-href="{{TaskSvc.attachmentOrigin('@moudelName', @moudelIndex, file_index) }}"
+                target="_blank">
+                @MSG("upload.image.original")
+              </a>
+            </p>
+            <p ng-show="TaskSvc.layout_type === 'task'">
+              @MSG("profile.picture.accept.formats")
+            </p>
+            <p ng-show="TaskSvc.layout_type === 'task'">
+              @MSG("upload.image_size")
+            </p>
+            <p>
+              <span ng-show="!TaskSvc.isAttachmentUploading('@moudelName', @moudelIndex, file_index) && TaskSvc.layout_type === 'task'"
+                class="btn btn-default"
+                flow-btn
+                flow-single-file
+                flow-attrs="{ accept: '@EmployeeOrdersCtrl.acceptImageFormats.mkString(", ")' }">
+                <strong>@TasksCtrl.msg("attachment.modify")</strong>
+              </span>
+              <span ng-show="TaskSvc.isAttachmentUploading('@moudelName', @moudelIndex, file_index) && TaskSvc.layout_type === 'task'"
+                class="btn btn-default" disabled>
+                <i class="fa fa-refresh fa-spin"></i>
+                <strong>@TasksCtrl.msg("attachment.uploading")</strong>
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  @* 备注 *@
+  <div class="row" ng-show="attachment.filename">
+    <div class="col-xs-12 col-sm-12">
+      <div class="form-control-static">
+        <textarea class="form-control" rows="1"
+          ng-model="attachment.comment"
+          placeholder="@TasksCtrl.msg("attachment.placeholder")"
+          ng-disabled="TaskSvc.layout_type === 'review'"
+          empty-to-null>
+        </textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" ng-show="TaskSvc.layout_type === 'task'">
+  <div class="col-xs-12 col-sm-4 col-md-4">
+    <div flow-init
+         flow-files-submitted="uploadAttachment($flow, '@moudelName', @moudelIndex, @(attachments).length)"
+         flow-upload-started="startAttachmentUpload('@moudelName', @moudelIndex, @(attachments).length)"
+         flow-file-success="onAttachmentUploaded($message, '@moudelName', @moudelIndex, @(attachments).length)"
+         flow-file-error="onAttachmentFailed($message, '@moudelName', @moudelIndex, @(attachments).length)">
+
+      <button
+        ng-show="!(TaskSvc.isAttachmentUploading('@moudelName', @moudelIndex, @(attachments).length))"
+        class="btn btn-default"
+        flow-btn
+        flow-single-file
+        flow-attrs="{ accept: '@InfoGatheringCtrl.acceptImageFormats.mkString(", ")' }">
+        <strong>@TasksCtrl.msg("attachment.upload")</strong>
+      </button>
+      <button ng-show="TaskSvc.isAttachmentUploading('@moudelName', @moudelIndex, @(attachments).length)"
+        class="btn btn-default" disabled>
+        <i class="fa fa-refresh fa-spin"></i>
+        <strong>@TasksCtrl.msg("attachment.uploading")</strong>
+      </button>
+      <p>
+        @MSG("profile.picture.accept.formats")
+      </p>
+      <p>
+        @MSG("upload.image_size")
+      </p>
+
+    </div>
+  </div>
+</div>
+
+

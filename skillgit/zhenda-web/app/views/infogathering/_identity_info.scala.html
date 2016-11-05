@@ -1,0 +1,74 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+@import common._
+
+<div ng-if="Svc.value.identity">
+  <div class="panel panel-info ng-cloak">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-6">
+          <h4 class="f-text-success">
+            <i class="fa zd-v-card fa-lg"></i>
+            @MSG("identity.basic_info")
+          </h4>
+        </div>
+        <div class="col-xs-6 text-right">
+          <button type="button" class="btn btn-primary btn-xs" ng-click="editIdentity()">
+            <i class="fa fa-edit"></i>
+            @MSG("edit")
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("identity.name") : </strong> {{ Svc.value.identity.basic_info.personal_name | personalName:"@messages.lang.language" }}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("identity.former_name") : </strong> {{ Svc.value.identity.former_name }}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("identity.nationality") : </strong> {{ Svc.dictionary.countries[Svc.value.identity.basic_info.nationality] }}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("identity.gender") : </strong> {{ Svc.dictionary.genders[Svc.value.identity.basic_info.gender] }}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("identity.date_of_birth")  : </strong> {{ Svc.value.identity.basic_info.date_of_birth | date:"@MSG("date.format.long")"}}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("cell_phone")  : </strong>{{ Svc.value.identity.phone }}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("email")  : </strong>{{ Svc.value.identity.email }}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("identity.id_doc_nbr")  : </strong>{{ Svc.dictionary.id_doc_types[Svc.value.identity.basic_info.id_doc_nbr.type] + " : " + Svc.value.identity.basic_info.id_doc_nbr.number }}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("identity.registered_address") : </strong>{{ Svc.value.identity.hukou_location | address }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div ng-if="!Svc.value.identity">
+  <div class="row">
+    <div class="col-xs-12">
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="newIdentity()">
+        <i class="fa zd-v-card fa-lg fa-fw"></i>
+        @MSG("identity.basic_info")
+      </button>
+    </div>
+  </div>
+</div>

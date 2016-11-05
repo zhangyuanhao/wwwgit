@@ -1,0 +1,117 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+@import common._
+
+@* 合同基本信息 *@
+<div class="m-b-md">
+  <h3>
+    @CustomersCtrl.msg("contract.basic_info")
+  </h3>
+</div>
+
+<div class="row">
+  <div class="col-xs-4 col-sm-2">
+    <div class="form-group">
+      <label>@CustomersCtrl.msg("contract.due_in_days")</label>
+      <input type="number" class="form-control" ng-model="ContractSvc.contract.content.additional_terms.due_in_days" placeholder="@CustomersCtrl.msg("contract.working_days")">
+    </div>
+  </div>
+
+  <div class="col-xs-8 col-sm-6">
+    @ng._select("criterion",
+      '_label        -> CustomersCtrl.msg("contract.criterion"),
+      '_inline       -> false,
+      "ng-model".s   -> "ContractSvc.contract.content.additional_terms.criterion",
+      "ng-options".s -> "key as type for (key, type) in ContractSvc.dictionary.days_metric"
+    )()
+  </div>
+</div>
+
+<div class="row margin-top-20">
+  <div class="col-xs-12">
+    <div class="form-group">
+      <label>@CustomersCtrl.msg("contract.need_authorization")</label>
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="radio radio-success radio-inline">
+            <input type="radio" name="status" id="yes" ng-value="true" ng-model="ContractSvc.need_authorization" ng-click="ContractSvc.saveAuthorization()">
+            <label for="yes">
+              @MSG("yes")
+            </label>
+          </div>
+          <div class="radio radio-success radio-inline">
+            <input type="radio" name="status" id="no" ng-value="false" ng-model="ContractSvc.need_authorization" ng-click="ContractSvc.saveAuthorization()">
+            <label for="no">
+              @MSG("no")
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-header m-b-md">
+  <h4>
+    @MSG("report.lang")
+  </h4>
+</div>
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="checkbox checkbox-success checkbox-inline m-r-md">
+      <input type="checkbox" id="zh" class="styled" ng-model="ContractSvc.lang.zh" ng-click="ContractSvc.saveLanguages('zh')">
+      <label for="zh">
+        @MSG("report.lang.zh")
+      </label>
+    </div>
+    <div class="radio radio-success radio-inline">
+      <input type="radio" name="default_lang" id="default_zh" value="zh" ng-model="ContractSvc.lang.default" ng-disabled="!ContractSvc.lang.zh" ng-click="ContractSvc.saveLanguages('default')">
+      <label for="default_zh">
+        @MSG("report.lang.default")
+      </label>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12">
+    <div class="checkbox checkbox-success checkbox-inline m-r-md">
+      <input type="checkbox" id="en" class="styled" ng-model="ContractSvc.lang.en" ng-click="ContractSvc.saveLanguages('en')">
+      <label for="en">
+        @MSG("report.lang.en")
+      </label>
+    </div>
+    <div class="radio radio-success radio-inline">
+      <input type="radio" name="default_lang" id="default_en" value="en" ng-model="ContractSvc.lang.default" ng-disabled="!ContractSvc.lang.en" ng-click="ContractSvc.saveLanguages('default')">
+      <label for="default_en">
+        @MSG("report.lang.default")
+      </label>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-12">
+    <div class="checkbox checkbox-success checkbox-inline m-r-md">
+      <input type="checkbox" id="ja" class="styled" ng-model="ContractSvc.lang.ja" ng-click="ContractSvc.saveLanguages('ja')">
+      <label for="ja">
+        @MSG("report.lang.ja")
+      </label>
+    </div>
+    <div class="radio radio-success radio-inline">
+      <input type="radio" name="default_lang" id="default_ja" value="ja" ng-model="ContractSvc.lang.default" ng-disabled="!ContractSvc.lang.ja" ng-click="ContractSvc.saveLanguages('default')">
+      <label for="default_ja">
+        @MSG("report.lang.default")
+      </label>
+    </div>
+  </div>
+</div>

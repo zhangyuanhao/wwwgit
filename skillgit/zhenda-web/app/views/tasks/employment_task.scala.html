@@ -1,0 +1,183 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(id: UUID, oid: UUID)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import views.EnumToJson
+@import models.business.pay._
+@import models.business.services.definitions._
+@import models.business.checks._
+@import models.business.references._
+
+@layouts.base(TasksCtrl.msg("employment_task.title")){
+
+  <div class="ng-cloak" ng-controller="TaskCtrl">
+
+    @* 标题 *@
+    <div class="row page-heading white-bg">
+      <h2>
+        <i class="fa fa-search fa-fw"></i>
+        @TasksCtrl.msg("employment_task.head")
+      </h2>
+    </div>
+
+    @* review comment *@
+    <div ng-if="TaskSvc.last_comment">
+      <div class="fui-message m-b-none" ng-class="TaskSvc.task.status==='ReviewRejected' ? 'fui-message-danger' : 'fui-message-primary'">
+        <p class="lead">
+          {{ TaskSvc.last_comment }}
+        </p>
+      </div>
+    </div>
+
+    <div class="row wrapper-content">
+      <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-md-push-9 col-lg-push-9">
+        @* 订单概要/授权书 *@
+        @{_head_info("TaskSvc.order", "task")}
+        <div class="m-t-md" ng-class="scrollClass">
+          <div class="btn-content">
+            <button class="btn btn-primary btn-block" ng-click="TaskSvc.save()">
+              <i class="fa fa-save fa-fw"></i>
+              @MSG("save")
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-md-pull-3 col-lg-pull-3">
+        <div ng-repeat="employment in TaskSvc.task.content.employment.list"
+              ng-init="employment_index = $index">
+          <div ng-if="!employment.review_result.passed ||
+                        !employment.can_be_review_finally_passed">
+            <div class="section-header strong" ng-class="{'high':$index!=0}">
+              <h2 style="text-align:center">
+                <span ng-if="employment.employer_name.origin">
+                  <div class="form-control-static" ng-if="employment.employer_name.translated.zh">
+                    <a href="#" editable-text="employment.employer_name.translated.zh">
+                      {{employment.employer_name.translated.zh}}
+                    </a>
+                  </div>
+                  <div class="form-control-static" ng-if="employment.employer_name.translated.en">
+                    <a href="#" editable-text="employment.employer_name.translated.en">
+                      {{employment.employer_name.translated.en}}
+                    </a>
+                  </div>
+                </span>
+                <span ng-if="!employment.employer_name.origin">
+                  @MSG("not_provided")
+                </span>
+              </h2>
+            </div>
+            @{_review_show("employment")}
+            @{_employment("employment", "task")}
+          </div>
+        </div>
+
+        <div class="section-header strong high">
+          <h3>@TasksCtrl.msg("review_request_comment")</h3>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="form-group">
+              <label class="sr-only">@MSG("comment")</label>
+              <textarea class="form-control" rows="3" ng-model="TaskSvc.task_comment" max-length="512" empty-to-null></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="row text-right m-b-md">
+          <div class="col-xs-12">
+            <button class="btn btn-success" ng-click="reviewRequest()">
+              @TasksCtrl.msg("review_request")
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/ng-template" id="popoverTemp.html">
+    <pre class="popover-style">{{popover_content}}</pre>
+  </script>
+
+  @{reference._new_reference()}
+  @{reference._edit_reference()}
+
+}(
+  libs.webjars("css", "awesome-bootstrap-checkbox"),
+  libs.webjars("css", "xeditable"),
+  libs.assets("css", "tasks/show")
+)(
+  libs.webjars("js", "angular-resource"),
+  libs.webjars("js", "ng-flow"),
+  libs.webjars("js", "xeditable"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "ui.upload_attachment"),
+  libs.assets("js", "ui.common"),
+  libs.assets("js", "ui.address"),
+  libs.assets("js", "api_internal/employee_orders"),
+  libs.assets("js", "api_internal/tasks"),
+  libs.assets("js", "api_internal/messages"),
+  libs.assets("js", "api_internal/file_system"),
+  libs.assets("js", "tasks/_reference"),
+  libs.assets("js", "tasks/task_svc"),
+  libs.assets("js", "tasks/task"),
+  controller,
+  jsRoutes
+)
+
+@controller = {
+  <script>
+    views.tasks.task_svc.config(['uploadAttachmentConfig', function(uploadAttachmentConfig) {
+      uploadAttachmentConfig.attachment          = '@MSG("upload.attachment.name")';
+      uploadAttachmentConfig.attachment_size     = '@MSG("upload.attachment_size")';
+      uploadAttachmentConfig.btn_modify          = '@MSG("upload.modify")';
+      uploadAttachmentConfig.btn_upload          = '@MSG("upload.upload")';
+      uploadAttachmentConfig.btn_uploading       = '@MSG("upload.uploading")';
+      uploadAttachmentConfig.comment_placeholder = '@MSG("upload.attachment.placeholder")';
+      uploadAttachmentConfig.error_exists        = '@MSG("upload.error.exists")';
+      uploadAttachmentConfig.layout_type         = 'edit';
+    }]);
+
+    views.tasks.task_svc.run(['TaskSvc','editableOptions', function(TaskSvc, editableOptions) {
+      TaskSvc.task_id        = '@id';
+      TaskSvc.order_id       = '@oid'
+      TaskSvc.layout_type    = 'task'
+      TaskSvc.dictionary.msg = {
+        'msg.saved'          : '@TasksCtrl.message("msg.saved")',
+        'msg.review_request' : '@TasksCtrl.message("msg.review_request")',
+        'msg.error_exists'   : '@MSG("upload.error.exists")'
+      }
+      TaskSvc.dictionary.countries             = @Html(CountryCode.toJson());
+      TaskSvc.dictionary.reference_types       = @Html(Reference.Type.toJson());
+      TaskSvc.dictionary.reference_sources     = @Html(Reference.Source.toJson());
+      TaskSvc.dictionary.currency_types        = @Html(EnumToJson.CurrencyCodesDef.toJson);
+      TaskSvc.dictionary.hire_types            = @Html(HireType.toJson());
+      TaskSvc.dictionary.salary_types          = @Html(Salary.Period.toJson());
+      TaskSvc.dictionary.reason_def.employment = @Html(EmploymentCheckList.RemainingReason.toJson());
+      TaskSvc.dictionary.reason_def.interview  = @Html(Interview.RemainingReason.toJson());
+
+      editableOptions.theme = 'bs3'
+    }]);
+  </script>
+}
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.EmployeeOrdersCtrl.uploadAudio,
+    routes.javascript.EmployeeOrdersCtrl.streamAudio,
+    routes.javascript.EmployeeOrdersCtrl.testAttachment,
+    routes.javascript.EmployeeOrdersCtrl.uploadAttachment,
+    routes.javascript.EmployeeOrdersCtrl.attachment,
+    routes.javascript.EmployeeOrdersCtrl.showAuthorizationPDF
+  )
+}

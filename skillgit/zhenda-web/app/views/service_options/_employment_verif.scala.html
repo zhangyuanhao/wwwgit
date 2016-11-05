@@ -1,0 +1,224 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(index: Int, ngPath: String)(implicit messages: Messages)
+
+<div class="row m-b-sm">
+  <div class="col-xs-12">
+    <div class="checkbox checkbox-success"
+      @if(index == 1){
+        ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+      }else{
+        ng-disabled="read_only"
+      }>
+      <input type="checkbox" id="employment.@(index)" class="styled"
+        ng-model="OrderSvc.employment_verif[@index]"
+        @if(index == 1){
+          ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+        }else{
+          ng-disabled="read_only"
+        }
+        ng-click="OrderSvc.toggleEmployment(@index)">
+      <label for="employment.@(index)">
+        <span class="service-set-title service-set-lg">
+          @MSG("employment.employment_details", index)
+        </span>
+      </label>
+    </div>
+  </div>
+</div>
+<div class="row m-b-sm">
+  <div class="col-xs-12">
+    <label for="hr.@(index)">
+      <span class="service-set-title service-set-normal">
+        @MSG("Reference.Type.PersonnelOfficer.1")
+      </span>
+    </label>
+    <div class="pull-right">
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline"
+        @if(index == 1){
+          ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+        }else{
+          ng-disabled="read_only"
+        }>
+        <input type="checkbox" id="hr_ed.@(index)" class="styled"
+          ng-model="@(ngPath).interviews.PersonnelOfficer.employment_details.selected"
+          @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }
+          ng-click="OrderSvc.toggleInterview(@index,'PersonnelOfficer')">
+        <label for="hr_ed.@(index)">
+          @CustomerUserOrdersCtrl.msg("service.employment_detail_verif")
+        </label>
+      </div>
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline"
+        @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }>
+        <input type="checkbox" id="hr_wp.@(index)" class="styled"
+          ng-model="@(ngPath).interviews.PersonnelOfficer.work_performance.selected"
+          @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }
+          ng-click="OrderSvc.toggleInterview(@index,'PersonnelOfficer')">
+        <label for="hr_wp.@(index)">
+          @CustomerUserOrdersCtrl.msg("service.work_performance_verif")
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row m-b-sm">
+  <div class="col-xs-12">
+    <label for="supervisor.@(index)">
+      <span class="service-set-title service-set-normal">
+        @MSG("Reference.Type.Supervisor.1")
+      </span>
+    </label>
+    <div class="pull-right">
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline"
+        @if(index == 1){
+          ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+        }else{
+          ng-disabled="read_only"
+        }>
+        <input type="checkbox" id="supervisor_ed.@(index)" class="styled"
+          ng-model="@(ngPath).interviews.Supervisor.employment_details.selected"
+          @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }
+          ng-click="OrderSvc.toggleInterview(@index,'Supervisor')">
+        <label for="supervisor_ed.@(index)">
+          @CustomerUserOrdersCtrl.msg("service.employment_detail_verif")
+        </label>
+      </div>
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline"
+        @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }>
+        <input type="checkbox" id="supervisor_wp.@(index)" class="styled"
+          ng-model="@(ngPath).interviews.Supervisor.work_performance.selected"
+          @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }
+          ng-click="OrderSvc.toggleInterview(@index,'Supervisor')">
+        <label for="supervisor_wp.@(index)">
+          @CustomerUserOrdersCtrl.msg("service.work_performance_verif")
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row m-b-sm">
+  <div class="col-xs-12">
+    <label>
+      <span class="service-set-title service-set-normal">
+        @MSG("Reference.Type.Additional1.1")
+      </span>
+    </label>
+    <div class="pull-right">
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline"
+        @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }>
+        <input type="checkbox" id="additional1_ed.@(index)" class="styled"
+          ng-model="@(ngPath).interviews.Additional1.employment_details.selected"
+          @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }
+          ng-click="OrderSvc.toggleInterview(@index,'Additional1')">
+        <label for="additional1_ed.@(index)">
+          @CustomerUserOrdersCtrl.msg("service.employment_detail_verif")
+        </label>
+      </div>
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline"
+        @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }>
+        <input type="checkbox" id="additional1_wp.@(index)" class="styled"
+          ng-model="@(ngPath).interviews.Additional1.work_performance.selected"
+          @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }
+          ng-click="OrderSvc.toggleInterview(@index,'Additional1')">
+        <label for="additional1_wp.@(index)">
+          @CustomerUserOrdersCtrl.msg("service.work_performance_verif")
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row m-b-sm">
+  <div class="col-xs-12">
+    <label>
+      <span class="service-set-title service-set-normal">
+        @MSG("Reference.Type.Additional2.1")
+      </span>
+    </label>
+    <div class="pull-right">
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline"
+        @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }>
+        <input type="checkbox" id="additional2_ed.@(index)" class="styled"
+          ng-model="@(ngPath).interviews.Additional2.employment_details.selected"
+          @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }
+          ng-click="OrderSvc.toggleInterview(@index,'Additional2')">
+        <label for="additional2_ed.@(index)">
+          @CustomerUserOrdersCtrl.msg("service.employment_detail_verif")
+        </label>
+      </div>
+      <div class="checkbox checkbox-info checkbox-circle checkbox-inline"
+        @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }>
+        <input type="checkbox" id="additional2_wp.@(index)" class="styled"
+          ng-model="@(ngPath).interviews.Additional2.work_performance.selected"
+          @if(index == 1){
+            ng-disabled="!OrderSvc.employment_verif[0] || read_only"
+          }else{
+            ng-disabled="read_only"
+          }
+          ng-click="OrderSvc.toggleInterview(@index,'Additional2')">
+        <label for="additional2_wp.@(index)">
+          @CustomerUserOrdersCtrl.msg("service.work_performance_verif")
+        </label>
+      </div>
+    </div>
+  </div>
+</div>

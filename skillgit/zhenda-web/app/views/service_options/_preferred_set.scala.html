@@ -1,0 +1,64 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+<div ng-controller="PreferenceCtrl">
+  <button class="btn btn-link" ng-click="open()">
+    @CustomerUserOrdersCtrl.msg("service.preference.title")
+  </button>
+
+  <script type="text/ng-template" id="preferred_set.html">
+    @{preferredSetHtml}
+  </script>
+</div>
+
+@preferredSetHtml = {
+  <div class="modal-header">
+    <h3 class="modal-title">@CustomerUserOrdersCtrl.msg("service.preference.title")</h3>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="@CustomerUserOrdersCtrl.msg("service.preference.head")" ng-model="package_name">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <button class="btn btn-primary pull-right" ng-click="addPreferredServiceSet()" ng-disabled="!package_name">
+          <i class="fa fa-plus"></i>
+          @CustomerUserOrdersCtrl.msg("service.preference.add")
+        </button>
+      </div>
+    </div>
+    <div class="row m-t-sm">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="list-group">
+          <li class="list-group-item" ng-repeat="key in OrderSvc.preferred_keys">
+            {{ key }}
+            <button type="button" class="close" ng-click="delPreferredServiceSet(key)">
+              <i class="fa fa-times"></i>
+            </button>
+          </li>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="text-align: right">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <button class="btn btn-link" ng-click="close()">
+          @MSG("close")
+        </button>
+      </div>
+    </div>
+  </div>
+}

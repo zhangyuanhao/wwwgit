@@ -1,0 +1,38 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(resident_id_record: String)(implicit messages: Messages)
+
+<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 ng-cloak">
+  <dl class="dl-horizontal resident-id-info">
+    <dt>@MSG("identity.gender1")</dt>
+    <dd>{{ @(resident_id_record).gender }}</dd>
+    <dt>@MSG("identity.date_of_birth")</dt>
+    <dd>{{ @(resident_id_record).date_of_birth | date: "@MSG("date.format.long")" }}</dd>
+    <dt>@MSG("resident_id_record.ethnicity1")</dt>
+    <dd>{{ @(resident_id_record).ethnicity }}</dd>
+    <dt>@MSG("resident_id_record.location_of_household_register1")</dt>
+    <dd>
+      {{ @(resident_id_record).location_of_household_register.province }}
+      {{ @(resident_id_record).location_of_household_register.city }}
+      {{ @(resident_id_record).location_of_household_register.street1 }}
+    </dd>
+    <dt>@MSG("resident_id_record.issuing_authority")</dt>
+    <dd>{{ @(resident_id_record).issuing_authority }}</dd>
+    <dt>@MSG("resident_id_record.period_of_validity")</dt>
+    <dd>{{ @(resident_id_record).period_of_validity.start | date: "@MSG("date.format.long")" }}
+     -
+     {{ @(resident_id_record).period_of_validity.end | date: "@MSG("date.format.long")" }}</dd>
+  </dl>
+</div>
+
+<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 ng-cloak">
+  <img src="@routes.Assets.at("images/profile_male.svg")" alt="" class="img-rounded pull-right" width="120px">
+</div>

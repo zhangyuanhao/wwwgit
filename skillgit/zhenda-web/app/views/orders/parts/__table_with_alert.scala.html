@@ -1,0 +1,67 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th class="col-xs-3 col-sm-3 col-md-2 col-lg-2 ">
+              @MSG("identity.name")
+            </th>
+            <th class="hidden-xs col-sm-4 col-md-3 col-lg-3 ">
+              @MSG("cell_phone")
+            </th>
+            <th class="hidden-5 col-sm-4 col-md-3 col-lg-3 ">
+              @CustomerUserOrdersCtrl.msg("order.status")
+            </th>
+            <th class="hidden-xs hidden-sm col-md-3 col-lg-3 ">
+              @CustomerUserOrdersCtrl.msg("order.created_at")
+            </th>
+            <th class="col-xs-4 col-sm-1 col-md-1 col-lg-1 text-center">
+              @MSG("action")
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="ng-cloak" ng-repeat="order in OrderListSvc.orders"
+            ng-class="{'bg-danger' : order.rating === 'D'}">
+            <td class="col-xs-3 col-sm-3 col-md-2 col-lg-2 ">
+              <a ng-href="{{jsRoutes.controllers.CustomerUserOrdersCtrl.show(order.id).url}}"
+                target="_blank">
+                {{ order.candidate_info.personal_name | personalName:"@messages.lang.language" }}
+              </a>
+            </td>
+            <td class="hidden-xs col-sm-4 col-md-3 col-lg-3 ">
+              {{ order.candidate_info.phone }}
+            </td>
+            <td class="hidden-5 col-sm-4 col-md-3 col-lg-4 ">
+              {{ OrderListSvc.dictionary.status[order.statuses[0]] }}
+            </td>
+            <td class="hidden-xs hidden-sm col-md-3 col-lg-2 ">
+              {{ order.created_at | date:"@MSG("date.format.long")" }}
+            </td>
+            <td class="col-xs-4 col-sm-2 col-md-1 col-lg-1 text-center">
+              <a ng-href="{{jsRoutes.controllers.BackgroundReportsCtrl.show(order.id).url}}"
+                type="button" class="btn btn-default btn-xs ">
+                <i class="fa fa-search"></i>
+                @CustomerUserOrdersCtrl.msg("order.view")
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

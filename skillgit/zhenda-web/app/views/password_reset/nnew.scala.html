@@ -1,0 +1,45 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(fm: Form[_])(
+implicit req: MaybeUserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@account.base_tmpl(PasswordResetCtrl.msg("title") + " - " + MSG("app.name")){
+
+  <h3 class="text-center">
+    @PasswordResetCtrl.msg("new.head")
+  </h3>
+
+  @fm.globalErrors.map { err =>
+    @common._alert("danger", dismissible = true){
+      @MSG(err.message)
+    }
+  }
+
+  @form(action = routes.PasswordResetCtrl.create(), 'class -> "account-form") {
+
+    <p>@PasswordResetCtrl.msg("new.description")</p>
+
+    @{_input_email(fm("email"),
+      'placeholder -> PasswordResetCtrl.msg("email.enter"),
+      'tabindex    -> 1,
+      '_icons      -> "fa fa-envelope-o fa-fw"
+      )(_fc_input_group)
+    }
+
+    <button type="submit" class="btn btn-success btn-lg btn-block" tabindex="2">
+      @MSG("submit")
+    </button>
+  }
+
+}()()

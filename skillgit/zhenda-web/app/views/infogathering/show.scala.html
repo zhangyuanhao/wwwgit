@@ -1,0 +1,226 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(id: String, token: String)(
+implicit req: MaybeUserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import views.EnumToJson
+
+@base_tmpl(InfoGatheringCtrl.msg("show.title")){
+
+  @ng._alert()
+
+  <div ng-controller="InfoGatheringCtrl" class="ng-cloak">
+    <div class="row">
+      <div class="col-xs-12 col-sm-10 col-sm-offset-1">
+        <div class="page-header">
+          <h1>@InfoGatheringCtrl.msg("show.head")</h1>
+        </div>
+
+        <div class="row" ng-if="!Svc.blank.sections.authorization">
+          <div class="col-xs-12">
+            <h4>@InfoGatheringCtrl.msg("announcement")</h4>
+          </div>
+        </div>
+
+        <div class="row justify-text" style="margin-bottom:30px"
+          ng-if="!Svc.blank.sections.authorization">
+          <div class="col-sm-12 col-md-10 col-md-offset-1">
+            <p>@InfoGatheringCtrl.msg("announcement_content")</p>
+          </div>
+        </div>
+
+        <div ng-if="Svc.blank.sections.authorization">
+          <div class="row">
+            <div class="col-xs-12">
+              <h4>@InfoGatheringCtrl.msg("authorization_msg")</h4>
+            </div>
+          </div>
+          <div class="row" style="margin-bottom: 60px;">
+            <div class="col-sm-12 col-md-10 col-md-offset-1">
+              @{_authorization_info()}
+              <div class="slide-animate-container">
+                <div class="slide-animate" ng-include="authorization_display"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div ng-show="!Svc.blank.sections.authorization || Svc.authorization_saved">
+          <div class="row" style="margin-bottom:30px" ng-if="Svc.blank.message">
+            <div class="col-xs-12">
+              <h4>{{ Svc.blank.customer_name }}@InfoGatheringCtrl.msg("message_from_customer")</h4>
+            </div>
+            <div class="col-sm-12 col-md-10 col-md-offset-1">
+              {{ Svc.blank.message }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12">
+              <h4>@InfoGatheringCtrl.msg("provid_msg")</h4>
+            </div>
+          </div>
+
+          <div ng-if="Svc.blank.sections.identity">
+            <div class="row" style="margin-bottom: 60px;">
+              <div class="col-sm-12 col-md-10 col-md-offset-1">
+                @{_identity_info()}
+                <div class="slide-animate-container">
+                  <div class="slide-animate" ng-include="identity_display"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div ng-if="Svc.blank.sections.education">
+            <div class="row" style="margin-bottom: 60px;">
+              <div class="col-sm-12 col-md-10 col-md-offset-1">
+                @{_education_info()}
+                <div class="slide-animate-container">
+                  <div class="slide-animate" ng-include="new_education_display"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div ng-if="Svc.blank.sections.professional_licenses">
+            <div class="row" style="margin-bottom: 60px;">
+              <div class="col-sm-12 col-md-10 col-md-offset-1">
+                @{_professional_license_info()}
+                <div class="slide-animate-container">
+                  <div class="slide-animate" ng-include="prl_display"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div ng-if="Svc.blank.sections.employment">
+            <div class="row" style="margin-bottom: 10px;">
+              <div class="col-sm-12 col-md-10 col-md-offset-1">
+                <h4 style="display: inline-block;">@InfoGatheringCtrl.msg("employment_msg_1")
+                <div ng-if="Svc.blank.sections.employment.range.within_years" style="display: inline-block;">
+                  {{Svc.blank.sections.employment.range.within_years}}@InfoGatheringCtrl.msg("employment_msg_2")
+                </div>
+                <div ng-if="Svc.blank.sections.employment.range.total" style="display: inline-block;">
+                  {{'@InfoGatheringCtrl.msg("employment_msg_3")'+ ' ' +Svc.blank.sections.employment.range.total+ ' ' +'@InfoGatheringCtrl.msg("employment_msg_4")'}}
+                </div>
+                @InfoGatheringCtrl.msg("employment_msg_5")</h4>
+              </div>
+            </div>
+            <div class="row" style="margin-bottom: 60px;">
+              <div class="col-sm-12 col-md-10 col-md-offset-1">
+                @{_employment_info()}
+                <div class="slide-animate-container">
+                  <div class="slide-animate" ng-include="new_employment_display"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row ng-cloak">
+            <div class="col-sm-12 col-md-10 col-md-offset-1">
+              <button type="button" class="btn btn-success pull-right" ng-click="Svc.submit()">
+                <span ng-if="Svc.blank.sections.authorization">
+                  @InfoGatheringCtrl.msg("consent")
+                </span>
+                <span ng-if="!Svc.blank.sections.authorization">
+                  @InfoGatheringCtrl.msg("submit_authorization")
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script type="text/ng-template" id="blank.html">
+  </script>
+
+}(
+  libs.webjars("css", "awesome-bootstrap-checkbox"),
+  libs.assets("css", "infogathering/show")
+)(
+  libs.webjars("js", "angular-resource"),
+  libs.webjars("js", "ng-flow"),
+  libs.webjars("js", "signature_pad"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "ui.upload_image"),
+  libs.assets("js", "ui.common"),
+  libs.assets("js", "ui.address"),
+  libs.assets("js", "api_internal/institutions"),
+  libs.assets("js", "infogathering/show"),
+  controller,
+  jsRoutes
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.MyCtrl.profileImage,
+    routes.javascript.InfoGatheringCtrl.uploadImage,
+    routes.javascript.InfoGatheringCtrl.image,
+    routes.javascript.InfoGatheringCtrl.showAuthorizationPDF
+  )
+}
+
+@controller = {
+  <script>
+    views.infogathering.show.config(['uibDatepickerConfig', 'flowFactoryProvider', 'uploadImageConfig',
+      function(uibDatepickerConfig, flowFactoryProvider, uploadImageConfig) {
+        uibDatepickerConfig.formatDayTitle   = '@MSG("date.format.long")';
+        uibDatepickerConfig.formatMonthTitle = '@MSG("year.format")';
+        uibDatepickerConfig.formatMonth      = '@MSG("month.format")';
+        uibDatepickerConfig.formatYear       = '@MSG("year.format")';
+        uibDatepickerConfig.showWeeks        = false;
+        uibDatepickerConfig.startingDay      = 1;
+
+        flowFactoryProvider.defaults = {
+          target: '',
+          permanentErrors: [404, 500, 501],
+          maxChunkRetries: 1,
+          chunkRetryInterval: 5000,
+          testChunks: true,
+          simultaneousUploads: 1,
+          singleFile: true,
+          headers : {
+            'Form-Id' : '@id',
+            'Access-Token' : '@token'
+          }
+        };
+
+        uploadImageConfig.original_image      = '@MSG("upload.image.original")';
+        uploadImageConfig.image_format        = '@MSG("upload.image_formats")';
+        uploadImageConfig.image_size          = '@MSG("upload.image_size")';
+        uploadImageConfig.btn_modify          = '@MSG("upload.modify")';
+        uploadImageConfig.btn_upload          = '@MSG("upload.image")';
+        uploadImageConfig.btn_uploading       = '@MSG("upload.uploading")';
+        uploadImageConfig.comment_placeholder = '@MSG("upload.comment.placeholder")';
+        uploadImageConfig.error_exists        = '@MSG("upload.error.exists")';
+        uploadImageConfig.layout_type         = 'edit';
+    }]);
+
+    views.infogathering.show.run(['InfoGatheringSvc', function(InfoGatheringSvc) {
+      InfoGatheringSvc.http_headers = {'Form-Id' : '@id', 'Access-Token' : '@token'};
+      InfoGatheringSvc.form_id      = '@id';
+      InfoGatheringSvc.access_token = '@token';
+      InfoGatheringSvc.dictionary = {
+        'msg.saved'           : '@InfoGatheringCtrl.message("msg.saved")',
+        'msg.submitted'       : '@InfoGatheringCtrl.message("msg.submitted")',
+        'msg.signature.empty' : '@InfoGatheringCtrl.message("msg.signature.empty")'
+      };
+      InfoGatheringSvc.dictionary.genders          = @Html(Gender.toJson());
+      InfoGatheringSvc.dictionary.countries        = @Html(CountryCode.toJson());
+      InfoGatheringSvc.dictionary.id_doc_types     = @Html(EnumToJson.IdDocTypesDef.toJson);
+      InfoGatheringSvc.dictionary.study_modes      = @Html(ModeOfStudy.toJson());
+      InfoGatheringSvc.dictionary.education_levels = @Html(EducationLevel.toJson());
+      InfoGatheringSvc.dictionary.hire_types       = @Html(HireType.toJson());
+    }]);
+  </script>
+}

@@ -1,0 +1,125 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+@import common._
+@import java.util.Locale
+
+<div ng-if="Svc.value.authorization">
+  <div class="panel panel-info ng-cloak">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-6">
+          <h4 class="f-text-success">
+            <i class="fa zd-clipboard2 fa-lg"></i>
+            @MSG("authorize.signature")
+          </h4>
+        </div>
+        <div class="col-xs-6 text-right">
+          <button type="button" class="btn btn-primary btn-xs" ng-click="editAuthorization()">
+            <i class="fa fa-edit"></i>
+            @MSG("edit")
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        @defining("views.authorization.document.sample.") { prefix =>
+        <div class="col-xs-12">
+          <p>
+            <span ng-if="Svc.value.authorization.handwritten.inputs.identity.type === '@(IDCardNumber.basicName)'">
+              <strong>@messages.messages.apply(s"${prefix}${IDCardNumber.basicName}")(Lang(Locale.ENGLISH)) </strong>
+            </span>
+            <span ng-if="Svc.value.authorization.handwritten.inputs.identity.type === '@(PassportNumber.basicName)'">
+              <strong>@messages.messages.apply(s"${prefix}${PassportNumber.basicName}")(Lang(Locale.ENGLISH)) </strong>
+            </span>
+            <span ng-if="Svc.value.authorization.handwritten.inputs.identity.type === '@(EEPNumber.basicName)'">
+              <strong>@messages.messages.apply(s"${prefix}${EEPNumber.basicName}")(Lang(Locale.ENGLISH)) </strong>
+            </span>
+          </p>
+          <p>
+            <span ng-if="Svc.value.authorization.handwritten.inputs.identity.type === '@(IDCardNumber.basicName)'">
+              @messages.messages.apply(s"${prefix}${IDCardNumber.basicName}")(Lang(Locale.CHINESE))
+            </span>
+            <span ng-if="Svc.value.authorization.handwritten.inputs.identity.type === '@(PassportNumber.basicName)'">
+              @messages.messages.apply(s"${prefix}${PassportNumber.basicName}")(Lang(Locale.CHINESE))
+            </span>
+            <span ng-if="Svc.value.authorization.handwritten.inputs.identity.type === '@(EEPNumber.basicName)'">
+              @messages.messages.apply(s"${prefix}${EEPNumber.basicName}")(Lang(Locale.CHINESE))
+            </span>
+            <span>{{Svc.value.authorization.handwritten.inputs.identity.number}}</span>
+          </p>
+        </div>
+        }
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <p>
+            <strong>{{Svc.value.authorization.handwritten.letter_def.inputs.signature_zh.label.en}}</strong>
+          </p>
+          <p>
+            {{Svc.value.authorization.handwritten.letter_def.inputs.signature_zh.label.zh}}
+            <div >
+              <img ng-src="{{Svc.value.authorization.handwritten.inputs.signature_zh}}"
+                class="signature-img">
+            </div>
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <p>
+            <strong>{{Svc.value.authorization.handwritten.letter_def.inputs.signature_en.label.en}}</strong>
+          </p>
+          <p>
+            {{Svc.value.authorization.handwritten.letter_def.inputs.signature_en.label.zh}}
+            <div>
+              <img ng-src="{{Svc.value.authorization.handwritten.inputs.signature_en}}"
+                class="signature-img">
+            </div>
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <p>
+            <strong>{{Svc.value.authorization.handwritten.letter_def.inputs.signed_on.label.en}}</strong>
+          </p>
+          <p>
+            {{Svc.value.authorization.handwritten.letter_def.inputs.signed_on.label.zh}}
+            {{ Svc.value.authorization.handwritten.inputs.signed_on | date:"@MSG("date.format.long")" }}
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 text-right">
+          <a ng-href="{{Svc.jsRoutes.controllers.InfoGatheringCtrl.showAuthorizationPDF(Svc.form_id,false,true).url}}&access_token={{Svc.access_token}}"
+            target="_blank">
+            @MSG("authorize.view")
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div ng-if="!Svc.value.authorization">
+  <div class="row">
+    <div class="col-xs-12">
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="newAuthorization()">
+        <i class="fa zd-clipboard2 fa-lg fa-fw"></i>
+        @MSG("authorize.signature")
+      </button>
+    </div>
+  </div>
+</div>

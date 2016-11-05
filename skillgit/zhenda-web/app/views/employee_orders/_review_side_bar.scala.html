@@ -1,0 +1,68 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-md-push-9 col-lg-push-9">
+    <div class="ibox">
+      <div class="ibox-title no-top-border">
+        <strong>@EmployeeOrdersCtrl.msg("my.task")</strong>
+      </div>
+      <div class="ibox-content no-padding">
+        <div class="list-group">
+          <a class="list-group-item"
+            ui-sref="review_customer_complained"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'customer_complained'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['customer_complained'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.customer_complained")
+          </a>
+          <a class="list-group-item"
+            ui-sref="review_awaiting_review_request"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'awaiting_review_request'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['awaiting_review_request'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.awaiting_review_request")
+          </a>
+          <a class="list-group-item"
+            ui-sref="review_review_requested"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'review_requested'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['review_requested'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.review_requested")
+          </a>
+          <a class="list-group-item"
+            ui-sref="review_basically_completed"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'basically_completed'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['basically_completed'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.basically_completed")
+          </a>
+          <a class="list-group-item"
+            ui-sref="review_finally_completed"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'finally_completed'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['finally_completed'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.finally_completed")
+          </a>
+          <a class="list-group-item"
+            ui-sref="review_unassigned"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'unassigned'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['unassigned'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.unassigned")
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-md-pull-3 col-lg-pull-3">
+    <div class="tab-pane">
+      <div class="panel-body">
+        <div ui-view ></div>
+      </div>
+    </div>
+  </div>
+</div>

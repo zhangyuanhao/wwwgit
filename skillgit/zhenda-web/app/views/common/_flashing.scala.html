@@ -1,0 +1,27 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit req: MaybeUserRequest[_], messages: Messages)
+
+@req.flash.data.map {
+  case ("info", v) => {
+    @common._alert("info",dismissible=false){@v}
+  }
+  case ("success", v) => {
+    @common._alert("success",dismissible=false){@v}
+  }
+  case ("warning", v) => {
+    @common._alert("warning",dismissible=false){@v}
+  }
+  case ("danger", v) => {
+    @common._alert("danger",dismissible=false){@v}
+  }
+  case _ => {}
+}

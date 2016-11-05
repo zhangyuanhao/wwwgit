@@ -1,0 +1,348 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(ngModel: String)(implicit messages: Messages)
+
+@import common._
+
+@ng._panel_collapse("TaskSvc.task_info.cbi",
+                   "fa-link",
+                    MSG("conflict_of_business_interest"),
+                    Some(parts._checkbox_of_remaining(
+                    s"!${ngModel}.not_provided",
+                    s"${ngModel}.remaining.status"
+                    ))){
+  <div ng-if="@(ngModel).remaining.status">
+    @parts._reason_of_remaining(
+      "cbi",
+      "TaskSvc.dictionary.reason_def.cbi",
+      s"${ngModel}.remaining"
+      )
+  </div>
+
+  <div ng-if="!@(ngModel).remaining.status">
+    <div ng-controller="CBICtrl">
+      <div class="row">
+        <div class="col-xs-12 col-is-6 col-sm-6">
+          <h4>@MSG("conflict_of_business_interest.legal_representative")</h4>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6">
+          @{parts._line_of_truth(s"${ngModel}.checks.legal_representative", false)}
+        </div>
+      </div>
+      <div ng-repeat="legal_representative in @(ngModel).checks.legal_representative.facts.translated.zh.primary.fact track by $index">
+        @cbi_show("legal_representative", "zh")
+      </div>
+      <div ng-repeat="legal_representative in @(ngModel).checks.legal_representative.facts.translated.en.primary.fact track by $index">
+        @cbi_show("legal_representative", "en")
+      </div>
+      @new_cbi("legal_representative")
+      <hr>
+
+      <div class="row" class="m-t-xl">
+        <div class="col-xs-12 col-is-6 col-sm-6">
+          <h4>@MSG("conflict_of_business_interest.shareholder")</h4>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6">
+          @{parts._line_of_truth(s"${ngModel}.checks.shareholder", false)}
+        </div>
+      </div>
+      <div ng-repeat="shareholder in @(ngModel).checks.shareholder.facts.translated.zh.primary.fact track by $index">
+        @cbi_show("shareholder", "zh")
+      </div>
+      <div ng-repeat="shareholder in @(ngModel).checks.shareholder.facts.translated.en.primary.fact track by $index">
+        @cbi_show("shareholder", "en")
+      </div>
+      @new_cbi("shareholder")
+      <hr>
+
+      <div class="row" class="m-t-xl">
+        <div class="col-xs-12 col-is-6 col-sm-6">
+          <h4>@MSG("conflict_of_business_interest.corporate_executive")</h4>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6">
+          @{parts._line_of_truth(s"${ngModel}.checks.corporate_executive", false)}
+        </div>
+      </div>
+      <div ng-repeat="corporate_executive in @(ngModel).checks.corporate_executive.facts.translated.zh.primary.fact track by $index">
+        @cbi_show("corporate_executive", "zh")
+      </div>
+      <div ng-repeat="corporate_executive in @(ngModel).checks.corporate_executive.facts.translated.en.primary.fact track by $index">
+        @cbi_show("corporate_executive", "en")
+      </div>
+      @new_cbi("corporate_executive")
+    </div>
+    @*  商业利益冲突模块备注  *@
+    <div class="row m-t-md">
+      <div class="col-xs-12">
+        @{parts._line_comment(TasksCtrl.msg("cbi_comment"), s"${ngModel}.comments", "cbi_comment")}
+      </div>
+    </div>
+  </div>
+}
+
+@cbi_show(cbi_type: String, language: String) = {
+  <div class="panel panel-info ng-cloak">
+    <div class="panel-body p-xxs">
+      <div class="row m-b-sm">
+        <div class="col-xs-6">
+          <strong class="text-success">
+            @TasksCtrl.msg(s"record.$language")
+          </strong>
+        </div>
+        <div class="col-xs-6">
+          <button type="button" class="close pull-right" ng-click="TaskSvc.cbiRemove('@(cbi_type)', $index, '@language')">
+            <i class="fa fa-fw fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+          <p><strong>@MSG("corporation.name") : </strong> {{ @(cbi_type).corporation.name }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+          <p><strong>@MSG("corporation.registration_number") : </strong> {{ @(cbi_type).corporation.registration_number }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+          <p><strong>@MSG("corporation.registered_capital.amount") : </strong> {{ @(cbi_type).corporation.registered_capital.amount | ten_thousand | number : 4 }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+          <p><strong>@MSG("currency") : </strong> {{ TaskSvc.dictionary.currencys[@(cbi_type).corporation.registered_capital.currency] }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+          <p><strong>@MSG("corporation.business_type") : </strong> {{ TaskSvc.dictionary.business_types[@(cbi_type).corporation.business_type] }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+          <p><strong>@MSG("corporation.status") : </strong> {{ TaskSvc.dictionary.business_status[@(cbi_type).corporation.status] }}</p>
+        </div>
+        @if(cbi_type == "shareholder") {
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+            <p><strong>@MSG("shareholder.investment") : </strong> {{ @(cbi_type).investment.amount | ten_thousand | number : 4 }}</p>
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+            <p><strong>@MSG("currency") : </strong> {{ TaskSvc.dictionary.currencys[@(cbi_type).investment.currency] }}</p>
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+            <p><strong>@MSG("shareholder.investment_percentage") : </strong> {{ @(cbi_type).investment_ratio | percentage}}</p>
+          </div>
+        }
+        @if(cbi_type == "corporate_executive") {
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+            <p><strong>@MSG("job_title") : </strong> {{ @(cbi_type).position_title.job_title }}</p>
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3" ng-if="@(cbi_type).position_title.department">
+            <p><strong>@MSG("department") : </strong> {{ @(cbi_type).position_title.department }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+@new_cbi(cbi_type: String) = {
+  <div ng-controller="CBICtrl">
+    <div class="row m-b-sm">
+      <div class="col-xs-12">
+        <button class="btn btn-primary btn-xs" ng-click="newCbi('@(cbi_type)', 'zh')" ng-if="TaskSvc.lang.zh">
+          @TasksCtrl.msg("add_record.zh")
+        </button>
+        <button class="btn btn-primary btn-xs" ng-click="newCbi('@(cbi_type)', 'en')" ng-if="TaskSvc.lang.en">
+          @TasksCtrl.msg("add_record.en")
+        </button>
+      </div>
+    </div>
+    <div class="slide-animate-container">
+      <div class="slide-animate" ng-include="input_page.@(cbi_type)"></div>
+    </div>
+  </div>
+}
+
+<script type="text/ng-template" id="cbiLRInputZh.html">
+  @cbi_input("legal_representative","zh")
+</script>
+
+<script type="text/ng-template" id="cbiLRInputEn.html">
+  @{cbi_input("legal_representative","en")}
+</script>
+
+<script type="text/ng-template" id="cbiSInputZh.html">
+  @cbi_input("shareholder","zh")
+</script>
+
+<script type="text/ng-template" id="cbiSInputEn.html">
+  @{cbi_input("shareholder","en")}
+</script>
+
+<script type="text/ng-template" id="cbiCEInputZh.html">
+  @cbi_input("corporate_executive","zh")
+</script>
+
+<script type="text/ng-template" id="cbiCEInputEn.html">
+  @{cbi_input("corporate_executive","en")}
+</script>
+
+@cbi_input(cbi_type: String, language: String) = {
+  <div class="panel panel-default panel-border">
+    <div class="panel-body">
+      <form name="@(cbi_type)_form" novalidate>
+        <div class="row m-b-sm">
+          <div class="col-xs-12">
+            <strong>@TasksCtrl.msg(s"record.$language")</strong>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+            @ng._form_control("corporation_name",
+              '_formname   -> s"${cbi_type}_form",
+              'maxLength   -> 64,
+              'minLength   -> 2,
+              '_label      -> MSG("corporation.name"),
+              '_inline     -> false,
+              'required    -> true,
+              "ng-model".s -> "cbi.corporation.name"
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+            @ng._form_control("registration_number",
+              '_formname        -> s"${cbi_type}_form",
+              'maxLength        -> 64,
+              '_label           -> MSG("corporation.registration_number"),
+              '_inline          -> false,
+              "empty-to-null".s -> None,
+              "ng-model".s      -> "cbi.corporation.registration_number"
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+            @ng._form_control("rc_amount",
+              '_formname        -> s"${cbi_type}_form",
+              'maxLength        -> 64,
+              '_type            -> "number",
+              '_label           -> MSG("corporation.registered_capital.amount"),
+              '_inline          -> false,
+              'pattern          -> """^\d+(.\d{1,4})?$""",
+              'max              -> 999999,
+              '_pattern_msg_key -> "error.real.precision4",
+              "empty-to-null".s -> None,
+              "ng-model".s      -> "cbi.corporation.registered_capital.amount"
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+            @ng._select("currency",
+              '_formname     -> s"${cbi_type}_form",
+              '_label        -> MSG("currency"),
+              '_inline       -> false,
+              "ng-model".s   -> "cbi.corporation.registered_capital.currency",
+              "ng-options".s -> "key as type for (key, type) in TaskSvc.dictionary.currencys"
+            )()
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+            @ng._select("business_type",
+              '_formname        -> s"${cbi_type}_form",
+              '_label           -> MSG("corporation.business_type"),
+              '_inline          -> false,
+              "ng-model".s      -> "cbi.corporation.business_type",
+              "ng-options".s    -> "key as type for (key, type) in TaskSvc.dictionary.business_types",
+              "empty-to-null".s -> None
+            ){
+              <option value="">
+            }
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+            @ng._select("status",
+              '_formname        -> s"${cbi_type}_form",
+              '_label           -> MSG("corporation.status"),
+              '_inline          -> false,
+              "ng-model".s      -> "cbi.corporation.status",
+              "ng-options".s    -> "key as type for (key, type) in TaskSvc.dictionary.business_status",
+              "empty-to-null".s -> None
+            ){
+             <option value="">
+            }
+          </div>
+          @if(cbi_type == "shareholder") {
+            <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+              @ng._form_control("i_amount",
+                '_formname        -> s"${cbi_type}_form",
+                'maxLength        -> 64,
+                '_type            -> "number",
+                '_label           -> MSG("shareholder.investment"),
+                '_inline          -> false,
+                'pattern          -> """^\d+(.\d{1,4})?$""",
+                'max              -> 999999,
+                '_pattern_msg_key -> "error.real.precision4",
+                "empty-to-null".s -> None,
+                "ng-model".s      -> "cbi.investment.amount"
+              )
+            </div>
+            <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-3">
+              @ng._select("i_currency",
+                '_formname     -> s"${cbi_type}_form",
+                '_label        -> MSG("currency"),
+                '_inline       -> false,
+                "ng-model".s   -> "cbi.investment.currency",
+                "ng-options".s -> "key as type for (key, type) in TaskSvc.dictionary.currencys"
+              )()
+            </div>
+            <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+              @ng._form_control("investment_percentage",
+                '_formname        -> s"${cbi_type}_form",
+                'maxLength        -> 64,
+                '_type            -> "number",
+                '_label           -> MSG("shareholder.investment_percentage"),
+                '_inline          -> false,
+                'pattern          -> """^\d+(.\d{1,4})?$""",
+                'max              -> 100,
+                '_pattern_msg_key -> "error.real.precision4",
+                "empty-to-null".s -> None,
+                "ng-model".s      -> "cbi.investment_ratio"
+              )
+            </div>
+          }
+
+          @if(cbi_type == "corporate_executive") {
+            <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+              <div class="form-group">
+                <label>@MSG("corporate_executive.position_title")</label>
+                <div class="row">
+                  <div class="col-xs-6">
+                    @ng._form_control("position_title",
+                      '_formname        -> s"${cbi_type}_form",
+                      'maxLength        -> 64,
+                      '_in_group        -> true,
+                      'placeholder      -> MSG("job_title"),
+                      "empty-to-null".s -> None,
+                      "ng-model".s      -> "cbi.position_title.job_title"
+                    )
+                  </div>
+                  <div class="col-xs-6">
+                    @ng._form_control("position_department",
+                      '_formname        -> s"${cbi_type}_form",
+                      'maxLength        -> 64,
+                      'placeholder      -> MSG("department"),
+                      '_in_group        -> true,
+                      "empty-to-null".s -> None,
+                      "ng-model".s      -> "cbi.position_title.department"
+                    )
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+        <div class="row">
+          <div class="col-xs-12 text-right">
+            <button type="submit" class="btn btn-primary btn-sm" ng-click="@(cbi_type)_form.$valid ? addCbi('@cbi_type', '@language') : ''">@MSG("ok")</button>
+            <button class="btn btn-link btn-sm" ng-click="cancelCbi('@cbi_type')">@MSG("cancel")</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}

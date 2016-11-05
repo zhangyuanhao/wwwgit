@@ -1,0 +1,181 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(url: String)(implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(MSG("dashboard")) {
+
+  <div class="row ng-cloak" ng-controller="EmployeeOrdersCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+      <div class="row page-heading white-bg">
+        <h2>
+          <i class="fa fa-home fa-lg fa-fw"></i>
+          @MSG("dashboard")
+          <small>@EmployeeOrdersCtrl.msg("head")</small>
+        </h2>
+      </div>
+
+			@ng._msg_confirm_delete()
+
+      <div class="row wrapper-content">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="tabs-container">
+            <div class="row">
+              <div class="col-xs-12 col-md-9">
+                <ul class="nav nav-tabs">
+                  <li ui-sref-active="active" ng-class="{ 'active' : EmployeeOrdersSvc.role == k }"
+                      ng-repeat="(k, v) in EmployeeOrdersSvc.employee_roles">
+                    <a ui-sref="{{k}}" role="button"> {{v}} </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="tab-content">
+              <div ui-view></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+}(libs.assets("css", "employee_orders/index"),
+  css)(
+  libs.webjars("js", "angular-resource"),
+  libs.webjars("js", "angular-ui-router"),
+  libs.webjars("js", "state-events"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/employees"),
+  libs.assets("js", "api_internal/employee_orders"),
+  libs.assets("js", "api_internal/employee_customers"),
+  libs.assets("js", "employee_orders/index"),
+  libs.assets("js", "employee_orders/parts/_support"),
+  libs.assets("js", "employee_orders/parts/_qualification"),
+  libs.assets("js", "employee_orders/parts/_employment"),
+  libs.assets("js", "employee_orders/parts/_review"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.EmployeeOrdersCtrl.parts,
+    routes.javascript.TasksCtrl.task,
+    routes.javascript.TasksCtrl.review,
+    routes.javascript.EmployeeOrdersCtrl.history,
+    routes.javascript.BackgroundReportsCtrl.show,
+    routes.javascript.BackgroundReportsCtrl.preview,
+    routes.javascript.BackgroundReportsCtrl.showPDF,
+    routes.javascript.BackgroundReportsCtrl.previewPDF
+  )
+}
+
+@css = {
+  <style>
+    .no-top-border {
+      border-top-width: 0px;
+    }
+  </style>
+}
+
+@controller = {
+<script>
+    views.employee_orders.index.config(['$urlRouterProvider', function($urlRouterProvider) {
+      $urlRouterProvider.otherwise('@url');
+    }]);
+    views.employee_orders.index.run([
+      'EmployeeOrdersSvc',
+      '$state',
+      '$stateParams',
+      function(EmployeeOrdersSvc) {
+        EmployeeOrdersSvc.options = {
+          page     : @Pager.first.pageNum,
+          pageSize : @Pager.first.pageSize,
+          uid      : '@req.user.id',
+          nextPage : '',
+          prevPage : ''
+      };
+
+      EmployeeOrdersSvc.confirmDelete = {
+        title              : '@EmployeeOrdersCtrl.msg("confirm.remove.title")',
+        text               : '@EmployeeOrdersCtrl.msg("confirm.remove.text")',
+        type               : 'warning',
+        showCancelButton   : true,
+        confirmButtonText  : '@EmployeeOrdersCtrl.msg("confirm.remove.btn_confirm")',
+        cancelButtonText   : '@EmployeeOrdersCtrl.msg("confirm.remove.btn_cancel")',
+        confirmButtonClass : 'btn btn-lg btn-default',
+        cancelButtonClass  : 'btn btn-lg btn-primary',
+        buttonsStyling     : false
+      };
+
+      EmployeeOrdersSvc.dictionary.confirm_type = {
+        "abandon"                : '@EmployeeOrdersCtrl.msg("confirm.abandon")',
+        "withdraw_reviewer"      : '@EmployeeOrdersCtrl.msg("confirm.withdraw_reviewer")',
+        "withdraw_qualification" : '@EmployeeOrdersCtrl.msg("confirm.withdraw_qualification")',
+        "withdraw_employment"    : '@EmployeeOrdersCtrl.msg("confirm.withdraw_employment")',
+        "complaints"             : '@EmployeeOrdersCtrl.msg("confirm.complaints")',
+        "remove"                 : '@EmployeeOrdersCtrl.msg("confirm.remove")',
+        "recontact"              : '@EmployeeOrdersCtrl.msg("confirm.recontact")',
+        "complained"             : '@EmployeeOrdersCtrl.msg("confirm.complained")'
+      };
+
+      EmployeeOrdersSvc.employee_id            = '@req.user.id';
+      EmployeeOrdersSvc.roles_def              = @Html(Employee.Role.toJson);
+      EmployeeOrdersSvc.dictionary.mistake_def = @Html(EmployeeMistake.toJson(EmployeeMistake.madeByReviewer.contains(_)));
+      EmployeeOrdersSvc.order_status_def       = @Html(Order.Status.toJson());
+      EmployeeOrdersSvc.task_status_def        = @Html(Task.Status.toJson(postfix = "1"));
+      EmployeeOrdersSvc.task_type_def          = @Html(Task.Type.toJson());
+
+      EmployeeOrdersSvc.customer_orders_actions  = {
+        "Place"              : '@MSG("order.search_by.Place")',
+        "BasicallyCompleted" : '@MSG("order.search_by.BasicallyCompleted")',
+        "FinallyCompleted"   : '@MSG("order.search_by.FinallyCompleted")'
+      };
+
+      EmployeeOrdersSvc.my_task_actions  = {
+        "ReviewRequest"         : '@MSG("Task.Action.ReviewRequest")',
+        "ReviewRejected"        : '@MSG("Task.Action.ReviewRejected")',
+        "ReviewComplained"      : '@MSG("Task.Action.ReviewComplained")',
+        "ReviewBasicallyPassed" : '@MSG("Task.Action.ReviewBasicallyPassed")',
+        "ReviewFinallyPassed"   : '@MSG("Task.Action.ReviewFinallyPassed")'
+      };
+
+      EmployeeOrdersSvc.dictionary.recontact       = {
+        'success' : '@EmployeeOrdersCtrl.msg("recontact.success")',
+        'failed'  : '@EmployeeOrdersCtrl.msg("recontact.failed")'
+      };
+      EmployeeOrdersSvc.dictionary.abandon       = {
+        'success' : '@EmployeeOrdersCtrl.msg("abandon.success")',
+        'failed'  : '@EmployeeOrdersCtrl.msg("abandon.failed")'
+      };
+      EmployeeOrdersSvc.dictionary.withdraw       = {
+        'success' : '@EmployeeOrdersCtrl.msg("withdraw.success")',
+        'failed'  : '@EmployeeOrdersCtrl.msg("withdraw.failed")'
+      };
+      EmployeeOrdersSvc.dictionary.customer_complained       = {
+        'success' : '@EmployeeOrdersCtrl.msg("customer_complained.success")',
+        'failed'  : '@EmployeeOrdersCtrl.msg("customer_complained.failed")'
+      };
+      EmployeeOrdersSvc.dictionary.publish       = {
+        'success' : '@EmployeeOrdersCtrl.msg("publish.success")',
+        'failed'  : '@EmployeeOrdersCtrl.msg("publish.failed")'
+      };
+      EmployeeOrdersSvc.dictionary.take       = {
+        'success' : '@EmployeeOrdersCtrl.msg("take.success")',
+        'failed'  : '@EmployeeOrdersCtrl.msg("take.failed")'
+      };
+    }]);
+</script>
+}

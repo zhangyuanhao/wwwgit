@@ -1,0 +1,128 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.customers.OrderMetrics._
+@(customer: Customer, url: String)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(CustomersCtrl.msg("contract.title", customer.info.name)) {
+
+  <div class="row page-heading white-bg" ng-controller="ContractCtrl">
+    <h2>
+      <i class="fa fa-black-tie fa-lg fa-fw"></i>
+      @CustomersCtrl.msg("contract.head")
+      <small>@customer.info.name</small>
+      <span ng-class="scrollClass">
+        <button class="btn btn-primary pull-right" ng-click="ContractSvc.save('@customer.id')">
+          <i class="fa fa-save fa-fw"></i>
+          @MSG("save")
+        </button>
+      </span>
+    </h2>
+  </div>
+
+  <div class="row wrapper-content ng-cloak" ng-controller="ContractCtrl">
+    <div class="col-xs-12">
+      <div class="tabs-container">
+        <ul class="nav nav-tabs">
+          <li ui-sref-active="active" ng-class="{'active' : selected_tab==='basic'}">
+            <a ui-sref="basic" role="button"> @CustomersCtrl.msg("contract.tab.basic") </a>
+          </li>
+          <li ui-sref-active="active" ng-class="{'active' : selected_tab==='qualification'}">
+            <a ui-sref="qualification" role="button"> @CustomersCtrl.msg("contract.tab.qualification") </a>
+          </li>
+          <li ui-sref-active="active" ng-class="{'active' : selected_tab==='education'}">
+            <a ui-sref="education" role="button"> @CustomersCtrl.msg("contract.tab.education") </a>
+          </li>
+          <li ui-sref-active="active" ng-class="{'active' : selected_tab==='employment'}">
+            <a ui-sref="employment" role="button"> @CustomersCtrl.msg("contract.tab.employment") </a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div ui-view></div>
+        </div>
+      </div>
+    </div>
+  </div>
+}(
+  libs.webjars("css", "awesome-bootstrap-checkbox"),
+  libs.assets("css", "tasks/show")
+  )(
+  libs.webjars("js", "angular-resource"),
+  libs.webjars("js", "angular-ui-router"),
+  libs.webjars("js", "state-events"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "api_internal/services_definitions"),
+  libs.assets("js", "customers/contract"),
+  libs.assets("js", "customers/contract/_basic"),
+  libs.assets("js", "customers/contract/_qualification"),
+  libs.assets("js", "customers/contract/_education"),
+  libs.assets("js", "customers/contract/_employment"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.CustomersCtrl.contractParts
+  )
+}
+
+@controller = {
+  <script>
+    views.customers.contract.config(['$stateProvider', '$urlRouterProvider', 'uibDatepickerConfig',
+      function($stateProvider, $urlRouterProvider, uibDatepickerConfig) {
+        $stateProvider
+          .state('basic', {
+            url         : "/basic",
+            templateUrl : jsRoutes.controllers.CustomersCtrl.contractParts('basic_side_bar').url,
+            controller  : 'BasicCtrl',
+          })
+          .state('qualification', {
+            url         : "/qualification",
+            templateUrl : jsRoutes.controllers.CustomersCtrl.contractParts('qualification_side_bar').url,
+            controller  : 'QualificationCtrl',
+          })
+          .state('education', {
+            url         : "/education",
+            templateUrl : jsRoutes.controllers.CustomersCtrl.contractParts('education_side_bar').url,
+            controller  : 'EducationCtrl',
+          })
+          .state('employment', {
+            url         : "/employment",
+            templateUrl : jsRoutes.controllers.CustomersCtrl.contractParts('employment_side_bar').url,
+            controller  : 'EmploymentCtrl',
+          });
+
+        $urlRouterProvider.otherwise('@url');
+
+        uibDatepickerConfig.formatDayTitle   = '@MSG("date.format.long")';
+        uibDatepickerConfig.formatMonthTitle = '@MSG("year.format")';
+        uibDatepickerConfig.formatMonth      = '@MSG("month.format")';
+        uibDatepickerConfig.formatYear       = '@MSG("year.format")';
+        uibDatepickerConfig.showWeeks        = false;
+        uibDatepickerConfig.startingDay      = 1;
+    }]);
+
+    views.customers.contract.run(['ContractSvc', function(ContractSvc) {
+      ContractSvc.load('@customer.id');
+      ContractSvc.dictionary = {
+        'msg.contract_saved'      : '@CustomersCtrl.message("msg.contract_saved")',
+        'msg.remove_default_lang' : '@CustomersCtrl.message("msg.contract.remove_default_lang")'
+      };
+      ContractSvc.dictionary.days_metric = @Html(DaysMetric.toJson());
+    }]);
+  </script>
+}

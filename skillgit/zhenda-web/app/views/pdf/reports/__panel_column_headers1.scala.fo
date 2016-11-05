@@ -1,0 +1,23 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import views.fo.Magic._
+
+@*
+  通用布局1
+*@
+@()(implicit messages: Messages)
+
+@__panel_row(
+  __panel_cell(BackgroundReportsCtrl.msg("pdf.item"), Seq("text-center", "text-strong")),
+  __panel_cell(BackgroundReportsCtrl.msg("pdf.info_provided"), Seq("text-center", "text-strong")),
+  __panel_cell(BackgroundReportsCtrl.msg("pdf.risk_level"), Seq("text-center", "text-strong")),
+  __panel_cell(BackgroundReportsCtrl.msg("pdf.explanation"), Seq("text-center", "text-strong"))
+)()

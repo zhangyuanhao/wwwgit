@@ -1,0 +1,170 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(prl: String)(implicit messages: Messages)
+
+@import common._
+
+@ng._panel_collapse("TaskSvc.task_info.prl",
+                     "zd-medal2",
+                     MSG("professional_license"),
+                     Some(parts._checkbox_of_remaining(
+                      s"!${prl}.not_provided.status",
+                      s"${prl}.remaining.status"
+                    ))){
+  @* 未提供 *@
+  <div ng-if="@(prl).not_provided.status">
+    @{parts._not_provided(TasksCtrl.msg("prl.not_provided"), s"${prl}.not_provided")}
+  </div>
+
+  @* 专业资格提供 *@
+  <div ng-if="!@(prl).not_provided.status">
+    @* 待查 *@
+    <div ng-if="@(prl).remaining.status">
+      @parts._reason_of_remaining(
+        "prl",
+        "TaskSvc.dictionary.reason_def.prl",
+        s"${prl}.remaining"
+        )
+    </div>
+
+    <div ng-if="!@(prl).remaining.status">
+      @* 专业资格照片 *@
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="section-header">
+            <h4>@TasksCtrl.msg("image.prl_image")</h4>
+          </div>
+          @parts._image_line(s"${prl}.extra_gathered.images")
+        </div>
+      </div>
+
+      @* 额外收集信息 *@
+      <div class="row m-t-md">
+        <div class="col-xs-12">
+          <div class="section-header">
+            <h4>@TasksCtrl.msg("extra_gathering")</h4>
+          </div>
+          <dl class="dl-horizontal dl-info lg">
+            <span ng-if="@(prl).extra_gathered.organization">
+              <dt>@MSG("professional_license.organization")</dt>
+              <dd>{{ @(prl).extra_gathered.organization }}</dd>
+            </span>
+            <span ng-if="@(prl).extra_gathered.location">
+              <dt>@MSG("professional_license.location")</dt>
+              <dd>{{ @(prl).extra_gathered.location }}</dd>
+            </span>
+            <span ng-if="@(prl).extra_gathered.issue_date">
+              <dt>@MSG("professional_license.issue_date")</dt>
+              <dd>{{ @(prl).extra_gathered.issue_date | date : "@MSG("date.format.long")"}}</dd>
+            </span>
+            <span ng-if="@(prl).extra_gathered.license_type">
+              <dt>@MSG("professional_license.license_type")</dt>
+              <dd>{{ @(prl).extra_gathered.license_type }}</dd>
+            </span>
+            <span ng-if="@(prl).extra_gathered.expire_date">
+              <dt>@MSG("professional_license.expire_date")</dt>
+              <dd>{{ @(prl).extra_gathered.expire_date | date : "@MSG("date.format.long")"}}</dd>
+            </span>
+            <span ng-if="@(prl).extra_gathered.license_number">
+              <dt>@MSG("professional_license.license_number")</dt>
+              <dd>{{ @(prl).extra_gathered.license_number }}</dd>
+            </span>
+            <span ng-if="@(prl).extra_gathered.contact_info">
+              <dt>@MSG("professional_license.contact_info")</dt>
+              <dd>{{ @(prl).extra_gathered.contact_info }}</dd>
+            </span>
+          <dl>
+        </div>
+      </div>
+
+      @* 上传补查资料 *@
+      <div class="row m-t-sm">
+        <div class="col-xs-12">
+          <upload-attachment title="@MSG("upload.attachment")" name="attachments" module-name="professional_licenses" module-index="0" ng-model="@(prl).attachments" src-fn="TaskSvc.getLoadUrl(fName)" upload-fn="TaskSvc.getUploadUrl(fName)">
+          </upload-attachment>
+        </div>
+      </div>
+
+      <div class="row m-t-md">
+        <div class="col-xs-12">
+          <div class="section-header strong">
+            <h4>@TasksCtrl.msg("checks")</h4>
+          </div>
+        </div>
+      </div>
+
+      <form name="prl_form" novalidate>
+        @* 认证机构 *@
+        @{parts._line(MSG("professional_license.organization"), s"${prl}.checks.organization", Some(edit_organization("zh")), Some(edit_organization("en")), None, true)}
+
+        @* 所在国 *@
+        @{parts._line(MSG("professional_license.location"), s"${prl}.checks.location", Some(edit_location("zh")), Some(edit_location("en")), None, true)}
+
+        @* 认证日期 *@
+        @{parts._line_interval(MSG("professional_license.issue_date"), s"${prl}.checks.issue_date", MSG("date.format.long"), Some(edit_issue_date("zh")), Some(edit_issue_date("en")), "date", true)}
+
+        @* 认证内容 *@
+        @{parts._line(MSG("professional_license.license_type"), s"${prl}.checks.license_type", Some(edit_license_type("zh")), Some(edit_license_type("en")), None, true)}
+      </form>
+
+      @* 专业资格验证模块备注 *@
+      @{parts._line_comment(TasksCtrl.msg("prl_comment"), s"${prl}.comments", "prl_comment")}
+    </div>
+  </div>
+}
+
+@edit_organization(language: String) = {
+  @ng._form_control(s"organization_$language",
+    '_formname        -> "prl_form",
+    '_label           -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline          -> false,
+    'maxLength        -> 255,
+    "empty-to-null".s -> None,
+    "ng-model".s      -> s"${prl}.checks.organization.provided.translated.${language}"
+  )
+}
+
+@edit_location(language: String) = {
+  @ng._form_control(s"location_$language",
+    '_formname        -> "prl_form",
+    '_label           -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline          -> false,
+    'maxLength        -> 255,
+    "empty-to-null".s -> None,
+    "ng-model".s      -> s"${prl}.checks.location.provided.translated.${language}"
+  )
+}
+
+@edit_issue_date(language: String) = {
+  <div class="form-group">
+    <label>@TasksCtrl.msg(s"provided.edit.$language")</label>
+    @ng._input_date_picker(s"issue_date_$language",
+      '_formname               -> "prl_form",
+      "ng-model".s             -> s"${prl}.checks.issue_date.provided.translated.${language}",
+      "datepicker-options".s   -> s"TaskSvc.date_picker.prl.issue_date_${language}.date_options",
+      "is-open".s              -> s"TaskSvc.date_picker.prl.issue_date_${language}.opened",
+      "uib-datepicker-popup".s -> MSG("date.format.long"),
+      "localdate-to-string".s  -> None,
+      '_click                  -> s"TaskSvc.date_picker.prl.issue_date_${language}.open()"
+    )
+  </div>
+}
+
+@edit_license_type(language: String) = {
+  @ng._form_control(s"license_type_$language",
+    '_formname        -> "prl_form",
+    '_label           -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline          -> false,
+    'maxLength        -> 255,
+    "empty-to-null".s -> None,
+    "ng-model".s      -> s"${prl}.checks.license_type.provided.translated.${language}"
+  )
+}

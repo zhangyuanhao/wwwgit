@@ -1,0 +1,105 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+@import common._
+@import employee_orders._
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <div class="row">
+          <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            @ng._select("customer",
+              "ng-model".s   -> "EmployeeOrdersSvc.customer_id",
+              "ng-change".s  -> "index()",
+              "ng-options".s -> "cid as cname.name for (cid, cname) in EmployeeOrdersSvc.employee.following"
+            )()
+          </div>
+          <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <div class="form-group">
+              @ng._input_month_picker("EmployeeOrdersSvc.date_picker", "EmployeeOrdersSvc.search_date")
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            @ng._select("action",
+              "ng-model".s   -> "EmployeeOrdersSvc.action",
+              "ng-change".s  -> "index()",
+              "ng-options".s -> "action as text for (action, text) in EmployeeOrdersSvc.customer_orders_actions"
+            )()
+          </div>
+        </div>
+        <hr>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>
+                <h4>
+                  @EmployeeOrdersCtrl.msg("head")
+                </h4>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="ng-cloak" ng-repeat="order in EmployeeOrdersSvc.orders">
+            @{parts.common._tags()}
+            <tr class="bg-info">
+              @{parts.common._order_info()}
+            </tr>
+            <tr uib-collapse="order.isConfirmCollapse" class="no-animate">
+              <td>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                  @{parts.common._reviewer_mistake()}
+                  @{parts.common._confirm_area()}
+                </div>
+              </td>
+            </tr>
+            <tr uib-collapse="!order.isConfirmCollapse" class="no-animate">
+              <td>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right">
+
+                  <button type="button" class="btn btn-danger btn-xs"
+                    ng-click="EmployeeOrdersSvc.confirm(order, 'complained')">
+                    <i class="fa fa-gavel"></i>
+                    @EmployeeOrdersCtrl.msg("complained")
+                  </button>
+
+                  <a type="button" class="btn btn-primary btn-xs"
+                    ng-href="{{ jsRoutes.controllers.EmployeeOrdersCtrl.history(order.id, EmployeeOrdersSvc.task_type).url }}"
+                    target="_blank">
+                    <i class="fa fa-history"></i>
+                    @EmployeeOrdersCtrl.msg("show_log")
+                  </a>
+
+                  @{parts.common._report_hrefs()}
+
+                  <button type="button" class="btn btn-primary btn-xs"
+                    ng-click="EmployeeOrdersSvc.publish(order.id)">
+                    <i class="fa fa-bullhorn"></i>
+                    @EmployeeOrdersCtrl.msg("publish")
+                  </button>
+
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      @ng._pager("EmployeeOrdersSvc.links", jump = false)
+    </div>
+  </div>

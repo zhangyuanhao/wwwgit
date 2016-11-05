@@ -1,0 +1,37 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(question: String, name: String, ngModel: String, referenceType: String, inverse: Boolean = false)(implicit message: Messages)
+
+<div ng-if="@ngModel">
+  @{_line_of_title(question, ngModel)}
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <label class="form-control-static">@TasksCtrl.msg("reference.said")</label>
+        <div class="row">
+          <div class="col-xs-12" ng-class="{'col-is-6':TaskSvc.lang.en}" ng-if="TaskSvc.lang.zh">
+            <textarea class="form-control" rows="1" ng-model="@(ngModel).comments.zh" max-length="512" placeholder="@MSG("report.lang.zh")" empty-to-null></textarea>
+          </div>
+          <div class="col-xs-12" ng-class="{'col-is-6':TaskSvc.lang.zh}" ng-if="TaskSvc.lang.en">
+            <textarea class="form-control" rows="1" ng-model="@(ngModel).comments.en" max-length="512" placeholder="@MSG("report.lang.en")" empty-to-null></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      @{_line_of_truth(ngModel, false)}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *
+ * 表格中的单元格
+ *@
+@(content: Xml, attrs: Seq[String] = Nil, rowspan: Int = 1, colspan: Int = 1, pre_line: Boolean = false)
+
+<fo:table-cell
+  @attribute_sets(("panel-cell" +: attrs):_*)
+  @if(colspan > 1){ number-columns-spanned="@colspan" }
+  @if(rowspan > 1){ number-rows-spanned="@rowspan" }
+  >
+  <fo:block @if(pre_line){ @attribute_sets("pre-line") }>@Xml(content.body.trim)</fo:block>
+</fo:table-cell>

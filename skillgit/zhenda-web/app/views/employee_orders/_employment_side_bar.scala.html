@@ -1,0 +1,93 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-md-push-9 col-lg-push-9">
+    <div class="ibox">
+      <div class="ibox-title no-top-border">
+        <strong>@EmployeeOrdersCtrl.msg("my.task")</strong>
+      </div>
+      <div class="ibox-content no-padding">
+        <div class="list-group">
+          <a class="list-group-item"
+            ui-sref="employment_customer_complained"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'customer_complained'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['customer_complained'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.customer_complained")
+          </a>
+          <a class="list-group-item"
+            ui-sref="employment_awaiting_submission"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'awaiting_submission'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['awaiting_submission'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.awaiting_submission")
+          </a>
+          <a class="list-group-item"
+            ui-sref="employment_candidate_submitted"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'candidate_submitted'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['candidate_submitted'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.candidate_submitted")
+          </a>
+          <a class="list-group-item"
+            ui-sref="employment_review_requested"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'review_requested'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['review_requested'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.review_requested")
+          </a>
+          <a class="list-group-item"
+            ui-sref="employment_review_rejected"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'review_rejected'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['review_rejected'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.review_rejected")
+          </a>
+          <a class="list-group-item"
+            ui-sref="employment_review_partially_passed"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'review_partially_passed'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['review_partially_passed'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.review_partially_passed")
+          </a>
+          <a class="list-group-item"
+            ui-sref="employment_review_basically_passed"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'review_basically_passed'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['review_basically_passed'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.review_basically_passed")
+          </a>
+          <a class="list-group-item"
+            ui-sref="employment_review_finally_passed"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'review_finally_passed'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['review_finally_passed'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.review_finally_passed")
+          </a>
+          <a class="list-group-item"
+            ui-sref="employment_unassigned"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'unassigned'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['unassigned'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.unassigned")
+          </a>
+          <a class="list-group-item"
+            ui-sref="employment_list_history_tasks"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'list_history_tasks'}">
+            @EmployeeOrdersCtrl.msg("task.list_history_tasks")
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-md-pull-3 col-lg-pull-3">
+    <div class="tab-pane">
+      <div class="panel-body">
+        <div ui-view ></div>
+      </div>
+    </div>
+  </div>
+
+</div>

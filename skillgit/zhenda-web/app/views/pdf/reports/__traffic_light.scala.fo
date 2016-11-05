@@ -1,0 +1,54 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services._
+@import views.fo.FontAwesome._
+@import views.fo.Magic._
+
+@*
+  警示灯图片
+*@
+@(total: Int, level: Option[Level])(implicit env: Environment)
+
+@level match {
+  case Some(Level.A) => {
+    @light(total, "green")
+  }
+  case Some(Level.A10) => {
+    @light(total, "green")
+  }
+  case Some(Level.A20) => {
+    @light(total, "green")
+  }
+  case Some(Level.B) => {
+    @light(total, "blue")
+  }
+  case Some(Level.C) => {
+    @light(total, "yellow")
+  }
+  case Some(Level.D) => {
+    @light(total, "red")
+  }
+  case Some(Level.Na) => {
+    <fo:inline @attribute_sets("fa")>@fa_minus</fo:inline>
+  }
+  case Some(Level.Unknown) => {
+    <fo:inline @attribute_sets("fa")>@fa_clock_o</fo:inline>
+  }
+  case _ => {}
+}
+
+@light(total: Int, color: String) = {
+  @defining(imageToDataURI(s"public/images/$total$color.png")) { data =>
+    <fo:external-graphic
+      src="url(@data)"
+      @attribute_sets("traffic-lights")/>
+  }
+}

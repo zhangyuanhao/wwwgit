@@ -1,0 +1,115 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(customer: Customer)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(CustomersCtrl.msg("hrs.title", customer.info.name)) {
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa fa-black-tie fa-lg fa-fw"></i>
+      @CustomersCtrl.msg("hrs.head")
+      <small>@customer.info.name</small>
+    </h2>
+  </div>
+
+  <div class="row wrapper-content">
+    <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+      <div class="ibox" ng-controller="HRListCtrl">
+        <div class="ibox-content">
+          @ng._msg_confirm_delete()
+
+          <div class="table-responsive">
+            <table class="table table-hover table-ellipsis">
+              <thead>
+                <tr>
+                  <th class="col-xs-4 col-sm-5">
+                    @MSG("email")
+                  </th>
+                  <th class="hidden-xs col-sm-5 ">
+                    @MSG("name")
+                  </th>
+                  <th class="col-xs-2  col-sm-2 text-right">
+                    @MSG("action")
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="ng-cloak" ng-repeat="usr in List.values">
+                  <td>
+                    <i class="fa fa-envelope-o fa-lg fa-fw"></i>
+                    <a href="{{'mailto:' + usr.email}}">{{usr.email}}</a>
+                  </td>
+                  <td class="hidden-xs">
+                    {{ usr.user_name }}
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-danger btn-xs pull-right" ng-click="confirm(usr)">
+                      <i class="fa fa-user-times"></i>
+                      @MSG("delete")
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+      <div class="ibox">
+        <div class="ibox-content">
+          <div class="row" ng-controller="HRCtrl">
+            <form name="form" novalidate>
+              <div class="col-xs-8 col-sm-9 col-md-12 col-lg-12">
+                @ng._form_control("email",
+                  '_type        -> "text",
+                  'maxLength    -> 64,
+                  'email        -> None,
+                  'placeholder  -> CustomersCtrl.msg("user.email.placeholder"),
+                  Symbol("uib-typeahead") -> "user as user.email for user in getUsers($viewValue)",
+                  'autocomplete -> "off",
+                  Symbol("ng-model") -> "user",
+                  Symbol("ng-model-options") -> "{debounce: 400}"
+                )
+              </div>
+              <div class="col-xs-4 col-sm-3 col-md-12 col-lg-12">
+                <button type="submit" class="btn btn-primary pull-right" ng-click="List.create(user)" ng-disabled="form.$invalid || !user.email">
+                  <i class="fa fa-user-plus hidden-xs"></i>
+                  @CustomersCtrl.msg("add.hr")
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "api_internal/users"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "customers/hrs"),
+  controller
+)
+
+@controller = {
+  <script>
+    views.customers.hrs.run(['HRList', function(HRList) {
+      HRList.load('@customer.id');
+    }]);
+  </script>
+}

@@ -1,0 +1,150 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(idx: Int, reference: String )(implicit message: Messages)
+
+<div class="m-b-md">
+  <h3>
+    @{
+      if(reference=="PersonnelOfficer"){
+        CustomersCtrl.msg("contract.personnelOfficer")
+      }else if(reference=="Supervisor"){
+        CustomersCtrl.msg("contract.supervisor")
+      }else if(reference=="Additional1"){
+        CustomersCtrl.msg("contract.additional1")
+      }else if(reference=="Additional2"){
+        CustomersCtrl.msg("contract.additional2")
+      }
+    }
+  </h3>
+</div>
+
+@{parts._line_header()}
+
+@*  证明人验证  *@
+@{parts._line(MSG("references.authenticity"), "emp_" + idx + "_" + reference + "_authenticity", s"ContractSvc.value.employment[${idx}].${reference}.authenticity", s"ContractSvc.saveReferenceCheck('authenticity',1,${idx},'${reference}')", s"ContractSvc.saveReferenceCheck('authenticity',2,${idx},'${reference}')", s"ContractSvc.saveReferenceCheck('authenticity',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveReferenceCheck('authenticity',4,${idx},'${reference}')")}
+
+@*  雇主名称  *@
+@{parts._line(MSG("employment_details.employer_name"), "emp_" + idx + "_" + reference + "_employer_name", s"ContractSvc.value.employment[${idx}].${reference}.employer_name", s"ContractSvc.saveEmployment('employer_name',1,${idx},'${reference}')", s"ContractSvc.saveEmployment('employer_name',2,${idx},'${reference}')", s"ContractSvc.saveEmployment('employer_name',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveEmployment('employer_name',4,${idx},'${reference}')",None,true)}
+
+@*  工作地址  *@
+@{parts._line(MSG("employment_details.address"), "emp_" + idx + "_" + reference + "_address", s"ContractSvc.value.employment[${idx}].${reference}.address", s"ContractSvc.saveEmployment('address',1,${idx},'${reference}')", s"ContractSvc.saveEmployment('address',2,${idx},'${reference}')", s"ContractSvc.saveEmployment('address',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveEmployment('address',4,${idx},'${reference}')",None,true)}
+
+@*  供职时间  *@
+@{
+  if (idx == 0 ){
+    parts._line(MSG("employment_details.interval"), "emp_" + idx + "_" + reference + "_interval_optional_end", s"ContractSvc.value.employment[${idx}].${reference}.interval_optional_end", s"ContractSvc.saveEmployment('interval_optional_end',1,${idx},'${reference}')", s"ContractSvc.saveEmployment('interval_optional_end',2,${idx},'${reference}')", s"ContractSvc.saveEmployment('interval_optional_end',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveEmployment('interval_optional_end',4,${idx},'${reference}')",None,true)
+  }else{
+    parts._line(MSG("employment_details.interval"), "emp_" + idx + "_" + reference + "_interval", s"ContractSvc.value.employment[${idx}].${reference}.interval", s"ContractSvc.saveEmployment('interval',1,${idx},'${reference}')", s"ContractSvc.saveEmployment('interval',2,${idx},'${reference}')", s"ContractSvc.saveEmployment('interval',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveEmployment('interval',4,${idx},'${reference}')",None,true)
+  }
+}
+
+@*  供职方式  *@
+@{parts._line(MSG("employment_details.hire_type"), "emp_" + idx + "_" + reference + "_hire_type", s"ContractSvc.value.employment[${idx}].${reference}.hire_type", s"ContractSvc.saveEmployment('hire_type',1,${idx},'${reference}')", s"ContractSvc.saveEmployment('hire_type',2,${idx},'${reference}')", s"ContractSvc.saveEmployment('hire_type',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveEmployment('hire_type',4,${idx},'${reference}')")}
+
+@*  职位名称  *@
+@{parts._line(MSG("employment_details.position_title"), "emp_" + idx + "_" + reference + "_title", s"ContractSvc.value.employment[${idx}].${reference}.position_title", s"ContractSvc.saveEmployment('position_title',1,${idx},'${reference}')", s"ContractSvc.saveEmployment('position_title',2,${idx},'${reference}')", s"ContractSvc.saveEmployment('position_title',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveEmployment('position_title',4,${idx},'${reference}')")}
+
+@*  职责描述  *@
+@{parts._line(MSG("employment_details.major_responsibility"), "emp_" + idx + "_" + reference + "_major_responsibility", s"ContractSvc.value.employment[${idx}].${reference}.major_responsibility", s"ContractSvc.saveEmployment('major_responsibility',1,${idx},'${reference}')", s"ContractSvc.saveEmployment('major_responsibility',2,${idx},'${reference}')", s"ContractSvc.saveEmployment('major_responsibility',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveEmployment('major_responsibility',4,${idx},'${reference}')")}
+
+@*  上级职位  *@
+@{parts._line(MSG("employment_details.supervisor_position_title"), "emp_" + idx + "_" + reference + "_supervisor_title", s"ContractSvc.value.employment[${idx}].${reference}.supervisor_position_title", s"ContractSvc.saveSupervisorTitle(1,${idx},'${reference}')", s"ContractSvc.saveSupervisorTitle(2,${idx},'${reference}')", s"ContractSvc.saveSupervisorTitle(3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveSupervisorTitle(4,${idx},'${reference}')")}
+
+@*  薪酬范围  *@
+@{parts._line(MSG("employment_details.earnings"), "emp_" + idx + "_" + reference + "_earnings", s"ContractSvc.value.employment[${idx}].${reference}.earnings", s"ContractSvc.saveEmployment('earnings',1,${idx},'${reference}')", s"ContractSvc.saveEmployment('earnings',2,${idx},'${reference}')", s"ContractSvc.saveEmployment('earnings',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveEmployment('earnings',4,${idx},'${reference}')")}
+
+@*  离职原因  *@
+@{parts._line(MSG("employment_details.reason_for_leaving"), "emp_" + idx + "_" + reference + "_reason_for_leaving", s"ContractSvc.value.employment[${idx}].${reference}.reason_for_leaving", s"ContractSvc.saveEmployment('reason_for_leaving',1,${idx},'${reference}')", s"ContractSvc.saveEmployment('reason_for_leaving',2,${idx},'${reference}')", s"ContractSvc.saveEmployment('reason_for_leaving',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveEmployment('reason_for_leaving',4,${idx},'${reference}')")}
+
+@*  是否完成工作交接  *@
+@{parts._line(MSG("employment_details.handed_over"), "emp_" + idx + "_" + reference + "_handed_over", s"ContractSvc.value.employment[${idx}].${reference}.handed_over", s"ContractSvc.saveEmployment('handed_over',1,${idx},'${reference}')", s"ContractSvc.saveEmployment('handed_over',2,${idx},'${reference}')", s"ContractSvc.saveEmployment('handed_over',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveEmployment('handed_over',4,${idx},'${reference}')")}
+
+@*  是否存在重大违规违纪行为?  *@
+@{parts._line(MSG("employment_details.misconduct"), "emp_" + idx + "_" + reference + "_misconduct", s"ContractSvc.value.employment[${idx}].${reference}.misconduct", s"ContractSvc.saveDetermine('misconduct',1,${idx},'${reference}')", s"ContractSvc.saveDetermine('misconduct',2,${idx},'${reference}')", s"ContractSvc.saveDetermine('misconduct',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveDetermine('misconduct',4,${idx},'${reference}')", Some("ContractSvc.saveOpinions('misconduct',"+ idx + ",'" + reference + "')"))}
+
+@*  是否发生劳动争议或仲裁?  *@
+@{parts._line(MSG("employment_details.labor_dispute"), "emp_" + idx + "_" + reference + "_labor_dispute", s"ContractSvc.value.employment[${idx}].${reference}.labor_dispute", s"ContractSvc.saveDetermine('labor_dispute',1,${idx},'${reference}')", s"ContractSvc.saveDetermine('labor_dispute',2,${idx},'${reference}')", s"ContractSvc.saveDetermine('labor_dispute',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveDetermine('labor_dispute',4,${idx},'${reference}')", Some("ContractSvc.saveOpinions('labor_dispute',"+ idx + ",'" + reference + "')"))}
+
+@*  是否签订行业禁止协议?  *@
+@{parts._line(MSG("employment_details.nonsolicitation_agreement"), "emp_" + idx + "_" + reference + "_non_solicitation_agreement", s"ContractSvc.value.employment[${idx}].${reference}.nonsolicitation_agreement", s"ContractSvc.saveDetermine('nonsolicitation_agreement',1,${idx},'${reference}')", s"ContractSvc.saveDetermine('nonsolicitation_agreement',2,${idx},'${reference}')", s"ContractSvc.saveDetermine('nonsolicitation_agreement',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveDetermine('nonsolicitation_agreement',4,${idx},'${reference}')", Some("ContractSvc.saveOpinions('nonsolicitation_agreement',"+ idx + ",'" + reference + "')"))}
+
+@*  是否签订培训协议?  *@
+@{parts._line(MSG("employment_details.training_agreement"), "emp_" + idx + "_" + reference + "_training_agreement", s"ContractSvc.value.employment[${idx}].${reference}.training_agreement", s"ContractSvc.saveDetermine('training_agreement',1,${idx},'${reference}')", s"ContractSvc.saveDetermine('training_agreement',2,${idx},'${reference}')", s"ContractSvc.saveDetermine('training_agreement',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveDetermine('training_agreement',4,${idx},'${reference}')", Some("ContractSvc.saveOpinions('training_agreement',"+ idx + ",'" + reference + "')"))}
+
+@*  是否适合再次雇佣?  *@
+@{parts._line(MSG("employment_details.willing_to_rehire"), "emp_" + idx + "_" + reference + "_willing_to_rehire", s"ContractSvc.value.employment[${idx}].${reference}.willing_to_rehire", s"ContractSvc.saveDetermine('willing_to_rehire',1,${idx},'${reference}')", s"ContractSvc.saveDetermine('willing_to_rehire',2,${idx},'${reference}')", s"ContractSvc.saveDetermine('willing_to_rehire',3,${idx},'${reference}',#desc_type)", s"ContractSvc.saveDetermine('willing_to_rehire',4,${idx},'${reference}')", Some("ContractSvc.saveOpinions('willing_to_rehire',"+ idx + ",'" + reference + "')"))}
+
+<div class="m-b-md m-t-xl">
+  <h4>
+            @CustomersCtrl.msg("contract.performance")
+  </h4>
+</div>
+
+@*  突出优点  *@
+@{parts._line_performance(MSG("work_performance.strengths"), "strengths", idx ,reference)}
+@*  缺点或劣势  *@
+@{parts._line_performance(MSG("work_performance.weaknesses"), "weaknesses", idx ,reference)}
+@*  前瞻性思维  *@
+@{parts._line_performance(MSG("work_performance.future_thinking"), "future_thinking", idx ,reference)}
+@*  领导及管理  *@
+@{parts._line_performance(MSG("work_performance.leadership_and_management"), "leadership_and_management", idx ,reference)}
+@*  专业知识及技能  *@
+@{parts._line_performance(MSG("work_performance.professional_knowledge"), "professional_knowledge", idx ,reference)}
+@*  工作态度  *@
+@{parts._line_performance(MSG("work_performance.working_attitude"), "working_attitude", idx ,reference)}
+@*  压力管理  *@
+@{parts._line_performance(MSG("work_performance.stress_management"), "stress_management", idx ,reference)}
+@*  人际关系  *@
+@{parts._line_performance(MSG("work_performance.interpersonal_relationships"), "interpersonal_relationships", idx ,reference)}
+@*  总体评分  *@
+@{parts._line_performance(MSG("work_performance.rating"), "rating", idx ,reference)}
+
+<div class="m-t-xl">
+  <h4>
+    @CustomersCtrl.msg("contract.extra_gathering")
+  </h4>
+</div>
+@*  公司全称  *@
+@{parts._employment_extra_gathering(MSG("employment_details.employer_name1"), "employer_name", idx ,reference, true)}
+@*  工作地址  *@
+@{parts._employment_extra_gathering(MSG("employment_details.address"), "address", idx ,reference, true)}
+@*  供职时间  *@
+@{
+  if (idx == 0 ){
+    parts._employment_extra_gathering(MSG("employment_details.interval"), "interval_optional_end", idx ,reference, true)
+  }else{
+    parts._employment_extra_gathering(MSG("employment_details.interval"), "interval", idx ,reference, true)
+  }
+}
+@*  上级职位  *@
+@{parts._employment_extra_gathering(MSG("employment_details.supervisor_position_title"), "supervisor_position_title", idx ,reference)}
+@*  公司电话  *@
+@{parts._employment_extra_gathering(MSG("employment_details.employer_telephone"), "telephone", idx ,reference)}
+@*  员工号  *@
+@{parts._employment_extra_gathering(MSG("employment_details.employee_number"), "employee_number", idx ,reference)}
+@*  业绩表现  *@
+@{parts._employment_extra_gathering(MSG("employment_details.performance_description"), "performance_description", idx ,reference)}
+@*  当前不可以开始调查  *@
+@{parts._employment_extra_gathering(MSG("employment_details.still_employed"), "still_employed", idx ,reference)}
+@*  可以开始调查的时间  *@
+@{parts._employment_extra_gathering(MSG("employment_details.no_check_until"), "no_check_until", idx ,reference)}
+@*  供职方式  *@
+@{parts._employment_extra_gathering(MSG("employment_details.hire_type"), "hire_type", idx ,reference)}
+@*  职位名称  *@
+@{parts._employment_extra_gathering(MSG("employment_details.position_title"), "position_title", idx ,reference)}
+@*  薪酬范围  *@
+@{parts._employment_extra_gathering(MSG("employment_details.earnings"), "earnings", idx ,reference)}
+@*  职责描述  *@
+@{parts._employment_extra_gathering(MSG("employment_details.major_responsibility"), "major_responsibility", idx ,reference)}
+@*  离职原因  *@
+@{parts._employment_extra_gathering(MSG("employment_details.reason_for_leaving"), "reason_for_leaving", idx ,reference)}
+@*  是否完成工作交接  *@
+@{parts._employment_extra_gathering(MSG("employment_details.handed_over"), "handed_over", idx ,reference)}

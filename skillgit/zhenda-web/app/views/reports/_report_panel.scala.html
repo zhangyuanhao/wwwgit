@@ -1,0 +1,33 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(component: String, iconClass: String, title: String, risk: String="false", additional: Option[Html] = None, style: String = "panel-default")(
+content: Html)(
+implicit messages: Messages)
+
+<div class="panel @style ng-cloak">
+  <div class="panel-heading clearfix">
+    <h3 class="panel-title" style="display:inline-block;cursor: pointer;" ng-click="@(component).is_collapsed = !@(component).is_collapsed">
+      <i class="fa @iconClass fa-lg fa-fw"></i>
+      @title
+    </h3>
+    <div class="pull-right">
+      @additional.map{ html =>
+        @html
+      }
+      <i class="fa fa-fw collapse-button" ng-class="@(component).is_collapsed ? 'fa-chevron-right' : 'fa-chevron-down'"
+        ng-click="@(component).is_collapsed = !@(component).is_collapsed">
+      </i>
+    </div>
+  </div>
+  <div class="panel-body" uib-collapse="isCollapsed(@(component), '@risk')">
+    @content
+  </div>
+</div>

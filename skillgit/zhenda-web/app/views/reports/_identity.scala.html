@@ -1,0 +1,77 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import models.business.reports._
+@import models.business.services._
+@import common._
+
+@(checks_set:ChecksSet)(implicit messages: Messages)
+
+  @IdentityChecks.findIn(checks_set).map{ identity =>
+    @* 区分处理待查和非待查 *@
+    @identity.remaining.status match {
+      case false => {
+        @* 非待查 *@
+        <div ng-show="show_all || @BackgroundReportsCtrl.showOrNot(identity.rating, identity.review_result.passed)">
+          @_report_panel(
+            "identity_info_check",
+            "zd-vcard",
+            MSG("service.identity_verif"),
+            BackgroundReportsCtrl.showOrNot(identity.rating, identity.review_result.passed),
+            Some(reports.common._panel_label(identity.rating, identity.review_result.passed, identity.remaining.status, identity.toRecheck)),
+            BackgroundReportsCtrl.getPanelType(identity.rating, identity.review_result.passed, identity.remaining.status)
+            ){
+            @identity.review_result.passed match {
+              case Some(true) => {
+                @* 调查内容已经通过审核 *@
+                <div class="row">
+                  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    @IdentityCheck.BasicInfo.findIn(identity).map { o =>
+                      @check._strict_check(identity.basicName, o)
+                    }
+                  </div>
+                </div>
+                @reports.common._comment(identity.comments)
+              }
+              case _ => {
+                @* 调查内容尚未通过审核 *@
+                @reports.common._not_passed()
+              }
+            }
+          }
+        </div>
+      }
+      case _ => {
+        @* 待查 *@
+        <div ng-show="show_all">
+          @_report_panel(
+            "identity_info_check",
+            "zd-vcard",
+            MSG("service.identity_verif"),
+            "false",
+            Some(reports.common._panel_label(None, identity.review_result.passed, identity.remaining.status, None)),
+            BackgroundReportsCtrl.getPanelType(None, identity.review_result.passed, identity.remaining.status)
+            ){
+              @identity.review_result.passed match {
+                case Some(true) => {
+                  @* 调查内容已经通过审核 *@
+                  @reports.common._reason_for_remaining(IdentityChecks.RemainingReason, identity.remaining)
+                }
+                case _ => {
+                  @* 调查内容尚未通过审核 *@
+                  @reports.common._not_passed()
+                }
+              }
+            }
+        </div>
+      }
+    }
+  }

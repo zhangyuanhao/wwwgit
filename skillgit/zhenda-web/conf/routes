@@ -1,0 +1,138 @@
+#
+# Copyright (c) Factchina Inc, 2015-2016
+#
+# This unpublished material is proprietary to Factchina Inc.
+# All rights reserved. The methods and techniques described herein
+# are considered trade secrets and/or confidential.
+# Reproduction or distribution, in whole or in part,
+# is forbidden except by express written permission of Factchina Inc.
+#
+
+# API routes
+->   /api_internal                          api_internal.Routes
+->   /sockets                               sockets.Routes
+->   /api_private                           api_private.Routes
+
+# Home page
+GET  /                                      controllers.Application.index
+GET  /wiki                                  controllers.Application.wiki
+GET  /about                                 controllers.Application.about
+
+GET  /experimental/chat                     controllers.ExperimentalCtrl.chat
+GET  /experimental/notifications/nnew       controllers.ExperimentalCtrl.showNotification
+POST /experimental/notifications/send       controllers.ExperimentalCtrl.sendNotification
+GET  /experimental/mail/nnew                controllers.ExperimentalCtrl.showMail
+POST /experimental/mail/send                controllers.ExperimentalCtrl.sendMail
+
+# Map static resources from the /public folder to the /assets URL path
+GET  /assets/*file                          controllers.Assets.at(path="/public", file)
+
+GET  /cfs/stream/$path<.*>                  controllers.FileSystemCtrl.stream(path:Path)
+GET  /cfs/download/$path<.*>                controllers.FileSystemCtrl.download(path:Path,inline:Boolean?=false)
+GET  /cfs/show/$path<.*>                    controllers.FileSystemCtrl.show(path:Path)
+GET  /cfs/$path<.*>                         controllers.FileSystemCtrl.index(path:Path,p:Pager?=Pager.first)
+
+GET  /login                                 controllers.SessionsCtrl.nnew(next:Option[String]?=None)
+POST /login                                 controllers.SessionsCtrl.create(next:Option[String]?=None)
+POST /logout                                controllers.SessionsCtrl.destroy
+
+GET  /join                                  controllers.UsersCtrl.nnew
+POST /join                                  controllers.UsersCtrl.create
+POST /signup_check/username                 controllers.UsersCtrl.checkEmail
+POST /signup_check/password                 controllers.UsersCtrl.checkPassword
+
+GET  /my/dashboard                          controllers.MyCtrl.dashboard
+GET  /settings/account                      controllers.MyCtrl.account
+POST /settings/account                      controllers.MyCtrl.changePassword
+GET  /settings/profile                      controllers.MyCtrl.profile
+POST /settings/profile                      controllers.MyCtrl.changeProfile
+GET  /my/profile_image                      controllers.MyCtrl.profileImage(s:Int?=40)
+GET  /my/profile_image/upload               controllers.MyCtrl.testProfileImage
+POST /my/profile_image/upload               controllers.MyCtrl.uploadProfileImage
+
+GET  /users                                 controllers.UsersCtrl.index(p:Pager?=Pager.first,sort:Seq[SortField]?=Nil)
+GET  /users/:id                             controllers.UsersCtrl.show(id:UUID)
+
+GET  /groups                                controllers.GroupsCtrl.index(p:Pager?=Pager.first,sort:Seq[SortField]?=Nil)
+GET  /groups/:id                            controllers.GroupsCtrl.show(id:UUID)
+
+GET  /password_reset                        controllers.PasswordResetCtrl.nnew(email:Option[EmailAddress]?=None)
+POST /password_reset                        controllers.PasswordResetCtrl.create
+GET  /password_reset/:id                    controllers.PasswordResetCtrl.show(id)
+POST /password_reset/:id                    controllers.PasswordResetCtrl.save(id)
+
+GET  /email_templates                       controllers.EmailTemplatesCtrl.index(p:Pager?=Pager.first)
+GET  /email_templates/new                   controllers.EmailTemplatesCtrl.nnew
+POST /email_templates                       controllers.EmailTemplatesCtrl.create
+GET  /email_templates/edit/:id              controllers.EmailTemplatesCtrl.edit(id,lang:Lang)
+GET  /email_templates/show/:id              controllers.EmailTemplatesCtrl.show(id,lang:Lang,updated_at:Option[DateTime]?=None)
+POST /email_templates/:id                   controllers.EmailTemplatesCtrl.save(id,lang:Lang)
+GET  /email_templates/history/:id           controllers.EmailTemplatesCtrl.history(id,lang:Lang,p:Pager?=Pager.first)
+POST /email_templates/destroy/:id           controllers.EmailTemplatesCtrl.destroy(id,lang:Lang)
+
+GET  /access_controls                       controllers.AccessControlsCtrl.index(q:Option[String]?=None,p:Pager?=Pager.first,sort:Seq[SortField]?=Nil)
+
+GET  /orders                                controllers.CustomerUserOrdersCtrl.index(p:Pager?=Pager.first,sort:Seq[SortField]?=Nil)
+GET  /orders/parts                          controllers.CustomerUserOrdersCtrl.parts(sub)
+GET  /orders/new                            controllers.CustomerUserOrdersCtrl.nnew
+GET  /orders/metrics                        controllers.CustomerUserOrdersCtrl.metrics
+GET  /orders/show/:id                       controllers.CustomerUserOrdersCtrl.show(id:UUID)
+GET  /orders/:id                            controllers.CustomerUserOrdersCtrl.edit(id:UUID)
+
+GET  /employees                             controllers.EmployeesCtrl.index(p:Pager?=Pager.first,sort:Seq[SortField]?=Nil)
+GET  /employees/new                         controllers.EmployeesCtrl.nnew
+GET  /employees/performance                 controllers.EmployeesCtrl.performance
+GET  /employees/:id                         controllers.EmployeesCtrl.edit(id:UUID)
+
+GET  /individuals                           controllers.IndividualsCtrl.index(p:Pager?=Pager.first,sort:Seq[SortField]?=Nil)
+GET  /individuals/new                       controllers.IndividualsCtrl.nnew
+GET  /individuals/edit/:id                  controllers.IndividualsCtrl.edit(id:UUID)
+
+GET  /business_entities                     controllers.BusinessEntitiesCtrl.index(p:Pager?=Pager.first,sort:Seq[SortField]?=Nil)
+GET  /business_entities/edit/:id            controllers.BusinessEntitiesCtrl.edit(id:UUID)
+GET  /business_entities/new                 controllers.BusinessEntitiesCtrl.nnew
+
+GET  /customers                             controllers.CustomersCtrl.index(p:Pager?=Pager.first,sort:Seq[SortField]?=Nil)
+GET  /customers/edit/:id                    controllers.CustomersCtrl.edit(id:UUID)
+GET  /customers/new                         controllers.CustomersCtrl.nnew
+GET  /customers/:id/hrs                     controllers.CustomersCtrl.hrs(id:UUID)
+GET  /customers/:id/orders                  controllers.CustomersCtrl.orders(id:UUID)
+GET  /customers/:id/contract                controllers.CustomersCtrl.contract(id:UUID)
+GET  /customers/contract/parts              controllers.CustomersCtrl.contractParts(sub)
+GET  /customers/:id/preferences             controllers.CustomersCtrl.preferences(id:UUID)
+GET  /customers/:id/invoice                 controllers.CustomersCtrl.invoice(id:UUID, p:Pager?=Pager.first)
+GET  /our_customers                         controllers.CustomersCtrl.our_customers(p:Pager?=Pager.first)
+
+GET  /institutions                          controllers.InstitutionsCtrl.index(p:Pager?=Pager.first,sort:Seq[SortField]?=Nil)
+GET  /institutions/new                      controllers.InstitutionsCtrl.nnew
+GET  /institutions/edit/:id                 controllers.InstitutionsCtrl.edit(id:UUID)
+
+GET  /tasks/:id                             controllers.TasksCtrl.task(id:UUID,type:Task.Type)
+GET  /tasks/:id/review                      controllers.TasksCtrl.review(id:UUID,type:Task.Type)
+
+GET  /background_reports/:id.pdf            controllers.BackgroundReportsCtrl.showPDF(id:UUID,inline:Option[Boolean]?=None)
+GET  /background_reports/:id                controllers.BackgroundReportsCtrl.show(id:UUID)
+GET  /background_reports/:id/preview.pdf    controllers.BackgroundReportsCtrl.previewPDF(id:UUID,review_pass_all:Option[Boolean]?=None,inline:Option[Boolean]?=None)
+GET  /background_reports/:id/preview        controllers.BackgroundReportsCtrl.preview(id:UUID,review_pass_all:Option[Boolean]?=None)
+GET  /background_reports/:id/no_login       controllers.BackgroundReportsCtrl.showWithoutLogin(id:UUID)
+
+GET  /infogathering/upload                  controllers.InfoGatheringCtrl.testImage
+POST /infogathering/upload                  controllers.InfoGatheringCtrl.uploadImage(fn)
+GET  /infogathering/image                   controllers.InfoGatheringCtrl.image(fn,size:Int?=0)
+GET  /infogathering/parts                   controllers.InfoGatheringCtrl.parts(sub)
+GET  /infogathering/authorization           controllers.InfoGatheringCtrl.showAuthorizationPDF(form_id,blank:Option[Boolean]?=None,inline:Option[Boolean]?=None)
+GET  /infogathering/:id                     controllers.InfoGatheringCtrl.showL(id)
+GET  /ig/:id                                controllers.InfoGatheringCtrl.showS(id)
+
+GET  /employee_orders                       controllers.EmployeeOrdersCtrl.index()
+GET  /employee_orders/parts                 controllers.EmployeeOrdersCtrl.parts(sub)
+GET  /employee_orders/:id/history           controllers.EmployeeOrdersCtrl.history(id:UUID,task_type)
+GET  /employee_orders/:id/upload_attachment controllers.EmployeeOrdersCtrl.testAttachment(id:UUID)
+POST /employee_orders/:id/upload_attachment controllers.EmployeeOrdersCtrl.uploadAttachment(id:UUID,tid:UUID,fn)
+GET  /employee_orders/:id/attachment        controllers.EmployeeOrdersCtrl.attachment(id:UUID,fn)
+GET  /employee_orders/:id/image             controllers.EmployeeOrdersCtrl.image(id:UUID,fn,size:Int?=0)
+GET  /employee_orders/:id/origin_image      controllers.EmployeeOrdersCtrl.originImage(id:UUID,fn,size:Int?=0)
+GET  /employee_orders/:id/upload_audio      controllers.EmployeeOrdersCtrl.testAudio(id:UUID)
+GET  /employee_orders/:id/stream_audio      controllers.EmployeeOrdersCtrl.streamAudio(id:UUID,fn)
+POST /employee_orders/:id/upload_audio      controllers.EmployeeOrdersCtrl.uploadAudio(id:UUID,tid:UUID,fn)
+GET  /employee_orders/:id/authorization     controllers.EmployeeOrdersCtrl.showAuthorizationPDF(id:UUID,inline:Option[Boolean]?=None)

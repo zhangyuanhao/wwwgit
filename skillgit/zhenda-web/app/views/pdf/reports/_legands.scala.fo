@@ -1,0 +1,53 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import java.util.Locale
+
+@import models.business.checks._
+@import models.business.services._
+@import views.fo.Magic._
+
+@*
+  概述 -- 安全级别说明
+*@
+@(checks_set: ChecksSet)(implicit messages: Messages, env: Environment)
+
+@defining(if (checks_set.levels.contains(Level.B)) 4 else 3) { levels_nr =>
+@defining(if (checks_set.levels.contains(Level.B)) Level.ABCD ++ Level.Others else Level.ACD ++ Level.Others) { levels =>
+
+<fo:table @attribute_sets("panel", "panel-block", "margin-bottom-md", s"${messages.lang.code}-panel")>
+
+  @{
+    messages.lang match {
+      case Lang(Locale.ENGLISH) => {
+        <fo:table-column column-width="17%"/>
+        <fo:table-column column-width="83%"/>
+      }
+      case _ => {
+        <fo:table-column column-width="24%"/>
+        <fo:table-column column-width="76%"/>
+      }
+    }
+  }
+
+  <fo:table-body>
+    @* 标题 *@
+    @__panel_header(BackgroundReportsCtrl.msg("pdf.legands.title"), colspan = 2)
+
+    @levels.map { level =>
+      @__panel_row(
+        __panel_cell(__traffic_light(levels_nr, Some(level)), Seq("text-center")),
+        __panel_cell(BackgroundReportsCtrl.msg(s"pdf.legands.$levels_nr.$level"))
+      )()
+    }
+
+  </fo:table-body>
+</fo:table>
+}}

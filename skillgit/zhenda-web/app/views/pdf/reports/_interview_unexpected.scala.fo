@@ -1,0 +1,97 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import models.business.services._
+@import models.business.references._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  报告正文 -- 证明人访谈
+*@
+@(employer_name: String, tpe: Reference.Type, interview: Interview, comment: Xml, review_passed: Boolean)(implicit messages: Messages)
+
+<fo:table @attribute_sets("panel", "margin-bottom-sm", s"${messages.lang.code}-panel")>
+  @* 布局 *@
+  @__panel_layout1()
+
+  <fo:table-body>
+    @__panel_header(employer_name)
+    @* 访谈类型 *@
+    @__panel_header2(Reference.Type.msg(tpe))
+
+    @* 证明人 *@
+    @__reference(interview.reference, true, review_passed)
+
+    @* 工作履历核实 *@
+    @interview.employment_details.map { employment_details =>
+
+      @__panel_header2(MSG("service.employment_verif"))
+
+      @* 表格中列标题 *@
+      @__panel_column_headers1()
+
+      @defining(
+        if(!review_passed) Some(Level.Unknown)
+        else if(interview.invalid.status) Some(Level.Na)
+        else Some(Level.Unknown)
+      ){ rating =>
+      @defining(employment_details.checks.length) { size =>
+        @employment_details.checks.headOption.map {
+          case strict_check : Check.Strict[_] => {
+            @__strict_check_merged(employment_details.basicName, strict_check, size, comment, rating)
+          }
+          case strict_multiple: ExtraCheck.StrictMultipleChoice => {
+            @__strict_multiple_choice_merged(employment_details.basicName, strict_multiple, size, comment, rating)
+          }
+          case _ => {}
+        }}
+        @employment_details.checks.tail.map {
+          case strict_check : Check.Strict[_] => {
+            @__strict_check_merged(employment_details.basicName, strict_check, rating = rating)
+          }
+          case strict_multiple: ExtraCheck.StrictMultipleChoice => {
+            @__strict_multiple_choice_merged(employment_details.basicName, strict_multiple, rating = rating)
+          }
+          case _ => {}
+        }
+      }
+    }
+
+    @* 工作表现鉴定 *@
+    @interview.work_performance.map { performance =>
+
+      @__panel_header2(MSG("service.employment_performance_verif"))
+
+      @performance.checks.map {
+        case wp:ExtraCheck.MultipleChoice => {
+          @_multiple_choice(performance.basicName, wp)
+        }
+        case rt: WorkPerformanceCheck.Rating => {
+          @__panel_row(
+            __panel_cell(MSG("work_performance.total_rating"), Seq("text-strong"), colspan = 2),
+            __panel_cell("", colspan = 2)
+          )()
+        }
+        case _ => {}
+      }
+    }
+
+  </fo:table-body>
+</fo:table>
+
+@_multiple_choice(prefix: String, check: ExtraCheck.MultipleChoice) = {
+
+  @__panel_row(
+    __panel_cell(MSG(s"$prefix.${check.basicName}"), Seq("text-strong"), colspan = 2),
+    __panel_cell("", colspan = 2, pre_line = true)
+  )()
+}

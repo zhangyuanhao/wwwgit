@@ -1,0 +1,82 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services.definitions.PurchasedServices
+
+@(customer: Customer, purchased_services: PurchasedServices)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import service_options._
+
+@layouts.base(CustomersCtrl.msg("preferences.title", customer.info.name)){
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa fa-black-tie fa-lg fa-fw"></i>
+      @CustomersCtrl.msg("preferences.head")
+      <small>@customer.info.name</small>
+    </h2>
+  </div>
+
+  <div class="row wrapper-content" ng-controller="PreferencesCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div class="ibox">
+        <div class="ibox-title">
+          <div class="row">
+            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
+              <h4>
+                @CustomerUserOrdersCtrl.msg("services")
+              </h4>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-4 col-lg-4">
+              @ng._select("package_name",
+                  "ng-model".s   -> "OrderSvc.package_name",
+                  "ng-change".s  -> "OrderSvc.showPreferredServiceSet()",
+                  "ng-options".s -> "key for key in OrderSvc.preferred_keys"
+                ){
+                  <option value="">
+                    @CustomerUserOrdersCtrl.msg("service.preference.select")
+                  </option>
+                }
+            </div>
+            <div class="col-xs-12 col-sm-3 col-md-5 col-lg-5">
+              @{_preferred_set()}
+            </div>
+          </div>
+        </div>
+        <div class="ibox-content">
+          @{_service_set(purchased_services)}
+        </div>
+      </div>
+    </div>
+  </div>
+}(
+  libs.webjars("css", "awesome-bootstrap-checkbox"),
+  libs.assets("css", "orders/show")
+)(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "api_internal/orders"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "orders/order_svc"),
+  libs.assets("js", "service_options/preferred_set"),
+  libs.assets("js", "customers/preferences"),
+  controller
+)
+
+@controller = {
+  <script>
+    views.orders.order_svc.run(['OrderSvc', function(OrderSvc) {
+      OrderSvc.customer_id = '@customer.id';
+    }]);
+  </script>
+}

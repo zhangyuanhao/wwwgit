@@ -1,0 +1,24 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services._
+@import models.business.checks._
+
+@(degree:DegreeCheckList)(implicit messages: Messages)
+
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 object-check">
+  @degree.checks.map {
+    case strict_check : Check.Strict[_] => {
+      @check._strict_check(degree.basicName, strict_check)
+    }
+  }
+  </div>
+</div>

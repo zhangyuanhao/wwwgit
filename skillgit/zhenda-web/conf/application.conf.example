@@ -1,0 +1,251 @@
+#
+# Copyright (c) Factchina Inc, 2015-2016
+#
+# This unpublished material is proprietary to Factchina Inc.
+# All rights reserved. The methods and techniques described herein
+# are considered trade secrets and/or confidential.
+# Reproduction or distribution, in whole or in part,
+# is forbidden except by express written permission of Factchina Inc.
+#
+
+# This is the main configuration file for the application.
+# ~~~~~
+
+# Secret key
+# ~~~~~
+# The secret key is used to secure cryptographics functions.
+#
+# This must be changed for production, but we recommend not changing it in this file.
+#
+# See http://www.playframework.com/documentation/latest/ApplicationSecret for more details.
+play.crypto.secret = "XH33fTcx3S/lE`xweDgA5[BZTMR=JmesvVQVw=UH`@yCHyyW14:NED`^r7K>HwRA"
+
+# The application languages
+# ~~~~~
+play.i18n.langs = ["en-US", "zh", "zh-CN", "zh-TW", "ja"]
+
+# Global object class
+# ~~~~~
+# Define the Global object class for this application.
+# Default to Global in the root package.
+# application.global=Global
+
+# Router
+# ~~~~~
+# Define the Router object to use for this application.
+# This router will be looked up first when the application is starting up,
+# so make sure this is the entry point.
+# Furthermore, it's assumed your route file is named properly.
+# So for an application router like `my.application.Router`,
+# you may need to define a router file `conf/my.application.routes`.
+# Default to Routes in the root package (and conf/routes)
+# application.router=my.application.Routes
+
+# Database configuration
+# ~~~~~
+# You can declare as many datasources as you want.
+# By convention, the default datasource is named `default`
+#
+# db.default.driver=org.h2.Driver
+# db.default.url="jdbc:h2:mem:play"
+# db.default.user=sa
+# db.default.password=""
+
+# Evolutions
+# ~~~~~
+# You can disable evolutions if needed
+# evolutionplugin=disabled
+
+# Logger
+# ~~~~~
+# You can also configure logback (http://logback.qos.ch/),
+# by providing an application-logger.xml file in the conf directory.
+# logger.root=ERROR
+# logger.play=INFO
+# logger.application=DEBUG
+# logger.models=DEBUG
+
+app.domain = fact.io
+
+play.application.loader = AppLoader
+
+# app.http.filters=[
+#   LoopbackIPFilter,
+#   InvalidIPFilter,
+#   RateLimitExceededIPFilter,
+#   RequestLogger,
+#   Compressor,
+#   HtmlCompressor,
+#   RequestTimeLogger
+# ]
+
+app.http.ip_filter {
+  limit = 90000
+  span = 15 minutes
+}
+
+app.akka.cluster {
+  number_of_nodes = 10
+  entity_actor.receive_timeout = 5 minutes
+}
+
+play.http.session.maxAge = 14 days
+
+contexts {
+  mailer {
+    fork-join-executor.parallelism-max=4
+  }
+  pdf-generator {
+    fork-join-executor.parallelism-max=4
+  }
+  traffic-shaper {
+    fork-join-executor.parallelism-max=4
+  }
+}
+
+cassandra {
+  contact_points = ["localhost", "127.0.0.1"]
+
+  # cassandra.cql.log=[create,batch,select,insert,update,delete]
+  cql.log = []
+}
+
+# TODO replace elasticsearch_name with your own cluster name
+elasticsearch.client.uri = "elasticsearch://127.0.0.1:9300"
+elasticsearch.cluster.name = elasticsearch_name
+
+services.bandwidth.max = 5M
+services.bandwidth.min = 200K
+
+controllers.api_internal {
+
+  rate_limit.limit = 900
+  rate_limit.span = 15 minutes
+
+  search {
+    rate_limit.limit = 3600
+    rate_limit.span = 15 minutes
+  }
+
+  file_system {
+    rate_limit.limit = 3600
+    rate_limit.span = 15 minutes
+
+    bandwidth.upload = 1.5M
+  }
+}
+
+controllers {
+
+  file_system {
+
+    bandwidth.download = 1M
+    bandwidth.stream = 1M
+  }
+
+  background_reports.pdf {
+    author = "Author"
+    producer = "Producer"
+    creator = "Creator"
+  }
+}
+
+pdf {
+  author = "Author"
+  producer = "Producer"
+  creator = "Creator"
+}
+
+services.mailer.admin.email-addresses = ["admin@app.io"]
+
+akka {
+  log-config-on-start = "off"
+  loggers = ["akka.event.slf4j.Slf4jLogger"]
+  loglevel = "DEBUG"
+
+  actor.provider = "akka.cluster.ClusterActorRefProvider"
+
+  remote {
+    log-remote-lifecycle-events = off
+    netty.tcp {
+      # hostname = "127.0.0.1"
+      port=2551
+    }
+  }
+
+  cluster {
+    seed-nodes = [
+      "akka.tcp://application@127.0.0.1:2551",
+      "akka.tcp://application@127.0.0.1:2552"
+    ]
+    auto-down-unreachable-after = 10s
+    sharding {
+      handoff-timeout = 60 s
+    }
+    pub-sub {
+      routing-logic = random
+      gossip-interval = 1s
+    }
+  }
+
+  extensions = ["akka.cluster.pubsub.DistributedPubSub"]
+
+  ## Since we're using our own cassandra plugins
+  # persistence.journal.leveldb.dir = "target/journal"
+  # persistence.snapshot-store.local.dir = "target/snapshots"
+
+  persistence {
+    journal.plugin = "cassandra-journal"
+    snapshot-store.plugin = "cassandra-snapshot-store"
+  }
+}
+
+cassandra-journal {
+  class = "plugins.akka.persistence.CassandraJournal"
+}
+
+cassandra-snapshot-store {
+  class = "plugins.akka.persistence.CassandraSnapshotStore"
+}
+
+mimetype {
+  mkv:video/x-matroska
+}
+
+app.wiki.video = wiki.mp4
+
+mailer {
+  noreply {
+    smtp.host = smtp.app.io
+    smtp.port = 465
+    smtp.ssl = yes
+    smtp.user = "noreply@app.io"
+    smtp.password = "******"
+  },
+  support {
+    smtp.host = smtp.app.io
+    smtp.port = 465
+    smtp.ssl = yes
+    smtp.user = "support@app.io"
+    smtp.password = "******"
+  }
+}
+
+sms.com.cloopen {
+  2013-12-26 {
+    host = "sandboxapp.cloopen.com"
+    port = 8883
+    account_sid = ""
+    auth_token = ""
+    app_id = ""
+    template_id = 1
+  }
+}
+
+work.time {
+  start = "09:00"
+  lunch_start = "12:00"
+  lunch_end = "13:30"
+  end = "18:00"
+  accepting_end = "18:00"
+}

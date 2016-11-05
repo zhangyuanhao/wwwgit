@@ -1,0 +1,46 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *
+ * In order to use this template, you should also include 'ui.parts'
+ *@
+@(ngCtrl: String = "AlertCtrl")(implicit messages: Messages)
+
+<div class="alert-container ng-cloak" ng-controller="@ngCtrl">
+
+  <uib-alert ng-repeat="alert in Alert.alerts.danger"
+    class="no-select animated"
+    type="{{alert.type}}"
+    close="Alert.dismiss('danger', $index)">
+    {{ alert.msg || '@MSG("ui.alert.msg.empty")' }}
+  </uib-alert>
+
+  <uib-alert ng-repeat="alert in Alert.alerts.warning"
+    class="no-select animated"
+    type="{{alert.type}}"
+    close="Alert.dismiss('warning', $index)">
+    {{ alert.msg || '@MSG("ui.alert.msg.empty")' }}
+  </uib-alert>
+
+  <uib-alert ng-repeat="alert in Alert.alerts.success"
+    class="no-select animated"
+    type="{{alert.type}}"
+    dismiss-on-timeout="3000"
+    close="Alert.dismiss('success', $index)">
+    {{ alert.msg || '@MSG("ui.alert.msg.empty")' }}
+  </uib-alert>
+
+  <uib-alert ng-repeat="alert in Alert.alerts.info"
+    class="no-select animated"
+    type="{{alert.type}}"
+    dismiss-on-timeout="5000"
+    close="Alert.dismiss('info', $index)">
+    {{ alert.msg || '@MSG("ui.alert.msg.empty")' }}
+  </uib-alert>
+
+</div>

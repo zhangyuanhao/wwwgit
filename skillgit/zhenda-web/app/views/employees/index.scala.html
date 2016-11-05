@@ -1,0 +1,187 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(pager: Pager, sort:Seq[SortField])(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(EmployeesCtrl.msg("index.title")) {
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa zd-users3 fa-lg fa-fw"></i>
+      @EmployeesCtrl.msg("index.head")
+      <small>@EmployeesCtrl.msg("index.head.small")</small>
+    </h2>
+  </div>
+
+  <div class="ng-cloak" ng-controller="EmployeesCtrl">
+    <div class="row wrapper-content">
+      <div class="col-xs-12">
+        <div class="ibox">
+          <div class="ibox-title">
+            <div class="row">
+              <div class="col-xs-8 col-sm-6">
+                @ng._search("keyword", EmployeesCtrl)
+              </div>
+              <div class="col-xs-4 col-sm-6 text-right">
+                <a href="@routes.EmployeesCtrl.nnew()" class="btn btn-primary">
+                  <i class="fa fa-plus"></i>
+                  @EmployeesCtrl.msg("new.employee")
+                </a>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-8 col-sm-6">
+                @ng._select("filter_roles",
+                  '_label        -> EmployeesCtrl.msg("index.filter_roles"),
+                  '_inline       -> false,
+                  "ng-model".s   -> "EmployeeListSvc.role_index",
+                  "ng-options".s -> "idx as role for (idx, role) in EmployeeListSvc.roles_def",
+                  "ng-change".s  -> "reloadByRole()"
+                ){
+                  <option value="">@EmployeesCtrl.msg("index.please_select_role")</option>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="ibox-content">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="table-responsive">
+                  <table class="table table-hover" >
+                    <thead>
+                      <tr>
+                        <th class="col-xs-11 col-sm-11">
+                          <h3>@EmployeesCtrl.msg("index.list")</h3>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="ng-cloak" ng-repeat="employee in EmployeeListSvc.values">
+                      <tr class="bg-info">
+                        <td>
+                          <i class="fa fa-user fa-fw"></i>
+                          {{ employee.personal_name | personalName:"@messages.lang.language" }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="row">
+                              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <label>@MSG("nickname") :</label>
+                                <span>{{ employee.nickname }}</span>
+                              </div>
+                              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <label>@MSG("email") :</label>
+                                <a href="{{'mailto:' + employee.email}}">{{employee.email}}</a>
+                              </div>
+                              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <label>@MSG("work_phone") :</label>
+                                <span>{{ employee.work_phone }}</span>
+                              </div>
+                              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <label>@MSG("home_phone") :</label>
+                                <span>{{ employee.home_phone }}</span>
+                              </div>
+                              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <label>@MSG("cell_phone") :</label>
+                                <span>{{ employee.cell_phone }}</span>
+                              </div>
+                              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <label>@MSG("resident_id_record.id_card_number") :</label>
+                                <span>{{ employee.id_card_number_detail }}</span>
+                              </div>
+                              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <label>@EmployeesCtrl.msg("office") :</label>
+                                <span>{{ employee.office }}</span>
+                              </div>
+                              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <label>@EmployeesCtrl.msg("employee.roles") :</label>
+                                <span>{{ employee.roles_detail }}</span>
+                              </div>
+                              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <label>@EmployeesCtrl.msg("hire_status") :</label>
+                                <span>{{ EmployeeListSvc.dictionary['hire_status'][employee.hire_status] }}</span>
+                              </div>
+                              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <label>@EmployeesCtrl.msg("hire_type") :</label>
+                                <span>{{ EmployeeListSvc.dictionary['hire_type'][employee.hire_type] }}</span>
+                              </div>
+                              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                                <label>@MSG("status") :</label>
+                                <span>{{ EmployeeListSvc.dictionary['employee_status'][employee.status] }}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <a class="btn btn-primary btn-xs pull-right" ng-href="{{jsRoutes.controllers.EmployeesCtrl.edit(employee.user_id).url}}">
+                            <i class="fa fa-edit fa-lg"></i>
+                            @MSG("edit")
+                          </a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="row">
+                  <div class="col-xs-12">
+                    <div ng-hide="keyword">
+                      @ng._pager("EmployeeListSvc.links")
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "api_internal/individuals"),
+  libs.assets("js", "api_internal/employees"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "employees/index"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.EmployeesCtrl.edit
+  )
+}
+
+@controller = {
+  <script>
+    views.employees.index.run(['EmployeeListSvc', function(EmployeeListSvc) {
+      EmployeeListSvc.options = {
+        page     : @pager.pageNum,
+        pageSize : @pager.pageSize,
+        sort     : @Html(SortField.toJson(sort)),
+        nextPage : '@Html(routes.EmployeesCtrl.index(pager.next).toString)',
+        prevPage : '@Html(routes.EmployeesCtrl.index(pager.prev).toString)'
+      };
+
+      EmployeeListSvc.dictionary.hire_status     = @Html(HireStatus.toJson());
+      EmployeeListSvc.dictionary.hire_type       = @Html(HireType.toJson());
+      EmployeeListSvc.dictionary.employee_status = @Html(Employee.Status.toJson());
+      EmployeeListSvc.roles_def                  = @Html(Employee.Role.toJson);
+    }]);
+  </script>
+}

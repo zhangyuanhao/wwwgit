@@ -1,0 +1,175 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import models.business.reports._
+@import models.business.references._
+@import models.business.services.definitions._
+@import models.business.services._
+@import common._
+@import reports.check._
+
+@(checks_set:ChecksSet)(implicit messages: Messages)
+  @* 在checksSet中查找是否有工作履历核实 *@
+  @EmploymentChecks.findIn(checks_set).map{ employment_checks =>
+    @* 找到工作履历后，遍历每条工作履历 *@
+    @employment_checks.list.zipWithIndex.map{ case (check_list, index) =>
+      @check_list.employer_name match {
+        case Some(name) => {
+          @* 候选人提供信息的情况 *@
+          @check_list.review_result.passed match {
+            case Some(true) => {
+              @* 调查内容已经通过审核 *@
+              @* 区分公司级别的待查和非待查 *@
+              @check_list.remaining.status match {
+                case false => {
+                  @* 公司级别非待查 *@
+                  @* 遍历所有的证明人类型 *@
+                  @Reference.Type.values.toSeq.map { value =>
+                    @* 查找是否存在该类型的证明人 *@
+                    @check_list.interviews.get(value).map { interview =>
+                      @* 区别证明人级别的待查和非待查 *@
+                      @interview.remaining.status match {
+                        case false => {
+                          @* 证明人级别非待查 *@
+                          @* 区分处理有效证明人和无效证明人 *@
+                          @interview.reference.invalid.status match {
+                            case false => {
+                              @* 有效证明人 *@
+                              <div ng-show="show_all || @BackgroundReportsCtrl.showOrNot(interview.rating, check_list.review_result.passed)">
+                                @_report_panel(
+                                s"${value.toString}[$index]",
+                                "fa-suitcase",
+                                BackgroundReportsCtrl.msg(s"${value.toString}", name.translate(messages.lang).getOrElse(name.origin).self),
+                                BackgroundReportsCtrl.showOrNot(interview.rating, check_list.review_result.passed),
+                                Some(reports.common._panel_label(interview.rating, check_list.review_result.passed, check_list.remaining.status, interview.toRecheck)),
+                                BackgroundReportsCtrl.getPanelType(interview.rating, check_list.review_result.passed, check_list.remaining.status)
+                                ){
+                                  @* 证明人验证 *@
+                                  <div class="page-header">
+                                    <h4>@BackgroundReportsCtrl.msg("employment.reference")</h4>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                      @{__references(interview.reference)}
+                                    </div>
+                                  </div>
+                                  @interview.reference.checks.map {
+                                    case strict_multiple: ExtraCheck.StrictMultipleChoice => {
+                                      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 object-check"
+                                        ng-show="show_all || @BackgroundReportsCtrl.showOrNot(strict_multiple.rating)">
+                                        <div class="row">
+                                          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                            @{_strict_multiple_choice(ReferenceCheckList.basicName, strict_multiple)}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    }
+                                  }
+                                  @* 工作履历验证 *@
+                                  @interview.employment_details.map { o =>
+                                  <div ng-show="show_all || @BackgroundReportsCtrl.showOrNot(o.rating)">
+                                    <div class="page-header">
+                                      <h4>@MSG("service.employment_verif")</h4>
+                                    </div>
+                                    <div class="row">
+                                      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                          @{__employment_details(o)}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  }
+                                  @* 工作表现验证 *@
+                                  @interview.work_performance.map { o =>
+                                  <div ng-show="show_all">
+                                    <div class="page-header">
+                                      <h4>@MSG("service.employment_performance_verif")</h4>
+                                    </div>
+                                    @{__work_performance(o)}
+                                  </div>
+                                  }
+                                  @reports.common._comment(interview.comments)
+                              }
+                              </div>
+                            }
+                            case true => {
+                              @* 无效证明人 *@
+                              <div ng-show="show_all">
+                                @_report_panel(s"${value.toString}[$index]", "fa-suitcase", BackgroundReportsCtrl.msg(s"${value.toString}.invalid", name.origin.self)){
+                                  @{reports.common._comment(interview.reference.invalid.comments)}
+                                }
+                              </div>
+                            }
+                          }
+                        }
+                        case _ => {
+                          @* 证明人级别待查 *@
+                          <div ng-show="show_all">
+                            @_report_panel(
+                              s"${value.toString}[$index]",
+                              "fa-suitcase",
+                              BackgroundReportsCtrl.msg(s"${value.toString}", name.origin.self),
+                              "false",
+                              Some(reports.common._panel_label(None, check_list.review_result.passed, interview.remaining.status, None)),
+                              BackgroundReportsCtrl.getPanelType(None, check_list.review_result.passed, interview.remaining.status)
+                              ){
+                                @reports.common._reason_for_remaining(Interview.RemainingReason, interview.remaining)
+                              }
+                          </div>
+                        }
+                      }
+                    }
+                  }
+                }
+                case _ => {
+                  @* 公司级别待查 *@
+                  <div ng-show="show_all">
+                    @_report_panel(
+                      s"PersonnelOfficer[$index]",
+                      "fa-suitcase",
+                      name.origin.self,
+                      "false",
+                      Some(reports.common._panel_label(None, check_list.review_result.passed, check_list.remaining.status, None)),
+                      BackgroundReportsCtrl.getPanelType(None, check_list.review_result.passed, check_list.remaining.status)
+                      ){
+                        @reports.common._reason_for_remaining(EmploymentCheckList.RemainingReason, check_list.remaining)
+                      }
+                  </div>
+                }
+              }
+            }
+            case _ => {
+              @* 调查内容尚未通过审核 *@
+              <div ng-show="show_all">
+                @_report_panel(
+                  s"PersonnelOfficer[$index]",
+                  "fa-suitcase",
+                  name.origin.self,
+                  "false",
+                  Some(reports.common._panel_label(None, check_list.review_result.passed, check_list.remaining.status, None)),
+                  BackgroundReportsCtrl.getPanelType(None, check_list.review_result.passed, check_list.remaining.status)
+                  ){
+                    @reports.common._not_passed()
+                  }
+              </div>
+            }
+          }
+        }
+        case _ => {
+          @* 候选人未提供信息的情况 *@
+          <div ng-show="show_all">
+            @_report_panel(s"PersonnelOfficer[$index]", "fa-suitcase", BackgroundReportsCtrl.msg("employment.none", index)){
+                @{reports.common._not_provided_object(BackgroundReportsCtrl.msg("employment.none.comment", index),check_list.not_provided.comments)}
+            }
+          </div>
+        }
+      }
+    }
+  }

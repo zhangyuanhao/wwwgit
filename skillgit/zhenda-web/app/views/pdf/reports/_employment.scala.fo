@@ -1,0 +1,119 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import models.business.references._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  报告正文 -- 工作履历
+*@
+@(checks_set:ChecksSet)(implicit messages: Messages)
+
+@* 报告中是否存在此模块 *@
+@EmploymentChecks.findIn(checks_set).map { employment_checks =>
+
+  @add_page_breaker
+
+  @* 逐家显示工作履历 *@
+  @employment_checks.list.zipWithIndex.map { case (check_list, idx) =>
+    @* 候选人提供了该工作履历相关信息 *@
+    @if(!check_list.not_provided.status) {
+
+      @* 多段工作履历之间断页 *@
+      @if(idx > 0) { <fo:block @attribute_sets("page-breaker")/> }
+
+      @* 该工作履历已经通过审核 *@
+      @if(check_list.review_result.passed.getOrElse(false)) {
+
+        @* 该工作履历不是待查状态 *@
+        @if(!check_list.remaining.status) {
+          @defining(Reference.Type.values.filter(check_list.interviews.contains).toSeq) { ref_tpes =>
+            @ref_tpes.headOption.map { ref_tpe =>
+              @show_interview(ref_tpe, check_list.interviews(ref_tpe), check_list.employer_name.format)
+            }
+            @ref_tpes.tail.map { ref_tpe =>
+              @* 访谈之间断页 *@
+              <fo:block @attribute_sets("page-breaker")/>
+              @show_interview(ref_tpe, check_list.interviews(ref_tpe), check_list.employer_name.format)
+            }
+          }
+        }
+
+        @* 该工作履历是待查状态 *@
+        @if(check_list.remaining.status) {
+          @_employment_remaining(check_list)
+        }
+      }
+
+      @* 该工作履历尚未通过审核 *@
+      @if(!check_list.review_result.passed_?) {
+        @defining(Reference.Type.values.filter(check_list.interviews.contains).toSeq) { ref_tpes =>
+          @ref_tpes.headOption.map { ref_tpe =>
+            @_interview_unexpected(check_list.employer_name.format, ref_tpe, check_list.interviews(ref_tpe), BackgroundReportsCtrl.msg("pdf.review_not_passed"), false)
+          }
+          @ref_tpes.tail.map { ref_tpe =>
+            @* 访谈之间断页 *@
+            <fo:block @attribute_sets("page-breaker")/>
+            @_interview_unexpected(check_list.employer_name.format, ref_tpe, check_list.interviews(ref_tpe), BackgroundReportsCtrl.msg("pdf.review_not_passed"), false)
+          }
+        }
+      }
+    } else {
+      @* 候选人未提供该工作履历相关信息 *@
+      @_employment_not_provided(check_list, idx)
+    }
+  }
+
+}
+
+@show_interview(ref_tpe: Reference.Type, interview: Interview, employer_name: String) = {
+
+  @* 该访谈的证明人无效 *@
+  @if(interview.reference.invalid.status) {
+    @defining(interview.reference.invalid.comment.format) { comment =>
+      @_interview_unexpected(employer_name, ref_tpe, interview, comment, true)
+    }
+  }
+
+  @* 该访谈是待查状态 *@
+  @if(interview.remaining.status) {
+    @defining(__remaining(interview.remaining, Interview.RemainingReason)) { comment =>
+      @_interview_unexpected(employer_name, ref_tpe, interview, comment, true)
+    }
+  }
+
+  @* 该访谈的证明人有效且不是待查状态 *@
+  @if(!interview.remaining.status && !interview.reference.invalid.status) {
+    @_interview(employer_name, ref_tpe, interview)
+  }
+}
+
+@*
+  如果有下列服务，则需要断页
+*@
+@add_page_breaker = {
+  @defining(
+    checks_set.exists {
+      case (IdentityChecks.basicName, _)                   => true
+      case (EducationChecks.basicName, _)                  => true
+      case (ProfessionalLicenseChecks.basicName, _)        => true
+      case (CriminalRecordsChecks.basicName, _)            => true
+      case (IllegalOrganizationRecordsChecks.basicName, _) => true
+      case (CourtRecordsChecks.basicName, _)               => true
+      case (FinancialIrregularitiesChecks.basicName, _)    => true
+      case (ConflictOfBusinessInterestChecks.basicName, _) => true
+      case _                                               => false
+    }
+  ) { exists =>
+    @if(exists) { <fo:block @attribute_sets("page-breaker")/> }
+  }
+}

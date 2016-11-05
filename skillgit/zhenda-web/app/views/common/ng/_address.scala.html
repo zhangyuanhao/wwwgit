@@ -1,0 +1,41 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(ngModel: String)(implicit message: Messages)
+
+<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+  <div class="row">
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+      <input type="text" class="form-control"
+        ng-model="@(ngModel).province"
+        placeholder="@MSG("address.province")">
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+      <input type="text" class="form-control"
+        ng-model="@(ngModel).city"
+        placeholder="@MSG("address.city")">
+    </div>
+  </div>
+</div>
+
+<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+  <div class="row">
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+      <input type="text" class="form-control"
+        ng-model="@(ngModel).street1"
+        placeholder="@MSG("address.street")">
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+      <input type="text" class="form-control"
+        ng-model="@(ngModel).street2"
+        placeholder="@MSG("address.street")">
+    </div>
+  </div>
+</div>

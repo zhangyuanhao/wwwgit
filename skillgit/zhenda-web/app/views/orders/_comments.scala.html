@@ -1,0 +1,22 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="form-control-static">
+      <textarea class="form-control" rows="2" ng-model="OrderSvc.candidate_info.message_for_candidate" placeholder="@CustomerUserOrdersCtrl.msg("order_comments.to_candidate")"></textarea>
+    </div>
+    <div class="form-control-static">
+      <textarea class="form-control" rows="2" ng-model="OrderSvc.candidate_info.message_for_employees" placeholder="@CustomerUserOrdersCtrl.msg("order_comments.to_employee")"></textarea>
+    </div>
+  </div>
+</div>

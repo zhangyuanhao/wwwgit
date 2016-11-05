@@ -1,0 +1,117 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(fm: Form[_])(implicit req: MaybeUserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(MSG("sign.up.title") + " " + MSG("app.name")){
+
+  <div class="page-header">
+    <h1>Join @MSG("app.name")<br>
+      <small>The best way to connect the world</small>
+    </h1>
+  </div>
+
+  <div class="row" >
+    <div class="col-xs-12 col-xs-offset-0
+                col-sm-7  col-sm-offset-0
+                col-md-6  col-md-offset-1
+                col-lg-5  col-lg-offset-2
+                signup-form">
+      <h4>@MSG("Create your personal account")</h4>
+      @fm.globalErrors.map { err =>
+        @common._alert("danger", dismissible = true){
+          @MSG(err.message)
+        }
+      }
+
+      @form(action = routes.UsersCtrl.create(), 'class -> "form-signup") {
+
+        @{_input_email(fm("email"),
+          "data-autocheck-url".s -> routes.UsersCtrl.checkEmail,
+          'tabindex    -> 1
+          )(_fc_form_group)
+        }
+
+        @{_input_password(fm("password.original"),
+          "data-autocheck-url".s -> routes.UsersCtrl.checkPassword,
+          'tabindex    -> 2
+          )(_fc_form_group)
+        }
+
+        @{_input_password(fm("password.confirmation"),
+          'tabindex    -> 3
+          )(_fc_form_group)
+        }
+
+        <p class="tos-info">
+          <small>
+            By clicking on "Create an account" below, you are agreeing to the
+            <a href="#" >Terms of Service</a> and the <a href="#" >Privacy Policy.</a>
+          </small>
+        </p>
+
+        <button type="submit" class="btn btn-success" tabindex="4">
+          @MSG("account.create")
+        </button>
+      }
+    </div>
+
+    <div class="col-xs-12 col-xs-offset-0
+                col-sm-5  col-sm-offset-0
+                col-md-4  col-md-offset-0
+                col-lg-3  col-lg-offset-0 ">
+
+      <ul class="list-group">
+        <li class="list-group-item">
+          <h4>You'll love @MSG("app.name")</h4>
+        </li>
+        <li class="list-group-item">
+          <strong>Unlimited</strong>
+          collaborators
+          </li>
+        <li class="list-group-item">
+          <strong>Unlimited</strong>
+          public repositories
+        </li>
+        <li class="list-group-item">
+          <i class="fa fa-check"></i>
+          Great communication
+        </li>
+        <li class="list-group-item">
+          <i class="fa fa-check"></i>
+          Open source community
+        </li>
+      </ul>
+    </div>
+  </div>
+}{
+  <style>
+    .tos-info {
+      border-style: solid none;
+      border-width: 1px 0px;
+      border-color: #e5e5e5;
+      padding: 10px 0px;
+    }
+
+    .fa-check {
+      color: green;
+    }
+
+    .signup-form {
+      padding-bottom: 20px;
+    }
+  </style>
+}(
+  libs.webjars("js", "bootstrap"),
+  libs.assets("js", "autocheck")
+)

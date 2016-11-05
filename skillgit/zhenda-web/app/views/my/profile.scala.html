@@ -1,0 +1,113 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(fm: Form[_])(implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(MSG("settings.profile.title"), white_navbar = true){
+
+  <div class="alert-container">
+    @fm.globalErrors.map { err =>
+      @common._alert("danger", dismissible = true){
+        @MSG(err.message)
+      }
+    }
+  </div>
+
+  <div class="row wrapper-content">
+    <div class="col-xs-12 col-sm-12 col-md-3 col-md-push-9">
+      @{_personal_settings("profile")}
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-9 col-md-pull-3">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="ibox">
+            <div class="ibox-title">
+              <strong>@MSG("settings.profile.head")</strong>
+            </div>
+
+            <div class="ibox-content" ng-controller="ProfileCtrl">
+
+              @ng._form_group_static("profile.picture",
+                '_type   -> MSG("profile.picture"),
+                '_inline -> false
+              ){
+                <div class="row ng-cloak">
+                  <div class="col-xs-4 col-sm-2 profile-img-sm">
+                    <img ng-src="{{ imgURL }}" alt="" class="img-rounded">
+                  </div>
+
+                  <div class="col-xs-8 col-sm-8" ng-class=" errorMessage ? ' has-error' : '' ">
+                    <div flow-init="{target: '@routes.MyCtrl.uploadProfileImage', testChunks: false, simultaneousUploads: 1}"
+                         flow-files-submitted="$flow.upload()"
+                         flow-upload-started="startUpload()"
+                         flow-file-success="onUploaded($message)"
+                         flow-file-error="onFailed($message)">
+
+                      <span ng-show="!uploading" class="btn btn-sm btn-default"
+                        flow-btn
+                        flow-single-file
+                        flow-attrs="{ accept: '@MyCtrl.acceptProfileImageFormats.mkString(", ")' }">
+                        <strong>@MSG("profile.picture.upload")</strong>
+                      </span>
+                      <span ng-show="uploading" class="btn btn-default" disabled>
+                        <i class="fa fa-refresh fa-spin"></i>
+                        <strong>@MSG("profile.picture.upload")</strong>
+                      </span>
+                    </div>
+                    <p class="help-block" ng-class="errorMessage ? 'text-danger' : ''">{{ errorMessage || '@MSG("profile.picture.accept.formats")' }}</p>
+                  </div>
+                </div>
+              }
+
+              @form(action = routes.MyCtrl.changeProfile) {
+                <div class="row">
+                  <div class="col-xs-12 col-sm-5">
+                    @{_input_text(fm("last_name"),
+                      '_label   -> MSG("identity.last_name"),
+                      'tabindex -> 1
+                      )(_fc_form_group)
+                    }
+                  </div>
+                  <div class="col-xs-12 col-sm-5">
+                    @{_input_text(fm("first_name"),
+                      '_label   -> MSG("identity.first_name"),
+                      'tabindex -> 2
+                      )(_fc_form_group)
+                    }
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-sm btn-success" tabindex="3">
+                  <strong>@MSG("settings.profile.update")</strong>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+}()(
+  libs.webjars("js", "holder"),
+  libs.webjars("js", "ng-flow"),
+  libs.assets("js", "my/profile"),
+  jsRoutes
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.MyCtrl.profileImage
+  )
+}

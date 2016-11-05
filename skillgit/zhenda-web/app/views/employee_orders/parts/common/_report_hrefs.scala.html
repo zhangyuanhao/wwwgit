@@ -1,0 +1,61 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(report_html: Boolean = true, report_pdf: Boolean = true, preview_html: Boolean = true, preview_pdf: Boolean = true)(implicit messages: Messages)
+
+<div class="btn-group" uib-dropdown>
+  <button id="single-button" type="button" class="btn btn-xs btn-primary" uib-dropdown-toggle>
+    <i class="fa fa-search"></i>
+    @EmployeeOrdersCtrl.msg("report.view")
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="btn-append-to-body">
+    @if(report_html) {
+      <li role="menuitem">
+        <a ng-href="{{jsRoutes.controllers.BackgroundReportsCtrl.show(order.id).url}}"
+          target="_blank">
+          <i class="fa fa-file-code-o"></i>
+          @EmployeeOrdersCtrl.msg("report")
+          @EmployeeOrdersCtrl.msg("report.html")
+        </a>
+      </li>
+    }
+    @if(report_pdf) {
+      <li role="menuitem">
+        <a ng-href="{{jsRoutes.controllers.BackgroundReportsCtrl.showPDF(order.id, true).url}}"
+          target="_blank">
+          <i class="fa fa-file-pdf-o"></i>
+          @EmployeeOrdersCtrl.msg("report")
+          @EmployeeOrdersCtrl.msg("report.pdf")
+        </a>
+      </li>
+    }
+    @if(preview_html) {
+      <li role="menuitem">
+        <a ng-href="{{jsRoutes.controllers.BackgroundReportsCtrl.preview(order.id, true).url}}"
+          target="_blank">
+          <i class="fa fa-file-code-o"></i>
+          @EmployeeOrdersCtrl.msg("preview")
+          @EmployeeOrdersCtrl.msg("report.html")
+        </a>
+      </li>
+    }
+    @if(preview_pdf) {
+      <li role="menuitem">
+        <a ng-href="{{jsRoutes.controllers.BackgroundReportsCtrl.previewPDF(order.id, true, true).url}}"
+          target="_blank">
+          <i class="fa fa-file-pdf-o"></i>
+          @EmployeeOrdersCtrl.msg("preview")
+          @EmployeeOrdersCtrl.msg("report.pdf")
+        </a>
+      </li>
+    }
+  </ul>
+</div>

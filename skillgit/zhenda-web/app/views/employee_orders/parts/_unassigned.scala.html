@@ -1,0 +1,52 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+@import common._
+@import employee_orders._
+  <div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>
+                <h4>
+                  @EmployeeOrdersCtrl.msg("head")
+                </h4>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="ng-cloak" ng-repeat="order in EmployeeOrdersSvc.orders">
+            <tr class="bg-warning">
+              <td class="text-right">
+                @{parts.common._remove_button()}
+              </td>
+            </tr>
+            <tr class="bg-info">
+              @{parts.common._order_info_unassigned()}
+            </tr>
+            <tr class="no-animate">
+              <td>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right">
+
+                  <button type="button" class="btn btn-primary btn-xs" ng-click="EmployeeOrdersSvc.take(order, $index)">
+                    <i class="fa fa-check"></i>
+                    @EmployeeOrdersCtrl.msg("take")
+                  </button>
+
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,64 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(user:User, groups:Seq[Group])(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(UsersCtrl.msg("title")) {
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa fa-user fa-lg fa-fw"></i>
+      @if(user.user_name.self.nonEmpty) {
+        @user.user_name
+      } else {
+        @user.email
+      }
+    </h2>
+  </div>
+
+  <div class="row wrapper-content" ng-controller="InfoCtrl" data-id="@user.id">
+    <div class="col-xs-12">
+      <div class="ibox">
+        <div class="ibox-content">
+          <div class="row">
+            @{_info(user, groups)}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "api_internal/users"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.GroupsCtrl.show
+  )
+}
+
+@controller = {
+  <script>
+    angular.module('users.show', ['ui.bootstrap', 'api_internal.user'])
+      .controller('InfoCtrl', ['$scope', '$attrs', 'User', function ($scope, $attrs, User) {
+        $scope.groups = User.externalGroups({id: $attrs.id});
+        $scope.jsRoutes = jsRoutes
+      }]);
+    angular.module('app').requires.push('users.show');
+  </script>
+}

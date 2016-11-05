@@ -1,0 +1,99 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import java.util.Locale
+@import models.business.infogathering.Authorization._
+@import models.business.services.definitions.AuthorizationDef._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  需要填写的一行
+*@
+@(input_def: InputDef, input: Option[Input])(implicit messages: Messages)
+
+@defining(
+  (Map(
+    Locale.ENGLISH -> Seq("input-row-en"),
+    Locale.CHINESE -> Seq("input-row-zh-1")
+  ),
+  Map(
+    Locale.ENGLISH -> Seq("input-row-en"),
+    Locale.CHINESE -> Seq("input-row-zh-2")
+  ))
+) { case (attrs1, attrs2) =>
+@defining(
+  input match {
+    case Some(Input.Identity(value))           => attrs1
+    case Some(Input.SignedOn(value))           => attrs1
+    case Some(Input.SignatureInChinese(value)) => if (value.isEmpty) attrs1 else attrs2
+    case Some(Input.SignatureInEnglish(value)) => if (value.isEmpty) attrs1 else attrs2
+    case _                                     => attrs1
+  }
+) { attrs =>
+@defining(
+  input.map {
+    case Input.Identity(value)           => value.format: Xml
+    case Input.SignedOn(value)           => value.format: Xml
+    case Input.SignatureInChinese(value) => __signature(value)
+    case Input.SignatureInEnglish(value) => __signature(value)
+    case _                               => "": Xml
+  }
+) { xmlOpt =>
+  @__row_tmpl(input_def.label, xmlOpt, attrs)
+}}}
+
+@*
+  每行的模版
+*@
+@__row_tmpl(label: Map[Lang, String], xmlOpt: Option[Xml], attrs: Map[Locale, Seq[String]] = Map()) = {
+  @defining("views.authorization.document.sample.") { prefix =>
+  <fo:block @attribute_sets((attrs.getOrElse(Locale.ENGLISH, Nil)):_*)>
+    @input.map {
+      case Input.Identity(Some(value)) => {
+        <fo:inline>
+          @messages.messages.apply(s"${prefix}${value.basicName}")(Lang(Locale.ENGLISH))
+        </fo:inline>
+      }
+      case _ => {
+        @label.get(Lang(Locale.ENGLISH)).map { value =>
+          <fo:inline>@value</fo:inline>
+        }
+      }
+    }
+  </fo:block>
+
+  <fo:block @attribute_sets((attrs.getOrElse(Locale.CHINESE, Nil)):_*)>
+    @input.map {
+      case Input.Identity(Some(value)) => {
+        <fo:inline vertical-align="top">
+          @messages.messages.apply(s"${prefix}${value.basicName}")(Lang(Locale.CHINESE))
+        </fo:inline>
+      }
+      case _ => {
+        @label.get(Lang(Locale.CHINESE)).map { value =>
+          <fo:inline vertical-align="top">@value</fo:inline>
+        }
+      }
+    }
+    @xmlOpt.map { xml =>
+      @xml
+    }
+  </fo:block>
+  }
+}
+
+@__signature(imageOpt: Option[DataURI]) = {
+  @imageOpt.map { image =>
+    <fo:external-graphic
+      src="url(@image)"
+      @attribute_sets("signature")/>
+  }
+}

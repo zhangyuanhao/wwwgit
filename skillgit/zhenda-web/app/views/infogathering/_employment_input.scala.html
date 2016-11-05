@@ -1,0 +1,401 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(
+implicit messages: Messages)
+
+@import common._
+
+<div class="panel panel-default ng-cloak">
+  <div class="panel-body">
+    <form name="employ_form" novalidate>
+      <div class="row">
+        <div class="col-xs-12">
+          <div ng-if="employment_idx === 0" class="f-text-danger" style="margin-bottom:20px">
+            <h4>@InfoGatheringCtrl.msg("employment_details",0)</h4>
+          </div>
+          <div ng-if="employment_idx === 1" class="f-text-danger" style="margin-bottom:20px">
+            <h4>@InfoGatheringCtrl.msg("employment_details",1)</h4>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-8">
+          @ng._form_control("employerName",
+            '_formname           -> "employ_form",
+            '_label              -> MSG("employment_details.employer_name1"),
+            '_inline             -> false,
+            'maxLength           -> 64,
+            'minLength           -> 2,
+            'required            -> true,
+            Symbol("ng-model")   -> "employment_data.fields.employer_name"
+          )
+          </div>
+        <div class="col-xs-12">
+          <div class="form-group">
+            <label>@MSG("employment_details.address")</label>
+            <address ng-model="employment_data.fields.address" countries="{{Svc.dictionary.countries}}" show-street="false" province-required require-invalid="employment_info.address_invalid">
+            </address>
+          </div>
+        </div>
+        <div class="col-xs-12">
+          <div class="form-group">
+            <label>@InfoGatheringCtrl.msg("employment.interval")</label>
+            <div class="row" ng-if="employment_idx===0">
+              <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                  <div class="col-xs-12">
+                    @ng._input_date_picker("employ_start_date",
+                      '_formname               -> "employ_form",
+                      "ng-model".s             -> "employment_data.fields.interval_optional_end.start",
+                      "datepicker-options".s   -> "date_picker.employ_start_date.date_options",
+                      "is-open".s              -> "date_picker.employ_start_date.opened",
+                      "uib-datepicker-popup".s -> MSG("month.format.long"),
+                      "localdate-to-string".s  -> None,
+                      'required                -> true,
+                      'placeholder             -> InfoGatheringCtrl.msg("employment.start_date"),
+                      '_click                  -> "date_picker.employ_start_date.open()"
+                    )
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                  <div class="col-xs-12">
+                    @ng._input_date_picker("employ_end_date",
+                      '_formname               -> "employ_form",
+                      "ng-model".s             -> "employment_data.fields.interval_optional_end.end",
+                      "datepicker-options".s   -> "date_picker.employ_end_date_1.date_options",
+                      "is-open".s              -> "date_picker.employ_end_date_1.opened",
+                      "uib-datepicker-popup".s -> MSG("month.format.long"),
+                      "localdate-to-string".s  -> None,
+                      'placeholder             -> InfoGatheringCtrl.msg("employment.optional_end_date"),
+                      '_click                  -> "date_picker.employ_end_date_1.open()"
+                    )
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" ng-if="employment_idx>0">
+              <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                  <div class="col-xs-12">
+                    @ng._input_date_picker("employ_start_date",
+                      '_formname               -> "employ_form",
+                      "ng-model".s             -> "employment_data.fields.interval.start",
+                      "datepicker-options".s   -> "date_picker.employ_start_date.date_options",
+                      "is-open".s              -> "date_picker.employ_start_date.opened",
+                      "uib-datepicker-popup".s -> MSG("month.format.long"),
+                      "localdate-to-string".s  -> None,
+                      'required                -> true,
+                      'placeholder             -> InfoGatheringCtrl.msg("employment.start_date"),
+                      '_click                  -> "date_picker.employ_start_date.open()"
+                    )
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-6">
+                <div class="row">
+                  <div class="col-xs-12">
+                    @ng._input_date_picker("employ_end_date",
+                      '_formname               -> "employ_form",
+                      "ng-model".s             -> "employment_data.fields.interval.end",
+                      "datepicker-options".s   -> "date_picker.employ_end_date.date_options",
+                      "is-open".s              -> "date_picker.employ_end_date.opened",
+                      "uib-datepicker-popup".s -> MSG("month.format.long"),
+                      "localdate-to-string".s  -> None,
+                      'required                -> true,
+                      'placeholder             -> InfoGatheringCtrl.msg("employment.end_date"),
+                      '_click                  -> "date_picker.employ_end_date.open()"
+                    )
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          @ng._form_control("employer_telephone",
+            '_formname              -> "employ_form",
+            '_label                 -> MSG("employment_details.employer_telephone"),
+            '_type                  -> "tel",
+            '_inline                -> false,
+            'required               -> true,
+            '_pattern_msg_key       -> "error.telephone_number",
+            'pattern                -> Telephone.regex,
+            Symbol("ng-model")      -> "employment_data.fields.telephone"
+          )
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <div class="form-group">
+            <label>@MSG("employment_details.hire_type")</label>
+            <select class="form-control" ng-model="employment_data.fields.hire_type"
+              ng-options="key as type for (key, type) in Svc.dictionary.hire_types">
+            </select>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <div class="form-group">
+            <label>@InfoGatheringCtrl.msg("employment.position_title")</label>
+            <div class="row">
+              <div class="col-xs-6">
+                @ng._form_control("employ_job_title",
+                  '_formname           -> "employ_form",
+                  'maxLength           -> 64,
+                  'minLength           -> 2,
+                  'required            -> true,
+                  Symbol("ng-model")   -> "employment_data.fields.position_title.job_title",
+                  'placeholder         -> InfoGatheringCtrl.msg("employment.job_title")
+                )
+              </div>
+              <div class="col-xs-6">
+                @ng._form_control("employ_department",
+                  '_formname           -> "employ_form",
+                  'maxLength           -> 64,
+                  'minLength           -> 2,
+                  Symbol("empty-to-null") -> None,
+                  Symbol("ng-model")   -> "employment_data.fields.position_title.department",
+                  'placeholder         -> InfoGatheringCtrl.msg("employment.department")
+                )
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <div class="form-group">
+            <label>@MSG("employment_details.employee_number")</label>
+            <input type="text" class="form-control" ng-model="employment_data.fields.employee_number" empty-to-null>
+          </div>
+        </div>
+        <div class="col-xs-12">
+          @ng._form_control("majorResponsibility",
+            '_formname           -> "employ_form",
+            '_label              -> InfoGatheringCtrl.msg("employment.major_responsibility"),
+            '_inline             -> false,
+            '_type               -> "textarea",
+            '_textarea_rows      -> 3,
+            'minLength           -> 2,
+            'required            -> true,
+            Symbol("ng-model")   -> "employment_data.fields.major_responsibility"
+          )
+        </div>
+        <div class="col-xs-12">
+          <div class="form-group">
+            <label>@InfoGatheringCtrl.msg("employment.performance_description")</label>
+            <textarea class="form-control" rows="3" ng-model="employment_data.fields.performance_description" empty-to-null></textarea>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          @ng._form_control("salary",
+            '_formname            -> "employ_form",
+            'maxLength            -> 64,
+            '_type                -> "number",
+            '_label               -> InfoGatheringCtrl.msg("employment.salary"),
+            '_inline              -> false,
+            '_addon_label         -> MSG("CNY.ten_thousand"),
+            'required             -> true,
+            'pattern              -> """^\d+(.\d{1,1})?$""",
+            'max                  -> 999,
+            '_pattern_msg_key     -> "error.real.precision1",
+            Symbol("ng-model")    -> "employment_info.earning"
+          )
+        </div>
+        <div class="col-xs-12">
+          @ng._form_control("employ_reason_for_leaving",
+            '_formname           -> "employ_form",
+            '_label              -> MSG("employment_details.reason_for_leaving"),
+            '_inline             -> false,
+            'maxLength           -> 64,
+            'minLength           -> 2,
+            'required            -> true,
+            Symbol("ng-model")   -> "employment_data.fields.reason_for_leaving"
+          )
+        </div>
+
+        <div ng-if="employment_idx===0">
+          <div class="col-xs-12">
+            @ng._form_group_static("handed_over",
+              '_formname -> "employ_form",
+            '_inline     -> false,
+            '_label      -> MSG("employment_details.handed_over")
+            ){
+              <div class="btn-group">
+                <label class="btn btn-default" ng-model="employment_data.fields.handed_over" uib-btn-radio="'true'">
+                  <i class="fa fa-check fa-lg text-success"></i>
+                  @MSG("yes")
+                </label>
+                <label class="btn btn-default" ng-model="employment_data.fields.handed_over" uib-btn-radio="'false'">
+                  <i class="fa fa-times fa-lg text-danger"></i>
+                  @MSG("no")
+                </label>
+              </div>
+            }
+          </div>
+          <div class="col-xs-12">
+            <div class="fui-message fui-message-danger">
+              <div class="row">
+                <div class="col-xs-12">
+                  <p class="text-danger lead">
+                    <strong>@InfoGatheringCtrl.msg("permit_to_start")</strong>
+                  </p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-12 col-sm-6 col-sm-offset-6">
+                  <div class="form-group"
+                   ng-class="employ_form.$submitted && employment_data.fields.still_employed === null ? 'has-error' : ''">
+                    <div class="btn-group">
+                      <label class="btn btn-default"
+                        ng-model="employment_data.fields.still_employed"
+                        uib-btn-radio="false"
+                        ng-required="!employment_data.fields.still_employed">
+                        <i class="fa fa-check fa-lg text-success"></i>
+                        @MSG("yes")
+                      </label>
+                      <label class="btn btn-default"
+                        ng-model="employment_data.fields.still_employed"
+                        uib-btn-radio="true"
+                        ng-required="!employment_data.fields.still_employed">
+                        <i class="fa fa-times fa-lg text-danger"></i>
+                        @MSG("no")
+                      </label>
+                    </div>
+                    <br>
+                    <span class="help-block ng-cloak"
+                      ng-show="employ_form.$submitted && employment_data.fields.still_employed === null">
+                      @MSG("error.selected", MSG("yes"), MSG("no"))
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="row" ng-if="employment_data.fields.still_employed">
+                <div class="col-xs-12">
+                  <p class="text-danger lead">
+                    <strong>@InfoGatheringCtrl.msg("permit_to_start_since")</strong>
+                  </p>
+                </div>
+              </div>
+              <div class="row" ng-if="employment_data.fields.still_employed">
+                <div class="col-xs-12 col-sm-6 col-sm-offset-6">
+                  @ng._input_date_picker("employ_no_check_until",
+                    '_formname               -> "employ_form",
+                    "ng-model".s             -> "employment_data.fields.no_check_until",
+                    "datepicker-options".s   -> "date_picker.no_check_until.date_options",
+                    "is-open".s              -> "date_picker.no_check_until.opened",
+                    "uib-datepicker-popup".s -> MSG("date.format.long"),
+                    "localdate-to-string".s  -> None,
+                    'required                -> true,
+                    '_click                  -> "date_picker.no_check_until.open()"
+                  )
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+          <div class="col-xs-12" style="margin-bottom: 10px;">
+            <strong>@InfoGatheringCtrl.msg("reference_provid_msg")</strong>
+          </div>
+
+        <div ng-if="employment_data.references.PersonnelOfficer">
+          @reference("hr", MSG("referenceInfo.PersonnelOfficer"), "employment_data.references.PersonnelOfficer.basic_info")
+        </div>
+        <div ng-if="employment_data.references.Supervisor">
+          @reference("supervisor",MSG("referenceInfo.Supervisor"), "employment_data.references.Supervisor.basic_info")
+        </div>
+        <div ng-if="employment_data.references.Additional1">
+          @reference("additional1",MSG("referenceInfo.Additional"), "employment_data.references.Additional1.basic_info")
+        </div>
+        <div ng-if="employment_data.references.Additional2">
+          @reference("additional2",MSG("referenceInfo.Additional"), "employment_data.references.Additional2.basic_info")
+        </div>
+      </div>
+      <div class="row text-right">
+        <div class="col-xs-12">
+          <button type="submit" class="btn btn-primary" ng-click="employ_form.$valid ? saveEmployment() : ''">@MSG("save")</button>
+          <button class="btn btn-default" ng-click="cancelEmployment()">@MSG("cancel")</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+@reference(reference_type: String, title: String, ngModel: String) = {
+  <div class="col-xs-12">
+    <div class="form-group">
+      <div class="row">
+        <div class="col-xs-12">
+          <label>@title</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          @ng._form_control(s"{{'reference_${reference_type}_name'}}",
+            '_formname           -> "employ_form",
+            'placeholder         -> MSG("identity.name"),
+            'maxLength           -> 64,
+            'required            -> true,
+            Symbol("ng-model")   -> s"${ngModel}.name"
+          )
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          @ng._form_control(s"{{'reference_${reference_type}_job_title'}}",
+            '_formname           -> "employ_form",
+            'placeholder         -> InfoGatheringCtrl.msg("employment.job_title"),
+            'maxLength           -> 64,
+            'minLength           -> 2,
+            'required            -> true,
+            Symbol("ng-model")   -> s"${ngModel}.position_title.job_title"
+          )
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          @ng._form_control(s"{{'reference_${reference_type}_department'}}",
+            '_formname           -> "employ_form",
+            'placeholder         -> InfoGatheringCtrl.msg("employment.department"),
+            'maxLength           -> 64,
+            'minLength           -> 2,
+            Symbol("empty-to-null") -> None,
+            Symbol("ng-model")   -> s"${ngModel}.position_title.department"
+          )
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+          @ng._form_control(s"{{'reference_${reference_type}_phone'}}",
+            '_formname           -> "employ_form",
+            'placeholder         -> InfoGatheringCtrl.msg("reference.phone"),
+            '_type               -> "tel",
+            '_pattern_msg_key    -> "error.telephone_number",
+            'pattern             -> Telephone.regex,
+            'required            -> true,
+            Symbol("ng-model")   -> s"${ngModel}.phone"
+          )
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+          @ng._form_control(s"{{'reference_${reference_type}_email'}}",
+            '_formname              -> "employ_form",
+            'placeholder            -> MSG("email"),
+            '_pattern_msg_key       -> "error.email",
+            'pattern                -> EmailAddress.emailRegex,
+            Symbol("ng-model")      -> s"${ngModel}.email",
+            Symbol("empty-to-null") -> true
+          )
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <textarea class="form-control" name="reference_@(reference_type)_comment" rows="1" ng-model="@(ngModel).comment" placeholder="@MSG("comment")" empty-to-null></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+}

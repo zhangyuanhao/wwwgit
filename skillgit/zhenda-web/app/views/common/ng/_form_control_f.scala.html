@@ -1,0 +1,62 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(name: String, args: (Symbol,Any)*)(
+implicit message: Messages)
+
+@argsMap       = @{args.toMap}
+@inputType     = @{argsMap.get('_type).map(_.toString).getOrElse("text")}
+@formname      = @{argsMap.get('_formname).map(_.toString).getOrElse("form")}
+@label         = @{argsMap.get('_label).map(_.toString).getOrElse(MSG(name))}
+@inline        = @{argsMap.get('_inline).map(_ == true).getOrElse(true)}
+@patternMsgKey = @{argsMap.get('_pattern_msg_key).map(_.toString).getOrElse("error.pattern")}
+@htmlArgs      = @{
+  args.filterNot(arg => arg._1.name.startsWith("_"))
+      .filterNot(arg => arg._1 == 'id)
+      .toMap
+}
+
+@defining( s"$formname.$name" ) { fullname =>
+  <div class="form-group" ng-class="(@{formname}.$submitted || @{fullname}.$touched) && @{fullname}.$invalid ? 'has-error has-feedback' : ''">
+
+    <label @if(inline){class="sr-only"} for="@name">@label</label>
+
+    <input type="@inputType" id="@name" name="@name" class="form-control" @toHtmlArgs(htmlArgs)>
+
+    <span ng-if="(@{formname}.$submitted || @{fullname}.$touched) && @{fullname}.$invalid" class="form-control-feedback" >
+      <i class="fa fa-warning fa-lg ng-cloak" ></i>
+    </span>
+
+    @htmlArgs.get('frequired).map { _ =>
+      <span ng-if="(@{formname}.$submitted || @{fullname}.$touched) && @{fullname}.$error.required" class="help-block ng-cloak">
+        @MSG("error.required")
+      </span>
+    }
+
+    @htmlArgs.get('fminLength).map { value =>
+      <span ng-if="@{fullname}.$error.minlength" class="help-block ng-cloak">
+        @MSG("error.minLength", value)
+      </span>
+    }
+
+    @htmlArgs.get('email).map { _ =>
+      <span ng-if="@{fullname}.$error.email" class="help-block ng-cloak">
+        @MSG("error.email")
+      </span>
+    }
+
+    @htmlArgs.get('fpattern).map { value =>
+      <span ng-if="@{fullname}.$error.pattern" class="help-block ng-cloak">
+        @MSG(patternMsgKey, value)
+      </span>
+    }
+
+  </div>
+}

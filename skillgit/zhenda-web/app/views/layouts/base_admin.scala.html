@@ -1,0 +1,111 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(title: String, white_navbar: Boolean = false)(
+  content: Html)(
+  css: Html *)(
+  js: Html *)(
+  implicit req: MaybeUserRequest[_], messages: Messages, env: Environment)
+
+@import helper._
+
+@base_tmpl(title, main_menu, white_navbar)(content)(css ++ Seq(ext_css):_*)(js:_*)
+
+@ext_css = {
+  <style type="text/css" media="screen">
+    .navbar-brand {
+      color: #a94442 !important;
+      font-size: 24px;
+    }
+  </style>
+}
+
+@main_menu = {
+    @*
+    <a href="#">
+      @MSG("basic_setting") <span class="caret"></span>
+    </a>
+    *@
+  <li>
+    <a href="@routes.BusinessEntitiesCtrl.index()">
+      <i class="fa fa-fw fa-building"></i>
+      <span class="nav-label">@BusinessEntitiesCtrl.message("name")</span>
+    </a>
+  </li>
+  <li>
+    <a href="@routes.IndividualsCtrl.index()">
+      <i class="fa fa-fw zd-organization"></i>
+      <span class="nav-label">@IndividualsCtrl.message("name")</span>
+    </a>
+  </li>
+  <li>
+    <a href="@routes.InstitutionsCtrl.index()">
+      <i class="fa fa-fw fa-institution"></i>
+      <span class="nav-label">@InstitutionsCtrl.message("name")</span>
+    </a>
+  </li>
+  <li class="divider"></li>
+  <li>
+    <a href="@routes.CustomersCtrl.index()">
+      <i class="fa fa-fw fa-black-tie"></i>
+      <span class="nav-label">@CustomersCtrl.message("name")</span>
+      </a>
+  </li>
+  <li>
+    <a href="@routes.EmployeesCtrl.index()">
+      <i class="fa fa-fw zd-users3"></i>
+      <span class="nav-label">@EmployeesCtrl.message("name")</span>
+    </a>
+  </li>
+
+  <li>
+    <a href="@routes.FileSystemCtrl.index(Path.root)">
+      <i class="fa fa-fw fa-database"></i>
+      <span class="nav-label">@MSG(FileSystemCtrl.message("name"))</span>
+    </a>
+  </li>
+  <li>
+    <a href="@routes.EmailTemplatesCtrl.index()">
+      <i class="fa fa-fw fa-envelope"></i>
+      <span class="nav-label">@MSG(EmailTemplatesCtrl.message("name"))</span>
+    </a>
+  </li>
+  <li>
+    <a href="@routes.AccessControlsCtrl.index()">
+      <i class="fa fa-fw fa-shield"></i>
+      <span class="nav-label">@MSG(AccessControlsCtrl.message("name"))</span>
+    </a>
+  </li>
+  <li class="divider"></li>
+  <li>
+    <a href="@routes.GroupsCtrl.index()">
+      <i class="fa fa-fw fa-group"></i>
+      <span class="nav-label">@MSG(GroupsCtrl.message("name"))</span>
+    </a>
+  </li>
+  <li>
+    <a href="@routes.UsersCtrl.index()">
+      <i class="fa fa-fw fa-user"></i>
+      <span class="nav-label">@MSG(UsersCtrl.message("name"))</span>
+    </a>
+  </li>
+
+  @*
+  <a href="#" class="dropdown-toggle" uib-dropdown-toggle>
+    @MSG("employees_management") <span class="caret"></span>
+  </a>
+  *@
+  <li>
+    <a href="@routes.EmployeesCtrl.performance()">
+      <i class="fa fa-fw fa-jpy"></i>
+      <span class="nav-label">@EmployeesCtrl.msg("performance.title")</span>
+    </a>
+  </li>
+}

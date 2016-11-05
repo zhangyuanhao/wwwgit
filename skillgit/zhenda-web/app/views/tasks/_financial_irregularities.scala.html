@@ -1,0 +1,228 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(ngModel: String)(implicit messages: Messages)
+
+@import common._
+
+@ng._panel_collapse("TaskSvc.task_info.fir",
+                   "zd-coins",
+                    MSG("financial_irregularities"),
+                    Some(parts._checkbox_of_remaining(
+                    s"!${ngModel}.not_provided",
+                    s"${ngModel}.remaining.status"
+                    ))){
+  <div ng-if="@(ngModel).remaining.status">
+    @parts._reason_of_remaining("fin",
+      "TaskSvc.dictionary.reason_def.fin",
+      s"${ngModel}.remaining"
+      )
+  </div>
+
+  <div ng-if="!@(ngModel).remaining.status">
+    <div ng-controller="FIRCtrl">
+      <div class="row">
+        <div class="col-xs-12 col-is-6 col-sm-6">
+          <h4>@MSG("financial_irregularities.csrc_ap")</h4>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6">
+          @{parts._line_of_truth(s"${ngModel}.checks.csrc_ap", false)}
+        </div>
+      </div>
+      <div ng-repeat="csrc_ap in @(ngModel).checks.csrc_ap.facts.translated.zh.primary.fact track by $index">
+        @fir_show("csrc_ap", "zh")
+      </div>
+      <div ng-repeat="csrc_ap in @(ngModel).checks.csrc_ap.facts.translated.en.primary.fact track by $index">
+        @fir_show("csrc_ap", "en")
+      </div>
+      @new_fir("csrc_ap")
+      <hr>
+
+      <div class="row" class="m-t-xl">
+        <div class="col-xs-12 col-is-6 col-sm-6">
+          <h4>@MSG("financial_irregularities.csrc_smb")</h4>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6">
+          @{parts._line_of_truth(s"${ngModel}.checks.csrc_smb", false)}
+        </div>
+      </div>
+      <div ng-repeat="csrc_smb in @(ngModel).checks.csrc_smb.facts.translated.zh.primary.fact track by $index">
+        @fir_show("csrc_smb", "zh")
+      </div>
+      <div ng-repeat="csrc_smb in @(ngModel).checks.csrc_smb.facts.translated.en.primary.fact track by $index">
+        @fir_show("csrc_smb", "en")
+      </div>
+      @new_fir("csrc_smb")
+      <hr>
+
+      <div class="row" class="m-t-xl">
+        <div class="col-xs-12 col-is-6 col-sm-6">
+          <h4>@MSG("financial_irregularities.circ_ap")</h4>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6">
+          @{parts._line_of_truth(s"${ngModel}.checks.circ_ap", false)}
+        </div>
+      </div>
+      <div ng-repeat="circ_ap in @(ngModel).checks.circ_ap.facts.translated.zh.primary.fact track by $index">
+        @fir_show("circ_ap", "zh")
+      </div>
+      <div ng-repeat="circ_ap in @(ngModel).checks.circ_ap.facts.translated.en.primary.fact track by $index">
+        @fir_show("circ_ap", "en")
+      </div>
+      @new_fir("circ_ap")
+    </div>
+    @*  金融违规记录模块备注  *@
+    <div class="row m-t-md">
+      <div class="col-xs-12">
+        @{parts._line_comment(TasksCtrl.msg("fin_comment"), s"${ngModel}.comments", "fin_comment")}
+      </div>
+    </div>
+  </div>
+}
+
+@fir_show(fir_type: String, language: String) = {
+  <div class="panel panel-info ng-cloak">
+    <div class="panel-body p-xxs">
+      <div class="row m-b-sm">
+        <div class="col-xs-6">
+          <strong class="text-success">
+            @TasksCtrl.msg(s"record.$language")
+          </strong>
+        </div>
+        <div class="col-xs-6">
+          <button type="button" class="close pull-right" ng-click="TaskSvc.firRemove('@(fir_type)', $index, '@language')">
+            <i class="fa fa-fw fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+          <p><strong>@MSG(s"announced_penalty.comment.${fir_type}") : </strong> {{ @(fir_type).comment }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+          <p><strong>@MSG("announced_penalty.number") : </strong> {{ @(fir_type).number }}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+          <p><strong>@MSG("announced_penalty.issue_date") : </strong> {{ @(fir_type).issue_date | date : "@MSG("date.format.long")"}}</p>
+        </div>
+        <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+          <p><strong>@MSG("announced_penalty.classification") : </strong> {{ @(fir_type).classification }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@new_fir(fir_type: String) = {
+  <div ng-controller="FIRCtrl">
+    <div class="row m-b-sm">
+      <div class="col-xs-12">
+        <button class="btn btn-primary btn-xs" ng-click="newFir('@(fir_type)', 'zh')" ng-if="TaskSvc.lang.zh">
+          @TasksCtrl.msg("add_record.zh")
+        </button>
+        <button class="btn btn-primary btn-xs" ng-click="newFir('@(fir_type)', 'en')" ng-if="TaskSvc.lang.en">
+          @TasksCtrl.msg("add_record.en")
+        </button>
+      </div>
+    </div>
+    <div class="slide-animate-container">
+      <div class="slide-animate" ng-include="input_page.@(fir_type)"></div>
+    </div>
+  </div>
+}
+
+<script type="text/ng-template" id="firCSRCAPInputZh.html">
+  @fir_input("csrc_ap","zh")
+</script>
+
+<script type="text/ng-template" id="firCSRCAPInputEn.html">
+  @{fir_input("csrc_ap","en")}
+</script>
+
+<script type="text/ng-template" id="firCSRCSMBInputZh.html">
+  @fir_input("csrc_smb","zh")
+</script>
+
+<script type="text/ng-template" id="firCSRCSMBInputEn.html">
+  @{fir_input("csrc_smb","en")}
+</script>
+
+<script type="text/ng-template" id="firCIRCAPInputZh.html">
+  @fir_input("circ_ap","zh")
+</script>
+
+<script type="text/ng-template" id="firCIRCAPInputEn.html">
+  @{fir_input("circ_ap","en")}
+</script>
+
+@fir_input(fir_type: String, language: String) = {
+  <div class="panel panel-default panel-border">
+    <div class="panel-body">
+      <form name="@(fir_type)_form" novalidate>
+        <div class="row m-b-sm">
+          <div class="col-xs-12">
+            <strong>@TasksCtrl.msg(s"record.$language")</strong>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+            @ng._form_control("fir_comment",
+              '_formname   -> s"${fir_type}_form",
+              'maxLength   -> 255,
+              'placeholder -> MSG(s"announced_penalty.comment.${fir_type}"),
+              'required    -> true,
+              "ng-model".s -> "fir.comment"
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+            @ng._form_control("fir_number",
+              '_formname   -> s"${fir_type}_form",
+              'maxLength   -> 255,
+              'placeholder -> MSG("announced_penalty.number"),
+              'required    -> true,
+              "ng-model".s -> "fir.number"
+            )
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="form-group">
+              <label class="sr-only">@MSG("announced_penalty.issue_date")</label>
+              @ng._input_date_picker("fir_issue_date",
+                '_formname               -> s"${fir_type}_form",
+                "ng-model".s             -> "fir.issue_date",
+                "datepicker-options".s   -> "fir_info.issue_date_picker.date_options",
+                "is-open".s              -> "fir_info.issue_date_picker.opened",
+                "uib-datepicker-popup".s -> MSG("date.format.long"),
+                '_click                  -> "fir_info.issue_date_picker.open()",
+                'required                -> None,
+                "localdate-to-string".s  -> None,
+                'placeholder             -> MSG("announced_penalty.issue_date")
+              )
+            </div>
+          </div>
+          <div class="col-xs-12 col-is-6 col-sm-6 col-md-6 col-lg-6">
+            @ng._form_control("fir_classification",
+              '_formname   -> s"${fir_type}_form",
+              'maxLength   -> 255,
+              'placeholder -> MSG("announced_penalty.classification"),
+              'required    -> true,
+              "ng-model".s -> "fir.classification"
+            )
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 text-right">
+            <button type="submit" class="btn btn-primary btn-sm" ng-click="@(fir_type)_form.$valid ? addFir('@fir_type', '@language') : ''">@MSG("ok")</button>
+            <button class="btn btn-link btn-sm" ng-click="cancelFir('@fir_type')">@MSG("cancel")</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}

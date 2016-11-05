@@ -1,0 +1,21 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@*
+  报告页脚
+*@
+@()(implicit messages: Messages)
+
+<fo:block @attribute_sets("footer-text", "text-end")>
+  <fo:page-number/>
+</fo:block>
+<fo:block @attribute_sets("footer-text", "text-center")>
+  全景求是管理顾问（北京）有限公司
+</fo:block>

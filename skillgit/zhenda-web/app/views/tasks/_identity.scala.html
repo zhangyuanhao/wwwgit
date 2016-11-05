@@ -1,0 +1,205 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(ngModel: String, extra_gathered: String)(implicit messages: Messages)
+
+@import common._
+
+@ng._panel_collapse("TaskSvc.task_info.identity",
+                  "zd-vcard",
+                  MSG("service.identity_verif"),
+                  Some(parts._checkbox_of_remaining(
+                    "!TaskSvc.task.content.identity.not_provided",
+                    "TaskSvc.task.content.identity.remaining.status"
+                    ))){
+
+  <div ng-if="!TaskSvc.task.content.identity.remaining.status" class="ng-cloak">
+    <div class="row">
+      <div class="col-xs-12 col-is-6">
+        <div class="section-header">
+          <h4>@TasksCtrl.msg("image.id_card_image")</h4>
+        </div>
+        @parts._image_line(s"${extra_gathered}.id_card_images", false)
+      </div>
+      <div class="col-xs-12 col-is-6">
+        <div class="section-header">
+          <h4>@TasksCtrl.msg("extra_gathering")</h4>
+        </div>
+        <dl class="dl-horizontal dl-info">
+          <dt>@MSG("identity.former_name")</dt>
+          <dd>{{ @(extra_gathered).former_name }}</dd>
+          <dt>@MSG("cell_phone")</dt>
+          <dd>{{ @(extra_gathered).phone }}</dd>
+          <dt>@MSG("email")</dt>
+          <dd><a href="{{'mailto:' + @(extra_gathered).email}}">{{@(extra_gathered).email}}</a></dd>
+          <dt>@MSG("identity.registered_address")</dt>
+          <dd>{{ @(extra_gathered).hukou_location | address }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    @*  上传补查资料  *@
+    <div class="row m-t-md">
+      <div class="col-xs-12">
+        <upload-attachment title="@MSG("upload.attachment")" name="attachments" module-name="identity" module-index="0" ng-model="TaskSvc.task.content.identity.attachments" src-fn="TaskSvc.getLoadUrl(fName)" upload-fn="TaskSvc.getUploadUrl(fName)">
+        </upload-attachment>
+      </div>
+    </div>
+
+    <div class="row m-t-md">
+      <div class="col-xs-12">
+        <div class="section-header strong">
+          <h4>@TasksCtrl.msg("checks")</h4>
+        </div>
+      </div>
+    </div>
+    <div class="row m-b-xs">
+      <div class="col-xs-12">
+        <button type="button" class="btn btn-default btn-xs pull-right">
+          公安部api
+        </button>
+      </div>
+    </div>
+
+    @{parts._line_of_title("证件及相关信息", ngModel, true)}
+
+    <form name="id_form" novalidate>
+      <div class="row m-t-xs">
+        <div class="col-xs-12 col-is-6">
+          <div class="panel panel-default panel-border ng-cloak">
+            <div class="panel-body" style="padding-bottom: 5px">
+              <div class="row">
+                <div class="col-xs-12">
+                  <strong>@TasksCtrl.msg("provided")</strong>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-12">
+                  <dl class="dl-horizontal dl-info">
+                    <dt>{{ TaskSvc.dictionary.id_doc_types[@(ngModel).provided.origin.id_doc_nbr.type] }}</dt>
+                    <dd>{{ @(ngModel).provided.origin.id_doc_nbr.number }}</dd>
+                    <dt>@MSG("identity.name")</dt>
+                    <dd>{{ @(ngModel).provided.origin.personal_name | personalName:"@messages.lang.language" }}
+                    </dd>
+                    <dt>@MSG("identity.gender")</dt>
+                    <dd>{{ TaskSvc.dictionary.genders[@(ngModel).provided.origin.gender] }}</dd>
+                    <dt>@MSG("identity.date_of_birth")</dt>
+                    <dd>{{ @(ngModel).provided.origin.date_of_birth | date : "@MSG("date.format.long")" }}</dd>
+                    <dt>@MSG("identity.nationality")</dt>
+                    <dd>{{ TaskSvc.dictionary.countries[@(ngModel).provided.origin.nationality] }}</dd>
+                  </dl>
+                </div>
+              </div>
+
+              <div class="row m-t-md" ng-if="TaskSvc.lang.zh">
+                <div class="col-xs-12">
+                  <div class="section-header">
+                    <h4>@TasksCtrl.msg("provided.edit.zh")</h4>
+                  </div>
+                  @{edit_basic_info("zh")}
+                </div>
+              </div>
+              <div class="row" ng-if="TaskSvc.lang.en">
+                <div class="col-xs-12">
+                  <div class="section-header">
+                    <h4>@TasksCtrl.msg("provided.edit.en")</h4>
+                  </div>
+                  @{edit_basic_info("en")}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-is-6">
+          <div class="panel panel-default panel-border">
+            <div class="panel-body" style="padding-bottom: 5px">
+              @{parts._line_of_truth(ngModel)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div ng-if="TaskSvc.task.content.identity.remaining.status">
+    @parts._reason_of_remaining(
+      "identity",
+      "TaskSvc.dictionary.reason_def.identity",
+      "TaskSvc.task.content.identity.remaining"
+      )
+  </div>
+}
+
+@edit_basic_info(language: String) = {
+  <div class="row">
+    <div class="col-xs-6">
+      @ng._form_control(s"last_Name_$language",
+        '_formname        -> "id_form",
+        'maxLength        -> 64,
+        'placeholder      -> MSG("identity.last_name"),
+        "empty-to-null".s -> None,
+        "ng-model".s      -> s"${ngModel}.provided.translated.${language}.personal_name.last"
+      )
+    </div>
+    <div class="col-xs-6">
+      @ng._form_control(s"first_name_$language",
+        '_formname        -> "id_form",
+        'maxLength        -> 64,
+        'placeholder      -> MSG("identity.first_name"),
+        "empty-to-null".s -> None,
+        "ng-model".s      -> s"${ngModel}.provided.translated.${language}.personal_name.first"
+      )
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <label class="sr-only">@MSG("identity.gender")</label>
+        <div class="btn-group">
+          <label class="btn btn-default" ng-model="@(ngModel).provided.translated.@(language).gender" uib-btn-radio="'Male'">
+            <i class="fa zd-male2 fa-fw text-primary"></i>
+            @MSG("Gender.Male")
+          </label>
+          <label class="btn btn-default" ng-model="@(ngModel).provided.translated.@(language).gender" uib-btn-radio="'Female'">
+            <i class="fa zd-female2 fa-fw text-danger"></i>
+            @MSG("Gender.Female")
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <label class="sr-only">@MSG("identity.date_of_birth")</label>
+        @ng._input_date_picker(s"birth_date_$language",
+          '_formname               -> "id_form",
+          "ng-model".s             -> s"${ngModel}.provided.translated.${language}.date_of_birth",
+          "uib-datepicker-popup".s -> MSG("date.format.long"),
+          "datepicker-options".s   -> s"TaskSvc.date_picker.identity.birth_date_${language}.date_options",
+          "is-open".s              -> s"TaskSvc.date_picker.identity.birth_date_${language}.opened",
+          '_click                  -> s"TaskSvc.date_picker.identity.birth_date_${language}.open()",
+          'placeholder             -> MSG("identity.date_of_birth"),
+          "localdate-to-string".s  -> None
+        )
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <label class="sr-only">@MSG("identity.nationality")</label>
+        <select class="form-control" ng-model="@(ngModel).provided.translated.@(language).nationality" ng-options="key as type for (key, type) in TaskSvc.dictionary.countries">
+        </select>
+      </div>
+    </div>
+  </div>
+}

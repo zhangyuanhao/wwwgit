@@ -1,0 +1,25 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import common._
+@()(implicit messages: Messages)
+
+<div class="row">
+  <div class="form-group col-xs-12 col-sm-6 col-md-4">
+    @ng._form_control("telephone",
+      '_type               -> "tel",
+      '_inline             -> false,
+      '_pattern_msg_key    -> "error.telephone_number",
+      'pattern             -> Telephone.regex,
+      'required            -> true,
+      Symbol("ng-model")   -> "CustomerSvc.customer.phone"
+    )
+  </div>
+</div>

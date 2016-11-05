@@ -1,0 +1,128 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  报告正文 -- 金融违规记录
+*@
+@(checks_set:ChecksSet)(implicit messages: Messages)
+
+@FinancialIrregularitiesChecks.findIn(checks_set).map{ financial_irregularities =>
+
+  @if(!financial_irregularities.review_result.passed_?) {
+    @* 未通过审核 *@
+    @__panel_explanation(MSG("financial_irregularities"), MSG("views.background_reports.pdf.review_not_passed"))
+  } else {
+    @if(financial_irregularities.remaining.status) {
+      @* 待查 *@
+      @__panel_explanation(MSG("financial_irregularities"), __remaining(financial_irregularities.remaining, FinancialIrregularitiesChecks.RemainingReason).toString)
+    } else {
+      <fo:table @attribute_sets("panel", "panel-block", "margin-bottom-sm", s"${messages.lang.code}-panel")>
+        <fo:table-column column-width="33%"/>
+        <fo:table-column column-width="25%"/>
+        <fo:table-column column-width="21%"/>
+        <fo:table-column column-width="21%"/>
+
+        <fo:table-body>
+          @* 标题 *@
+          @__panel_header(MSG("financial_irregularities"), colspan = 4)
+          @* 中国证监会行政处罚记录 *@
+          @__panel_row(
+            __panel_cell(MSG("financial_irregularities.csrc_ap"), Seq("text-center", "text-strong"), colspan = 4)
+          )()
+
+          @fin_title("csrc_ap")
+
+          @FinancialIrregularitiesCheck.CSRC_AP.findIn(financial_irregularities).map { csrc_ap =>
+            @csrc_ap.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+              @if(fact.isEmpty) {
+                @fin_empty
+              } else {
+                @fact.map { ap =>
+                  @fin_data(ap.comment.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")), ap.number.self, DateTimeFormat("date.format.long").print(ap.issue_date), ap.classification.self)
+                }
+              }
+            }
+          }
+
+          @* 中国证监会证券市场禁入记录 *@
+          @__panel_row(
+            __panel_cell(MSG("financial_irregularities.csrc_smb"), Seq("text-center", "text-strong"), colspan = 4)
+          )()
+
+          @fin_title("csrc_smb")
+
+          @FinancialIrregularitiesCheck.CSRC_SMB.findIn(financial_irregularities).map { csrc_smb =>
+            @csrc_smb.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+              @if(fact.isEmpty) {
+                @fin_empty
+              } else {
+                @fact.map { smb =>
+                  @fin_data(smb.comment.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")), smb.number.self, DateTimeFormat("date.format.long").print(smb.issue_date), smb.classification.self)
+                }
+              }
+            }
+          }
+
+          @* 中国保监会行政处罚记录 *@
+          @__panel_row(
+            __panel_cell(MSG("financial_irregularities.circ_ap"), Seq("text-center", "text-strong"), colspan = 4)
+          )()
+
+          @fin_title("circ_ap")
+
+          @FinancialIrregularitiesCheck.CIRC_AP.findIn(financial_irregularities).map { circ_ap =>
+            @circ_ap.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+              @if(fact.isEmpty) {
+                @fin_empty
+              } else {
+                @fact.map { ap =>
+                  @fin_data(ap.comment.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")), ap.number.self, DateTimeFormat("date.format.long").print(ap.issue_date), ap.classification.self)
+                }
+              }
+            }
+          }
+          @* 备注 *@
+          @__panel_comment(financial_irregularities.comments, colspan = 4)
+        </fo:table-body>
+      </fo:table>
+    }
+  }
+}
+
+@fin_title(fin_type: String) = {
+  @__panel_row(
+    __panel_cell(MSG(s"announced_penalty.comment.$fin_type"), Seq("text-center")),
+    __panel_cell(MSG("announced_penalty.number"), Seq("text-center")),
+    __panel_cell(MSG("announced_penalty.issue_date"), Seq("text-center")),
+    __panel_cell(MSG("announced_penalty.classification"), Seq("text-center"))
+  )()
+}
+
+@fin_empty = {
+  @__panel_row(
+    __panel_cell(MSG("not_exists"), Seq("text-center")),
+    __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"), Seq("text-center")),
+    __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"), Seq("text-center")),
+    __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"), Seq("text-center"))
+  )()
+}
+
+@fin_data(comment: String, number: String, issue_date: String, classification: String) = {
+  @__panel_row(
+    __panel_cell(comment, Seq("text-center")),
+    __panel_cell(number, Seq("text-center")),
+    __panel_cell(issue_date, Seq("text-center")),
+    __panel_cell(classification, Seq("text-center"))
+  )()
+}

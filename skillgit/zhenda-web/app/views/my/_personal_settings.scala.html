@@ -1,0 +1,41 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(key: String)(implicit req: UserRequest[_], messages: Messages)
+
+<div class="ibox">
+  <div class="ibox-title">
+    <strong>@MSG("settings.personal")</strong>
+  </div>
+  <div class="ibox-content no-padding">
+    <div class="list-group">
+      <a href="@routes.MyCtrl.profile()"
+        class="list-group-item@if(key=="profile"){ list-group-item-info}">
+        @MSG("settings.profile")
+      </a>
+      <a href="@routes.MyCtrl.account()"
+        class="list-group-item@if(key=="account"){ list-group-item-info}">
+        @MSG("settings.account")
+      </a>
+      <a href="#"
+        class="list-group-item@if(key=="email"){ list-group-item-info}">
+        @MSG("settings.email")
+      </a>
+      <a href="#"
+        class="list-group-item@if(key=="billing"){ list-group-item-info}">
+        @MSG("settings.billing")
+      </a>
+      <a href="#"
+        class="list-group-item@if(key=="security"){ list-group-item-info}">
+        @MSG("settings.security")
+      </a>
+    </div>
+  </div>
+</div>

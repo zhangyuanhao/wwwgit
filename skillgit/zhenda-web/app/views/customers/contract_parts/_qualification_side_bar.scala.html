@@ -1,0 +1,58 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-md-push-9 col-lg-push-9">
+    <div class="tab-pane">
+      <div class="panel-body no-padding">
+        <div class="list-group">
+          <a class="list-group-item mouse-hand" ng-click="qualificationRouter('identity')"
+            ng-class="{'list-group-item-info':selected_bar === 'identity'}">
+            @CustomersCtrl.msg("contract.identity")
+          </a>
+          <a class="list-group-item mouse-hand" ng-click="qualificationRouter('professional_license')"
+            ng-class="{'list-group-item-info':selected_bar === 'professional_license'}">
+            @CustomersCtrl.msg("contract.professional_licenses")
+          </a>
+          <a class="list-group-item mouse-hand" ng-click="qualificationRouter('criminal_record')"
+            ng-class="{'list-group-item-info':selected_bar === 'criminal_record'}">
+            @CustomersCtrl.msg("contract.criminal_records")
+          </a>
+          <a class="list-group-item mouse-hand" ng-click="qualificationRouter('illegal_organization_record')"
+            ng-class="{'list-group-item-info':selected_bar === 'illegal_organization_record'}">
+            @CustomersCtrl.msg("contract.illegal_organization_records")
+          </a>
+          <a class="list-group-item mouse-hand" ng-click="qualificationRouter('court_record')"
+            ng-class="{'list-group-item-info':selected_bar === 'court_record'}">
+            @CustomersCtrl.msg("contract.court_records")
+          </a>
+          <a class="list-group-item mouse-hand" ng-click="qualificationRouter('financial_irregularity')"
+            ng-class="{'list-group-item-info':selected_bar === 'financial_irregularity'}">
+            @CustomersCtrl.msg("contract.financial_irregularities")
+          </a>
+          <a class="list-group-item mouse-hand" ng-click="qualificationRouter('conflict_of_business_interest')"
+            ng-class="{'list-group-item-info':selected_bar === 'conflict_of_business_interest'}">
+            @CustomersCtrl.msg("contract.conflict_of_business_interest")
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-md-pull-3 col-lg-pull-3">
+    <div class="tab-pane">
+      <div class="panel-body">
+        <div ui-view ></div>
+      </div>
+    </div>
+  </div>
+</div>

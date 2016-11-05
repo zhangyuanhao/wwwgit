@@ -1,0 +1,303 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import java.util.Locale
+
+@import models.business.checks._
+@import models.business.services._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  概述 -- 警示灯概要
+*@
+@(checks_set: ChecksSet)(implicit messages: Messages, env: Environment)
+
+@defining(if (checks_set.levels.contains(Level.B)) 4 else 3) { levels_nr =>
+
+<fo:table @attribute_sets("panel", "panel-block", "margin-bottom-md", s"${messages.lang.code}-panel")>
+  @{
+    messages.lang match {
+      case Lang(Locale.ENGLISH) => {
+        <fo:table-column column-width="28%"/>
+        <fo:table-column column-width="46%"/>
+        <fo:table-column column-width="13%"/>
+        <fo:table-column column-width="13%"/>
+      }
+      case _ => {
+        <fo:table-column column-width="24%"/>
+        <fo:table-column column-width="50%"/>
+        <fo:table-column column-width="13%"/>
+        <fo:table-column column-width="13%"/>
+      }
+    }
+  }
+
+  <fo:table-body @attribute_sets("text-center")>
+    @__panel_row(
+      __panel_cell(BackgroundReportsCtrl.msg("pdf.checks_summary.type"), Seq("panel-header")),
+      __panel_cell(BackgroundReportsCtrl.msg("pdf.checks_summary.item"), Seq("panel-header")),
+      __panel_cell(BackgroundReportsCtrl.msg("pdf.checks_summary.verified"), Seq("panel-header")),
+      __panel_cell(BackgroundReportsCtrl.msg("pdf.checks_summary.status"), Seq("panel-header"))
+    )()
+
+    @* 身份信息 *@
+    @IdentityChecks.findIn(checks_set).map{ checks =>
+      @defining(IdentityCheck.BasicInfo.findIn(checks).flatMap(_.provided)) { provided =>
+      @defining(provided.map(p => MSG(s"IdDocType.${p.self.id_doc_nbr.basicName}"))) { document_type =>
+        @add_row(MSG("service.identity.1"), document_type.format, row_verified(checks), __traffic_light(levels_nr, checks.rating))
+      }}
+    }
+
+    @* 学历信息 *@
+    @EducationChecks.findIn(checks_set).map{ checks =>
+      @defining(checks.list.size) { total =>
+      @defining(checks.list.count(chk_ls => chk_ls.not_provided.status || chk_ls.education_details.isDefined)) { count =>
+        @* 多条则合并首单元格 *@
+        @checks.list.headOption.map { head =>
+          @if(head.not_provided.status) {
+            @add_row(MSG("service.education_details.1"), BackgroundReportsCtrl.msg("education_details.none", 0), row_verified(head), __traffic_light(levels_nr, head.rating), rowspan = count)
+          } else {
+            @head.education_details.map { education_details => @{
+              val title = row_title(education_details, total, head.institution.format)
+              add_row(MSG("service.education_details.1"), title, row_verified(education_details),
+                __traffic_light(levels_nr,
+                  if(!head.review_result.passed_?) Some(Level.Unknown)
+                  else if(head.remaining.status) Some(Level.Unknown)
+                  else education_details.rating
+                ), rowspan = count)
+            }}
+          }
+        }
+        @checks.list.tail.map { other =>
+          @if(other.not_provided.status) {
+            @add_row2(BackgroundReportsCtrl.msg("education_details.none", 1), row_verified(other), __traffic_light(levels_nr, other.rating))
+          } else {
+            @other.education_details.map { education_details => @{
+              val title = row_title(education_details, total, other.institution.format)
+              add_row2(title, row_verified(education_details),
+                __traffic_light(levels_nr,
+                  if(!other.review_result.passed_?) Some(Level.Unknown)
+                  else if(other.remaining.status) Some(Level.Unknown)
+                  else education_details.rating
+                ))
+            }}
+          }
+        }
+      }}
+    }
+
+    @* 学位信息 *@
+    @EducationChecks.findIn(checks_set).map{ checks =>
+      @defining(checks.list.size) { total =>
+      @defining(checks.list.count(chk_ls => chk_ls.not_provided.status || chk_ls.degree.isDefined)) { count =>
+        @* 多条则合并首单元格 *@
+        @checks.list.headOption.map { head =>
+          @if(head.not_provided.status) {
+            @add_row(MSG("service.degree.1"), BackgroundReportsCtrl.msg("degree.none", 0), row_verified(head), __traffic_light(levels_nr, head.rating), rowspan = count)
+          } else {
+            @head.degree.map { degree => @{
+              val title = row_title(degree, total, head.institution.format)
+              add_row(MSG("service.degree.1"), title, row_verified(degree),
+                __traffic_light(levels_nr,
+                  if(!head.review_result.passed_?) Some(Level.Unknown)
+                  else if(head.remaining.status) Some(Level.Unknown)
+                  else degree.rating
+                ), rowspan = count)
+            }}
+          }
+        }
+        @checks.list.tail.map { other =>
+          @if(other.not_provided.status) {
+            @add_row2(BackgroundReportsCtrl.msg("degree.none", 1), row_verified(other), __traffic_light(levels_nr, other.rating))
+          } else {
+            @other.degree.map { degree => @{
+              val title = row_title(degree, total, other.institution.format)
+              add_row2(title, row_verified(degree),
+                __traffic_light(levels_nr,
+                  if(!other.review_result.passed_?) Some(Level.Unknown)
+                  else if(other.remaining.status) Some(Level.Unknown)
+                  else degree.rating
+                ))
+            }}
+          }
+        }
+      }}
+    }
+
+    @* 专业资格 *@
+    @ProfessionalLicenseChecks.findIn(checks_set).map{ checks =>
+      @defining(checks.list.size) { total =>
+        @* 多条则合并首单元格 *@
+        @checks.list.headOption.map { head =>
+          @add_row(MSG("service.professional_licenses.1"), row_title(head, total), row_verified(checks), __traffic_light(levels_nr, head.rating), rowspan = total)
+        }
+        @checks.list.tail.map { other =>
+          @add_row2(row_title(other, total), row_verified(checks), __traffic_light(levels_nr, other.rating))
+        }
+      }
+    }
+
+    @* 犯罪记录 *@
+    @CriminalRecordsChecks.findIn(checks_set).map{ checks =>
+      @defining(checks.checks.size) { total =>
+        @* 多条则合并首单元格 *@
+        @checks.checks.headOption.map { head =>
+          @add_row(MSG("service.criminal_records.1"), MSG(s"service.criminal_records.${head.basicName}"), row_verified(checks), __traffic_light(levels_nr, head.rating), rowspan = total)
+        }
+        @checks.checks.tail.map { other =>
+          @add_row2(MSG("service.criminal_records.${other.basicName}"), row_verified(checks), __traffic_light(levels_nr, other.rating))
+        }
+      }
+    }
+
+    @* 非法组织记录 *@
+    @IllegalOrganizationRecordsChecks.findIn(checks_set).map{ checks =>
+      @defining(checks.checks.size) { total =>
+        @* 多条则合并首单元格 *@
+        @checks.checks.headOption.map { head =>
+          @add_row(MSG("service.illegal_organization_records.1"), MSG(s"service.illegal_organization_records.${head.basicName}"), row_verified(checks), __traffic_light(levels_nr, head.rating), rowspan = total)
+        }
+        @checks.checks.tail.map { other =>
+          @add_row2(MSG("service.illegal_organization_records.${other.basicName}"), row_verified(checks), __traffic_light(levels_nr, other.rating))
+        }
+      }
+    }
+
+    @* 诉讼记录 *@
+    @CourtRecordsChecks.findIn(checks_set).map{ checks =>
+      @defining(checks.checks.size) { total =>
+        @* 多条则合并首单元格 *@
+        @checks.checks.headOption.map { head =>
+          @add_row(MSG("service.court_records.1"), MSG(s"service.court_records.${head.basicName}"), row_verified(checks), __traffic_light(levels_nr, head.rating), rowspan = total)
+        }
+        @checks.checks.tail.map { other =>
+          @add_row2(MSG("service.court_records.${other.basicName}"), row_verified(checks), __traffic_light(levels_nr, other.rating))
+        }
+      }
+    }
+
+    @* 商业利益冲突 *@
+    @ConflictOfBusinessInterestChecks.findIn(checks_set).map{ checks =>
+      @add_row(MSG("service.conflict_of_business_interest.1"), MSG("service.conflict_of_business_interest.1"), row_verified(checks), __traffic_light(levels_nr, checks.rating))
+    }
+
+    @* 金融违规 *@
+    @FinancialIrregularitiesChecks.findIn(checks_set).map{ checks =>
+      @add_row(MSG("service.financial_irregularities.1"), MSG("service.financial_irregularities.2"), row_verified(checks), __traffic_light(levels_nr, checks.rating))
+    }
+
+    @* 工作履历 *@
+    @EmploymentChecks.findIn(checks_set).map{ checks =>
+      @defining(checks.list.filter(chk_ls => chk_ls.not_provided.status || chk_ls.interviews.exists(_._2.employment_details.isDefined))) { list =>
+        @* 多条则合并首单元格 *@
+        @list.headOption.map { head =>
+          @if(head.not_provided.status) {
+            @add_row(MSG("service.employment_details.1"), BackgroundReportsCtrl.msg("employment.none", 0), row_verified(head), __traffic_light(levels_nr, head.rating), rowspan = list.size)
+          } else {
+            @add_row(MSG("service.employment_details.1"), head.employer_name.format, row_verified(head), __traffic_light(levels_nr, head.rating), rowspan = list.size)
+          }
+        }
+        @list.tail.map { other =>
+          @if(other.not_provided.status) {
+            @add_row2(BackgroundReportsCtrl.msg("employment.none", 1), row_verified(other), __traffic_light(levels_nr, other.rating))
+          } else {
+            @add_row2(other.employer_name.format, row_verified(other), __traffic_light(levels_nr, other.rating))
+          }
+        }
+      }
+    }
+
+    @* 工作表现 *@
+    @EmploymentChecks.findIn(checks_set).map{ checks =>
+      @defining(checks.list.filter(_.interviews.exists(_._2.work_performance.isDefined))) { list =>
+      @if(list.nonEmpty) {
+        @* 多条则合并首单元格 *@
+        @list.headOption.map { head =>
+          @if(head.not_provided.status) {
+            @add_row(MSG("service.work_performance.1"), BackgroundReportsCtrl.msg("employment.none", 0), row_verified(head), __traffic_light(levels_nr, Some(Level.Na)), rowspan = list.size)
+          } else {
+            @add_row(MSG("service.work_performance.1"), head.employer_name.format, row_verified(head), __traffic_light(levels_nr, Some(Level.Na)), rowspan = list.size)
+          }
+        }
+        @list.tail.map { other =>
+          @if(other.not_provided.status) {
+            @add_row2(BackgroundReportsCtrl.msg("employment.none", 1), row_verified(other), __traffic_light(levels_nr, Some(Level.Na)))
+          } else {
+            @add_row2(other.employer_name.format, row_verified(other), __traffic_light(levels_nr, Some(Level.Na)))
+          }
+        }
+      }}
+    }
+
+  </fo:table-body>
+</fo:table>
+}
+
+@* 合并首单元格之第一行 *@
+@add_row(c1: Xml, c2: Xml, c3: Xml, c4: Xml, rowspan: Int = 1) = {
+  @__panel_row(
+    __panel_cell(c1, Seq("text-strong"), rowspan = rowspan),
+    __panel_cell(c2),
+    __panel_cell(c3),
+    __panel_cell(c4)
+  )()
+}
+
+@* 合并首单元格之第二行 *@
+@add_row2(c2: Xml, c3: Xml, c4: Xml) = {
+  @__panel_row(
+    __panel_cell(c2),
+    __panel_cell(c3),
+    __panel_cell(c4)
+  )()
+}
+
+@*
+  显示调查项目
+*@
+@row_title(obj: Any, total: Int = 0, prefix: String = "") = @{
+  obj match {
+
+    //学历
+    case o: EducationDetailsCheckList =>
+      val education_level = EducationDetailsCheck.EducationLevel.findIn(o).map(_.provided.format)
+      //学校名
+      if(total == 1) prefix
+      //学校名 + 学历性质
+      else (Seq(prefix) ++ education_level).mkString(" ")
+
+    //学位
+    case o: DegreeCheckList =>
+      val degree_type = DegreeCheck.DegreeType.findIn(o).map(_.provided.format)
+      //学位类别
+      if(total == 1) degree_type.format
+      //学校名 + 学位类别
+      else (Seq(prefix) ++ degree_type).mkString(" ")
+
+    //专业资格
+    case o: ProfessionalLicenseCheckList =>
+      if(o.not_provided.status) MSG("not_provided")
+      else ProfessionalLicenseCheck.LicenseType.findIn(o).flatMap(_.provided).format
+
+    //直接显示
+    case _ => prefix
+  }
+}
+
+@*
+  显示是否已经启动调查
+*@
+@row_verified(ratable: Ratable) = @{
+  ratable.rating match {
+    case Some(Level.Unknown) => BackgroundReportsCtrl.msg("pdf.checks_summary.verified.false")
+    case _                   => BackgroundReportsCtrl.msg("pdf.checks_summary.verified.true")
+  }
+}

@@ -1,0 +1,82 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 col-md-push-9 col-lg-push-9">
+    <div class="ibox">
+      <div class="ibox-title no-top-border">
+        <strong>@EmployeeOrdersCtrl.msg("my.task")</strong>
+      </div>
+      <div class="ibox-content no-padding">
+        <div class="list-group">
+          <a class="list-group-item"
+            ui-sref="support_customer_complained"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'customer_complained'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['customer_complained'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.customer_complained")
+          </a>
+          <a class="list-group-item"
+            ui-sref="support_partially_assigned"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'partially_assigned'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['partially_assigned'][0]}} </span>
+            <span class="badge risk_number"
+              ng-show="EmployeeOrdersSvc.counts['partially_assigned'][1]">
+              {{EmployeeOrdersSvc.counts['partially_assigned'][1]}}
+            </span>
+            @EmployeeOrdersCtrl.msg("task.partially_assigned")
+          </a>
+          <a class="list-group-item"
+            ui-sref="support_fully_assigned"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'fully_assigned'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['fully_assigned'][0]}} </span>
+            <span class="badge risk_number"
+              ng-show="EmployeeOrdersSvc.counts['fully_assigned'][1]">
+              {{EmployeeOrdersSvc.counts['fully_assigned'][1]}}
+            </span>
+            @EmployeeOrdersCtrl.msg("task.fully_assigned")
+          </a>
+          <a class="list-group-item"
+            ui-sref="support_basically_completed"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'basically_completed'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['basically_completed'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.basically_completed")
+          </a>
+          <a class="list-group-item"
+            ui-sref="support_finally_completed"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'finally_completed'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['finally_completed'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.finally_completed")
+          </a>
+          <a class="list-group-item"
+            ui-sref="support_unassigned"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'unassigned'}">
+            <span class="badge"> {{EmployeeOrdersSvc.counts['unassigned'][0]}} </span>
+            @EmployeeOrdersCtrl.msg("task.unassigned")
+          </a>
+          <a class="list-group-item"
+            ui-sref="support_customer_order_index"
+            ng-class="{'list-group-item-info':EmployeeOrdersSvc.filter === 'customer_order_index'}">
+            @EmployeeOrdersCtrl.msg("task.customer_order_index")
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-md-pull-3 col-lg-pull-3">
+    <div class="tab-pane active">
+      <div class="panel-body">
+        <div ui-view ></div>
+      </div>
+    </div>
+  </div>
+</div>

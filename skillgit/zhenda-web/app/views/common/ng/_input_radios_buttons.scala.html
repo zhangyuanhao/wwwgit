@@ -1,0 +1,33 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(field: Field, options: Seq[(String,(String,String))], args: (Symbol,Any)*)(
+fc:helper.FieldConstructor, fcs: helper.FieldConstructor*)(
+implicit messages: Messages)
+
+@helper.input(field, args:_*) { (id, name, value, htmlArgs) =>
+  <div class="btn-group" data-toggle="buttons">
+    @defining(args.toMap.get('_btnstyle)) { btnstyle =>
+      @options.map { v =>
+        <label class="btn @btnstyle.map{cls => @cls}" ng-model="@(name).value" uib-btn-radio="'@v._1'">
+          <input type="radio" id="@(id)_@v._1" name="@name" ng-model="@(name).value" value="@v._1"
+            autocomplete="off"
+            @toHtmlArgs(htmlArgs)>
+          @if(v._2._2.nonEmpty) {
+            <i class="@v._2._2"></i>
+          }
+          @if(v._2._1.nonEmpty) {
+            @v._2._1
+          }
+        </label>
+      }
+    }
+  </div>
+}(ChainedFieldConstructor(fc, fcs:_*), messages)

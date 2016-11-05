@@ -1,0 +1,40 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(title: String)(
+  content: Html)(
+  css: Html *)(
+  js: Html *)(
+  implicit req: RequestHeader, messages: Messages, env: Environment)
+
+@welcome.base_tmpl(title){
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="center-block">
+
+      <h1 class="text-center">
+        <img src="@routes.Assets.at("images/logo-blue.svg")">
+      </h1>
+
+      @content
+
+      <div class="account-footer text-center">
+        <ul class="list-inline">
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Security</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+}((css ++ Seq(libs.assets("css", "account/main"))):_*)(js:_*)

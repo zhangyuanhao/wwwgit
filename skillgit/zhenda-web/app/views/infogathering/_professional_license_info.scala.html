@@ -1,0 +1,77 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+@import common._
+
+<div ng-if="Svc.value.professional_licenses.list.length > 0">
+  <div class="panel panel-info ng-cloak">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-6">
+          <h4 class="f-text-success">
+            <i class="fa zd-medal2 fa-lg"></i>
+            @InfoGatheringCtrl.msg("prl_info")
+          </h4>
+        </div>
+        <div class="col-xs-6 text-right">
+          <button type="button" class="btn btn-primary btn-xs" ng-click="editPrl()">
+            <i class="fa fa-edit"></i>
+            @MSG("edit")
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("professional_license.organization") : </strong> {{ Svc.value.professional_licenses.list[0].organization }}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("professional_license.location") : </strong> {{ Svc.value.professional_licenses.list[0].location }}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("professional_license.issue_date") : </strong> {{ Svc.value.professional_licenses.list[0].issue_date | date:"@MSG("date.format.long")"}}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("professional_license.license_type") : </strong> {{ Svc.value.professional_licenses.list[0].license_type }}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("professional_license.expire_date")  : </strong> {{ Svc.value.professional_licenses.list[0].expire_date | date:"@MSG("date.format.long")"}}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("professional_license.license_number")  : </strong>{{ Svc.value.professional_licenses.list[0].license_number }}</p>
+        </div>
+        <div class="col-xs-12 col-sm-6">
+          <p><strong>@MSG("professional_license.contact_info")  : </strong>{{ Svc.value.professional_licenses.list[0].contact_info }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div ng-if="Svc.value.professional_licenses.list.length === 0">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="checkbox checkbox-success">
+        <input type="checkbox" id="no_more_prl" class="styled"
+          ng-model="Svc.value.professional_licenses.no_more" ng-click="noMorePrl()">
+        <label for="no_more_prl">
+          <span class="service-set-title service-set-lg" style="font-size: 16px;">
+            @InfoGatheringCtrl.msg("no_more_prl")
+          </span>
+        </label>
+      </div>
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="newPrl()" ng-disabled="Svc.value.professional_licenses.no_more">
+        <i class="fa zd-medal2 fa-lg fa-fw"></i>
+        @InfoGatheringCtrl.msg("prl_info")
+      </button>
+    </div>
+  </div>
+</div>

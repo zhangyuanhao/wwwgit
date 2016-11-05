@@ -1,0 +1,130 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+@import common._
+
+@* nickname *@
+<div class="row">
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    @ng._form_control("nickname",
+      '_inline           -> false,
+      'required          -> "required",
+      Symbol("ng-model") -> "EmployeeSvc.employee.nickname"
+    )
+  </div>
+  @* last name *@
+  <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
+    <div class="form-group">
+      @ng._form_control("identity.last_name",
+        '_inline           -> false,
+        'maxLength         -> 64,
+        'minLength         -> 1,
+        'required          -> true,
+        Symbol("ng-model") -> "EmployeeSvc.employee.personal_name.last"
+      )
+    </div>
+  </div>
+  @* first name *@
+  <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
+    <div class="form-group">
+      @ng._form_control("identity.first_name",
+        '_inline           -> false,
+        'maxLength         -> 64,
+        'minLength         -> 1,
+        'required          -> true,
+        Symbol("ng-model") -> "EmployeeSvc.employee.personal_name.first"
+      )
+    </div>
+  </div>
+</div>
+@* phone *@
+<div class="row">
+  <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+    @ng._form_control("work_phone",
+      '_inline           -> false,
+      '_type             -> "tel",
+      '_pattern_msg_key  -> "error.telephone_number",
+      'pattern           -> Telephone.regex,
+      'required          -> "required",
+      Symbol("ng-model") -> "EmployeeSvc.employee.work_phone"
+    )
+  </div>
+
+  <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+    @ng._form_control("cell_phone",
+      '_inline           -> false,
+      '_type             -> "tel",
+      '_pattern_msg_key  -> "error.cellphone_number",
+      'pattern           -> CellPhone.regex,
+      'required          -> "required",
+      Symbol("ng-model") -> "EmployeeSvc.employee.cell_phone"
+    )
+  </div>
+
+  <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+    @ng._form_control("home_phone",
+      '_inline           -> false,
+      '_type             -> "tel",
+      '_pattern_msg_key  -> "error.telephone_number",
+      'pattern           -> Telephone.regex,
+      Symbol("ng-model") -> "EmployeeSvc.employee.home_phone"
+    )
+  </div>
+</div>
+@* address *@
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="form-group">
+      <label>@EmployeesCtrl.msg("address")</label>
+      <address ng-model="EmployeeSvc.employee.address">
+      </address>
+    </div>
+  </div>
+</div>
+@* roles *@
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="form-group">
+      <label>@EmployeesCtrl.msg("employee.roles")</label>
+      <div ng-repeat="role in EmployeeSvc.roles_def"
+        ng-init="role_index = $index">
+        <div class="row m-t-sm">
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 checkbox checkbox-primary checkbox-inline m-l-sm">
+            <input type="checkbox"
+              ng-model="EmployeeSvc.roles[role_index]"
+              class="styled"
+              id="{{role_index}}"
+              ng-change="EmployeeSvc.changeLevel(role_index)">
+            <label for="{{role_index}}">
+                {{ role }}
+            </label>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 m-l-md">
+            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 radio radio-info radio-inline m-l-none"
+              ng-repeat="level in EmployeeSvc.levels_def"
+              ng-init="level_index = $index">
+              <input type="radio"
+                id=" {{role_index + '' + level_index}} "
+                ng-model="EmployeeSvc.employee.roles_levels[role_index]"
+                value="{{EmployeeSvc.levels_def[level_index]}}"
+                ng-disabled="!EmployeeSvc.roles[role_index]"
+                class="p-w-sd">
+              <label for="{{role_index + '' + level_index}}">
+                  {{ EmployeeSvc.roles_levels_def[role_index][level_index] }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

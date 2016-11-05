@@ -1,0 +1,25 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+<div class="m-b-md">
+  <h3>
+    @CustomersCtrl.msg("contract.financial_irregularities")
+  </h3>
+</div>
+
+@{parts._line_header()}
+
+@{parts._line(MSG("financial_irregularities.csrc_ap"), "csrc_ap","ContractSvc.value.fin.csrc_ap", "ContractSvc.saveFin('csrc_ap',1)", "ContractSvc.saveFin('csrc_ap',2)", "ContractSvc.saveFin('csrc_ap',3,#desc_type)", "ContractSvc.saveFin('csrc_ap',4)", None, true)}
+
+@{parts._line(MSG("financial_irregularities.csrc_smb"), "csrc_smb","ContractSvc.value.fin.csrc_smb", "ContractSvc.saveFin('csrc_smb',1)", "ContractSvc.saveFin('csrc_smb',2)", "ContractSvc.saveFin('csrc_smb',3,#desc_type)", "ContractSvc.saveFin('csrc_smb',4)", None, true)}
+
+@{parts._line(MSG("financial_irregularities.circ_ap"), "circ_ap","ContractSvc.value.fin.circ_ap", "ContractSvc.saveFin('circ_ap',1)", "ContractSvc.saveFin('circ_ap',2)", "ContractSvc.saveFin('circ_ap',3,#desc_type)", "ContractSvc.saveFin('circ_ap',4)", None, true)}

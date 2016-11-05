@@ -1,0 +1,248 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(edu: String, idx: Int)(implicit message: Messages)
+
+@import common._
+
+@ng._panel_collapse("TaskSvc.task_info.education"+idx,
+                    "fa-institution",
+                    MSG("education.education_details",idx),
+                    Some(parts._checkbox_of_remaining(
+                      s"!${edu}.not_provided.status",
+                      s"${edu}.remaining.status"
+                      ))){
+  @* 学历未提供 *@
+  <div ng-if="@(edu).not_provided.status">
+    @{parts._not_provided(TasksCtrl.msg("education.not_provided"), s"${edu}.not_provided")}
+  </div>
+
+  @* 学历提供 *@
+  <div ng-if="!@(edu).not_provided.status">
+    @* 待查 *@
+    <div ng-if="@(edu).remaining.status">
+      @parts._reason_of_remaining(
+        "edu_" + idx + "_",
+        "TaskSvc.dictionary.reason_def.edu",
+        s"${edu}.remaining"
+        )
+    </div>
+
+    <div ng-if="!@(edu).remaining.status">
+      <div class="row">
+        @* 学历证件照片 *@
+        <div class="col-xs-12 col-is-6">
+          <div class="section-header">
+            <h4>@TasksCtrl.msg("image.diploma_image")</h4>
+          </div>
+          @parts._image_line(s"${edu}.extra_gathered.diploma_images", false)
+        </div>
+        @* 额外收集信息 *@
+        <div class="col-xs-12 col-is-6">
+          <div class="section-header">
+            <h4>@TasksCtrl.msg("extra_gathering")</h4>
+          </div>
+          <dl class="dl-horizontal dl-info">
+            <span ng-if="@(edu).extra_gathered.major">
+              <dt>@MSG("education_details.major")</dt>
+              <dd>{{ @(edu).extra_gathered.major }}</dd>
+            </span>
+            <span ng-if="@(edu).extra_gathered.mode_of_study">
+              <dt>@MSG("education_details.mode_of_study")</dt>
+              <dd>{{ TaskSvc.dictionary.study_modes[@(edu).extra_gathered.mode_of_study] }}</dd>
+            </span>
+            <span ng-if="@(edu).extra_gathered.education_level">
+              <dt>@MSG("education_details.education_level")</dt>
+              <dd>{{ TaskSvc.dictionary.education_levels[@(edu).extra_gathered.education_level] }}</dd>
+            </span>
+            <span ng-if="@(edu).extra_gathered.diploma_number">
+              <dt>@MSG("education_details.diploma_number")</dt>
+              <dd>{{ @(edu).extra_gathered.diploma_number }}</dd>
+            </span>
+            <span ng-if="@(edu).extra_gathered.degree_type">
+              <dt>@MSG("degree.degree_type")</dt>
+              <dd>{{ @(edu).extra_gathered.degree_type }}</dd>
+            </span>
+            <span ng-if="@(edu).extra_gathered.date_of_award">
+              <dt>@MSG("degree.date_of_award")</dt>
+              <dd>{{ @(edu).extra_gathered.date_of_award | date : "@MSG("date.format.long")" }}</dd>
+            </span>
+          </dl>
+        </div>
+      </div>
+
+      @* 上传补查资料 *@
+      <div class="row m-t-md">
+        <div class="col-xs-12">
+          <upload-attachment title="@TasksCtrl.msg("upload_attachment.education")" name="attachments" module-name="education_details" module-index="@idx" ng-model="@(edu).education_details.attachments" src-fn="TaskSvc.getLoadUrl(fName)" upload-fn="TaskSvc.getUploadUrl(fName)">
+          </upload-attachment>
+        </div>
+      </div>
+
+      <div ng-if="@(edu).degree">
+        <div class="row m-t-md">
+          @* 学位证件照片 *@
+          <div class="col-xs-12 col-is-6" ng-if="@(edu).degree">
+            <div class="section-header">
+              <h4>@TasksCtrl.msg("image.degree_image")</h4>
+            </div>
+            @parts._image_line(s"${edu}.extra_gathered.degree_images", false)
+          </div>
+        </div>
+
+        @* 上传补查资料 *@
+        <div class="row m-t-md">
+          <div class="col-xs-12">
+            <upload-attachment title="@TasksCtrl.msg("upload_attachment.degree")" name="attachments" module-name="degree" module-index="@idx" ng-model="@(edu).degree.attachments" src-fn="TaskSvc.getLoadUrl(fName)" upload-fn="TaskSvc.getUploadUrl(fName)">
+            </upload-attachment>
+          </div>
+        </div>
+      </div>
+
+      <div class="row m-t-md">
+        <div class="col-xs-12">
+          <div class="section-header strong">
+            <h4>@TasksCtrl.msg("checks")</h4>
+          </div>
+        </div>
+      </div>
+      <div class="row m-b-sm">
+        <div class="col-xs-12">
+          <div class="pull-right">
+            <button type="button" class="btn btn-default btn-xs">
+              学信网api
+            </button>
+            <button type="button" class="btn btn-default btn-xs">
+              鹏元证信api
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <form name="edu_form" novalidate>
+        @* 学校名称 *@
+        @{parts._line(MSG("education_details.institution"), s"${edu}.education_details.checks.institution", Some(edit_institution("zh")), Some(edit_institution("en")), None, true)}
+
+        @* 所在地 *@
+        @{parts._line(MSG("education_details.address"), s"${edu}.education_details.checks.address", Some(edit_address("zh")), Some(edit_address("en")), Some("address : TaskSvc.dictionary.countries"), true)}
+
+        @* 学习时间 *@
+        @{parts._line_interval(MSG("education_details.interval"), s"${edu}.education_details.checks.interval", MSG("date.format.long"), Some(edit_interval("zh")), Some(edit_interval("en")), "interval", true)}
+
+        @* 学习专业 *@
+        @{parts._line(MSG("education_details.major"), s"${edu}.education_details.checks.major", Some(edit_major("zh")), Some(edit_major("en")), None, true)}
+
+        @* 学习方式 *@
+        @{parts._line_enum(MSG("education_details.mode_of_study"), s"${edu}.education_details.checks.mode_of_study", "TaskSvc.dictionary.study_modes", Some(edit_study_mode("zh")), Some(edit_study_mode("en")), true)}
+
+        @* 学历性质 *@
+        @{parts._line_enum(MSG("education_details.education_level"), s"${edu}.education_details.checks.education_level", "TaskSvc.dictionary.education_levels", Some(edit_education_level("zh")), Some(edit_education_level("en")), true)}
+
+        @* 学历备注 *@
+        @{parts._line_comment(TasksCtrl.msg("education_details.comment"), s"${edu}.education_details.comments",  "edu_comment", "edu_form")}
+
+        <div ng-if="@(edu).degree">
+          @{_degree(s"${edu}.degree", idx, s"${edu}.extra_gathered")}
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+@edit_institution(language: String) = {
+  @ng._form_control(s"edu_institution_$language",
+    '_formname           -> "edu_form",
+    '_label              -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline             -> false,
+    'maxLength           -> 255,
+    'minLength           -> 2,
+    "empty-to-null".s    -> None,
+    "ng-model".s         -> s"${edu}.education_details.checks.institution.provided.translated.${language}",
+    "uib-typeahead".s    -> "institution as institution.name for institution in getInstitutions($viewValue)",
+    "ng-model-options".s -> "{debounce: 400}",
+    "ng-change".s        -> s"TaskSvc.copyInstitution('${idx}', '${language}')"
+  )
+}
+
+@edit_address(language: String) = {
+  <div class="form-group">
+    <label name="address_@(language)" class="control-label">@TasksCtrl.msg(s"provided.edit.$language")</label>
+      <address ng-model="@(edu).education_details.checks.address.provided.translated.@(language)" countries="{{TaskSvc.dictionary.countries}}" show-city="false" show-street="false" input-mode="text">
+      </address>
+    </label>
+  </div>
+}
+
+@edit_interval(language: String) = {
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <label>@TasksCtrl.msg(s"provided.edit.$language")</label>
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+              @ng._input_date_picker(s"edu_start_date_$language",
+                '_formname               -> "edu_form",
+                "ng-model".s             -> s"${edu}.education_details.checks.interval.provided.translated.${language}.start",
+                "datepicker-options".s   -> s"TaskSvc.date_picker.education${idx}.start_date_${language}.date_options",
+                "is-open".s              -> s"TaskSvc.date_picker.education${idx}.start_date_${language}.opened",
+                "uib-datepicker-popup".s -> MSG("month.format.long"),
+                "localdate-to-string".s  -> None,
+                'placeholder             -> MSG("education_details.start_date"),
+                '_click                  -> s"TaskSvc.date_picker.education${idx}.start_date_${language}.open()"
+              )
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+              @ng._input_date_picker(s"edu_graduation_date_$language",
+                '_formname               -> "edu_form",
+                "ng-model".s             -> s"${edu}.education_details.checks.interval.provided.translated.${language}.end",
+                "datepicker-options".s   -> s"TaskSvc.date_picker.education${idx}.end_date_${language}.date_options",
+                "is-open".s              -> s"TaskSvc.date_picker.education${idx}.end_date_${language}.opened",
+                "uib-datepicker-popup".s -> MSG("month.format.long"),
+                "localdate-to-string".s  -> None,
+                'placeholder             -> MSG("education_details.graduation_date"),
+                '_click                  -> s"TaskSvc.date_picker.education${idx}.end_date_${language}.open()"
+              )
+            </div>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+}
+
+@edit_major(language: String) = {
+  @ng._form_control(s"edu_major_$language",
+    '_formname        -> "edu_form",
+    '_label           -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline          -> false,
+    'maxLength        -> 255,
+    'minLength        -> 2,
+    "empty-to-null".s -> None,
+    "ng-model".s      -> s"${edu}.education_details.checks.major.provided.translated.${language}"
+  )
+}
+
+@edit_study_mode(language: String) = {
+  <div class="form-group">
+    <label>@TasksCtrl.msg(s"provided.edit.$language")</label>
+    <select name="study_mode_@(language)" class="form-control" ng-model="@(edu).education_details.checks.mode_of_study.provided.translated.@(language)"
+      ng-options="key as type for (key, type) in TaskSvc.dictionary.study_modes">
+    </select>
+  </div>
+}
+
+@edit_education_level(language: String) = {
+  <div class="form-group">
+    <label>@TasksCtrl.msg(s"provided.edit.$language")</label>
+    <select name="education_level_@(language)" class="form-control" ng-model="@(edu).education_details.checks.education_level.provided.translated.@(language)"
+      ng-options="key as type for (key, type) in TaskSvc.dictionary.education_levels">
+    </select>
+  </div>
+}

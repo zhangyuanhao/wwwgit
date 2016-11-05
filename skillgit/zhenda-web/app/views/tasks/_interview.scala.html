@@ -1,0 +1,456 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(interviews: String, interview: String, referenceType: String, referenceTitle: String, task_type: String)(implicit message: Messages)
+
+@import common._
+
+<div class="ibox ng-cloak">
+  <div class="ibox-title clearfix">
+    <h4 class="ibox-collapse f-text-info" ng-click="TaskSvc.task_info.employment[$index].@(referenceType).is_collapsed = !TaskSvc.task_info.employment[$index].@(referenceType).is_collapsed">
+      {{ TaskSvc.dictionary.reference_types.@(referenceTitle) }}
+    </h4>
+    @if(task_type.equals("task")){
+      @{reference_operations()}
+    }else{
+      @{reference_display()}
+    }
+    <div class="pull-right">
+      @{parts._checkbox_of_remaining(s"!${interview}.reference.invalid.status", s"${interview}.remaining.status")}
+      <i class="fa fa-fw collapse-button" ng-class="TaskSvc.task_info.employment[$index].@(referenceType).is_collapsed ? 'fa-chevron-right' : 'fa-chevron-down'"
+        ng-click="TaskSvc.task_info.employment[$index].@(referenceType).is_collapsed = !TaskSvc.task_info.employment[$index].@(referenceType).is_collapsed">
+      </i>
+    </div>
+  </div>
+  <div class="ibox-content" uib-collapse="TaskSvc.task_info.employment[$index].@(referenceType).is_collapsed">
+
+    <div ng-if="@(interview).remaining.status">
+      @parts._reason_of_remaining(
+        "interview_" + "{{employment_index}}" + "_" + referenceType + "_",
+        "TaskSvc.dictionary.reason_def.interview",
+        s"${interview}.remaining"
+        )
+    </div>
+
+    <div class="m-b-md" ng-if="@(interview).reference.invalid.status">
+      <div class="section-header">
+        <h4>@TasksCtrl.msg("interview.invalid.comment")</h4>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-12">
+          <textarea class="form-control" rows="2" ng-model="@(interview).reference.invalid.comments.zh" max-length="512" placeholder="@TasksCtrl.msg("interview.invalid.comment.zh")" empty-to-null></textarea>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-12">
+          <textarea class="form-control" rows="2" ng-model="@(interview).reference.invalid.comments.en" max-length="512" placeholder="@TasksCtrl.msg("interview.invalid.comment.en")" empty-to-null></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div ng-if="!@(interview).remaining.status">
+      @{reference._reference_view(referenceType, s"${interview}.reference", task_type)}
+
+      <div class="row m-t-md">
+        <div class="col-xs-12 col-sm-12">
+          @{parts._upload_audio(referenceType, s"${interview}.audio_files")}
+        </div>
+      </div>
+
+      <div ng-if="!@(interview).reference.invalid.status">
+        <form name="employ_form" novalidate>
+          <div class="row m-t-md">
+            <div class="col-xs-12 col-sm-12">
+              <div class="section-header strong">
+                <h4>@MSG("service.employment_verif")</h4>
+              </div>
+            </div>
+          </div>
+          @*  雇主名称  *@
+          @{parts._line(MSG("employment_details.employer_name"), s"${interview}.employment_details.checks.employer_name", Some(edit_employer_name("zh")), Some(edit_employer_name("en")))}
+          @*  工作地址  *@
+          @{parts._line(MSG("employment_details.address"), s"${interview}.employment_details.checks.address", Some(edit_address("zh")), Some(edit_address("en")), Some("address : TaskSvc.dictionary.countries"))}
+          @*  供职时间  *@
+          @{parts._line_interval(MSG("employment_details.interval"), s"${interview}.employment_details.checks.interval_optional_end", MSG("month.format.long"), Some(edit_interval("zh", s"${interview}.employment_details.checks.interval_optional_end")), Some(edit_interval("en", s"${interview}.employment_details.checks.interval_optional_end")), "interval")}
+          @*  供职时间  *@
+          @{parts._line_interval(MSG("employment_details.interval"), s"${interview}.employment_details.checks.interval", MSG("month.format.long"), Some(edit_interval("zh", s"${interview}.employment_details.checks.interval")), Some(edit_interval("en", s"${interview}.employment_details.checks.interval")), "interval")}
+          @*  供职方式  *@
+          @{parts._line_enum(MSG("employment_details.hire_type"), s"${interview}.employment_details.checks.hire_type", "TaskSvc.dictionary.hire_types", Some(edit_hire_type("zh")), Some(edit_hire_type("en")))}
+          @*  职位名称  *@
+          @{parts._line(MSG("employment_details.position_title"), s"${interview}.employment_details.checks.position_title", Some(edit_position_title("zh")), Some(edit_position_title("en")), Some("jobTitle"))}
+          @*  职责描述  *@
+          @{parts._line(MSG("employment_details.major_responsibility"), s"${interview}.employment_details.checks.major_responsibility", Some(edit_major_responsibility("zh")), Some(edit_major_responsibility("en")))}
+          @*  上级职位  *@
+          @{parts._line(MSG("employment_details.supervisor_position_title"), s"${interview}.employment_details.checks.supervisor_position_title", Some(edit_supervisor_position_title("zh")), Some(edit_supervisor_position_title("en")), Some("jobTitle"))}
+          @*  薪酬范围  *@
+          <div ng-if="@(interview).employment_details.checks.earnings">
+            @{parts._line_of_title(MSG("employment_details.earnings"), s"${interview}.employment_details.checks.earnings")}
+            <div class="row m-t-xs">
+              <div class="col-xs-12 col-is-6 col-sm-6">
+                <div class="panel panel-default panel-border ng-cloak">
+                  <div class="panel-body" style="padding-bottom: 5px">
+                    <div class="row">
+                      <div class="col-xs-12">
+                        <div class="form-group">
+                          <label class="control-label">@TasksCtrl.msg("provided")</label>
+                          <div class="form-control-static">
+                            <span ng-if="@(interview).employment_details.checks.earnings.provided.origin[0]">
+                              {{ TaskSvc.dictionary.salary_types[@(interview).employment_details.checks.earnings.provided.origin[0].data.period] + " " + TaskSvc.dictionary.currency_types[@(interview).employment_details.checks.earnings.provided.origin[0].data.rate.currency] + " " + @(interview).employment_details.checks.earnings.provided.origin[0].data.rate.amount }}
+                            </span>
+                            <span ng-if="!@(interview).employment_details.checks.earnings.provided.origin[0]">
+                              @MSG("not_provided")
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row" ng-if="TaskSvc.lang.zh">
+                      <div class="col-xs-12">
+                        @{edit_salary("zh")}
+                      </div>
+                    </div>
+
+                    <div class="row" ng-if="TaskSvc.lang.en">
+                      <div class="col-xs-12">
+                        @{edit_salary("en")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xs-12 col-is-6 col-sm-6">
+                <div class="panel panel-default panel-border">
+                  <div class="panel-body" style="padding-bottom: 5px">
+                    @{parts._line_of_truth(s"${interview}.employment_details.checks.earnings")}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          @*  离职原因  *@
+          @{parts._line(MSG("employment_details.reason_for_leaving"), s"${interview}.employment_details.checks.reason_for_leaving", Some(edit_reason_for_leaving("zh")), Some(edit_reason_for_leaving("en")))}
+          @*  是否完成工作交接  *@
+          <div ng-if="@(interview).employment_details.checks.handed_over">
+            @{parts._line_of_title(MSG("employment_details.handed_over"), s"${interview}.employment_details.checks.handed_over")}
+            <div class="row m-t-xs">
+              <div class="col-xs-12 col-is-6 col-sm-6">
+                <div class="panel panel-default panel-border ng-cloak">
+                  <div class="panel-body" style="padding-bottom: 5px">
+                    <div class="row" ng-class="{'m-b-13' : TaskSvc.lang.zh && TaskSvc.lang.en}">
+                      <div class="col-xs-12">
+                        <div class="form-group">
+                          <label class="control-label">@TasksCtrl.msg("provided")</label>
+                          <div class="form-control-static">
+                            <span ng-if="@(interview).employment_details.checks.handed_over.provided.origin==='true'">
+                              @MSG("yes")
+                            </span>
+                            <span ng-if="@(interview).employment_details.checks.handed_over.provided.origin==='false'">
+                              @MSG("no")
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row" ng-if="TaskSvc.lang.zh">
+                      <div class="col-xs-12 col-is-6 col-sm-6">
+                        @{edit_handed_over("zh")}
+                      </div>
+                    </div>
+                    <div class="row" ng-if="TaskSvc.lang.en">
+                      <div class="col-xs-12 col-is-6 col-sm-6">
+                        @{edit_handed_over("en")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xs-12 col-is-6 col-sm-6">
+                <div class="panel panel-default panel-border">
+                  <div class="panel-body" style="padding-bottom: 5px">
+                    @{parts._line_of_truth(s"${interview}.employment_details.checks.handed_over")}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          @*  是否存在重大违规违纪行为?  *@
+          @{parts._line_determine(MSG("employment_details.misconduct"), "misconduct", s"${interview}.employment_details.checks.misconduct", s"$referenceType", true)}
+          @*  是否发生劳动争议或仲裁?  *@
+          @{parts._line_determine(MSG("employment_details.labor_dispute"), "labor_dispute", s"${interview}.employment_details.checks.labor_dispute", s"$referenceType", true)}
+          @*  是否签订行业禁止协议?  *@
+          @{parts._line_determine(MSG("employment_details.nonsolicitation_agreement"), "nonsolicitation_agreement", s"${interview}.employment_details.checks.nonsolicitation_agreement", s"$referenceType", true)}
+          @*  是否签订培训协议?  *@
+          @{parts._line_determine(MSG("employment_details.training_agreement"), "training_agreement", s"${interview}.employment_details.checks.training_agreement", s"$referenceType", true)}
+          @*  是否适合再次雇佣?  *@
+          @{parts._line_determine(MSG("employment_details.willing_to_rehire"), "willing_to_rehire", s"${interview}.employment_details.checks.willing_to_rehire", s"$referenceType")}
+
+        <div ng-if="@(interview).work_performance">
+          @{_performance(referenceType, s"${interview}.work_performance.checks")}
+        </div>
+
+          @*  证明人访谈备注  *@
+          <div class="row m-t-md">
+            <div class="col-xs-12">
+              @{parts._line_comment(TasksCtrl.msg("interview_comment"), s"${interview}.comments", "interview_comment")}
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+@reference_operations() = {
+  <div style="display:inline-block; margin-left:6px;" class="text-center">
+    <div class="btn-group" uib-dropdown>
+      <button id="single-button" type="button" class="btn btn-xs btn-primary" uib-dropdown-toggle>
+        @{reference_info()}
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="btn-append-to-body">
+        @{addOrRemove()}
+        <li role="menuitem"><a ng-click="changeReference($index,'@referenceType')"><i class="fa fa-retweet fa-fw fa-lg f-text-primary"></i>@MSG("references.change_reference")</a></li>
+        <li class="divider" ng-if="@(interview).reference.source === 'Provided' && !@(interview).remaining.status"></li>
+        <li role="menuitem" ng-if="@(interview).reference.source === 'Provided' && !@(interview).remaining.status">
+          <a ng-click="@(interview).reference.invalid.status = !@(interview).reference.invalid.status">
+            <i class="fa fa-fw fa-lg" ng-class="@(interview).reference.invalid.status ? 'fa-remove f-text-danger' : ''"></i>@TasksCtrl.msg("interview.invalid")
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+}
+
+@reference_display() = {
+  <div style="display:inline-block; margin-left:6px;" class="text-center">
+    @{reference_info()}
+  </div>
+}
+
+@reference_info() = {
+  <strong ng-if="@(interview).reference.current.translated.zh.basic_info.name">
+    {{ @(interview).reference.current.translated.zh.basic_info.name + " - "}}
+  </strong>
+  <strong ng-if="!@(interview).reference.current.translated.zh.basic_info.name">
+    @MSG("not_provided") -
+  </strong>
+  <strong ng-if="@(interview).reference.invalid.status">
+    @TasksCtrl.msg("interview.invalid")
+  </strong>
+  <strong ng-if="!@(interview).reference.invalid.status">
+    {{TaskSvc.dictionary.reference_sources[@(interview).reference.source]}}
+  </strong>
+}
+
+@addOrRemove() = {
+  @if(referenceType.endsWith("_Copy")){
+    <li role="menuitem">
+      <a ng-click="deleteReference($index,'@referenceType')">
+        <i class="fa fa-trash fa-fw fa-lg f-text-danger"></i>@MSG("references.delete_reference")
+      </a>
+    </li>
+  }else{
+    <li role="menuitem" ng-if="!@(interviews).@(referenceType + "_Copy")">
+      <a ng-click="newReference($index,'@referenceType')">
+        <i class="fa fa-plus fa-fw fa-lg f-text-success"></i>@MSG("references.add_reference")
+      </a>
+    </li>
+  }
+}
+
+@edit_employer_name(language: String) = {
+  @ng._form_control(s"employer_name_$language",
+    '_formname        -> "employ_form",
+    '_label           -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline          -> false,
+    'maxLength        -> 255,
+    'minLength        -> 2,
+    "empty-to-null".s -> None,
+    "ng-model".s      -> s"${interview}.employment_details.checks.employer_name.provided.translated.$language"
+  )
+}
+
+@edit_address(language: String) = {
+  <div class="form-group">
+    <label class="control-label">@TasksCtrl.msg(s"provided.edit.$language")</label>
+      <address form-name="employ_form" name="address_@(language)" ng-model="@(interview).employment_details.checks.address.provided.translated.@(language)" countries="{{TaskSvc.dictionary.countries}}" show-street="false" input-mode="text">
+      </address>
+    </label>
+  </div>
+}
+
+@edit_interval(language: String, ngModel: String) = {
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <label>@TasksCtrl.msg(s"provided.edit.$language")</label>
+          <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+              @ng._input_date_picker(s"start_date_$language",
+                '_formname               -> "employ_form",
+                "ng-model".s             -> s"${ngModel}.provided.translated.$language.start",
+                "datepicker-options".s   -> s"TaskSvc.date_picker.employment[employment_index].${referenceType}.start_date_$language.date_options",
+                "is-open".s              -> s"TaskSvc.date_picker.employment[employment_index].${referenceType}.start_date_$language.opened",
+                "uib-datepicker-popup".s -> MSG("month.format.long"),
+                "localdate-to-string".s  -> None,
+                'placeholder             -> MSG("employment_details.interval.start_date"),
+                '_click                  -> s"TaskSvc.date_picker.employment[employment_index].${referenceType}.start_date_$language.open()"
+              )
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+              @ng._input_date_picker(s"end_date_$language",
+                '_formname               -> "employ_form",
+                "ng-model".s             -> s"${ngModel}.provided.translated.$language.end",
+                "datepicker-options".s   -> s"TaskSvc.date_picker.employment[employment_index].${referenceType}.end_date_$language.date_options",
+                "is-open".s              -> s"TaskSvc.date_picker.employment[employment_index].${referenceType}.end_date_$language.opened",
+                "uib-datepicker-popup".s -> MSG("month.format.long"),
+                "localdate-to-string".s  -> None,
+                'placeholder             -> MSG("employment_details.interval.end_date"),
+                '_click                  -> s"TaskSvc.date_picker.employment[employment_index].${referenceType}.end_date_$language.open()"
+              )
+            </div>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+}
+
+@edit_hire_type(language: String) = {
+  <div class="form-group">
+    <label class="control-label">@TasksCtrl.msg(s"provided.edit.$language")</label>
+    <select name="hire_type_@(language)" class="form-control" ng-model="@(interview).employment_details.checks.hire_type.provided.translated.@(language)"
+      ng-options="key as type for (key, type) in TaskSvc.dictionary.hire_types">
+    </select>
+  </div>
+}
+
+@edit_position_title(language: String) = {
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <label>@TasksCtrl.msg(s"provided.edit.$language")</label>
+        <div class="row">
+          <div class="col-xs-6">
+            @ng._form_control(s"position_job_title_$language",
+              '_formname        -> "employ_form",
+              'maxLength        -> 255,
+              '_in_group        -> true,
+              "empty-to-null".s -> None,
+              "ng-model".s      -> s"${interview}.employment_details.checks.position_title.provided.translated.$language.job_title",
+              'placeholder      -> InfoGatheringCtrl.msg("employment.job_title")
+            )
+          </div>
+          <div class="col-xs-6">
+            @ng._form_control(s"position_department_$language",
+              '_formname        -> "employ_form",
+              'maxLength        -> 255,
+              '_in_group        -> true,
+              "empty-to-null".s -> None,
+              "ng-model".s      -> s"${interview}.employment_details.checks.position_title.provided.translated.$language.department",
+              'placeholder      -> InfoGatheringCtrl.msg("employment.department")
+            )
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@edit_major_responsibility(language: String) = {
+  @ng._form_control(s"major_responsibility_$language",
+    '_formname        -> "employ_form",
+    '_label           -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline          -> false,
+    'maxLength        -> 255,
+    "empty-to-null".s -> None,
+    "ng-model".s      -> s"${interview}.employment_details.checks.major_responsibility.provided.translated.$language"
+  )
+}
+
+@edit_supervisor_position_title(language: String) = {
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <label>@TasksCtrl.msg(s"provided.edit.$language")</label>
+        <div class="row">
+          <div class="col-xs-6">
+            @ng._form_control(s"supervisor_job_title_$language",
+              'maxLength        -> 255,
+              '_in_group        -> true,
+              'placeholder      -> InfoGatheringCtrl.msg("employment.job_title"),
+              "empty-to-null".s -> None,
+              "ng-model".s      -> s"${interview}.employment_details.checks.supervisor_position_title.provided.translated.$language.job_title"
+            )
+          </div>
+          <div class="col-xs-6">
+            @ng._form_control(s"supervisor_department_$language",
+              'maxLength        -> 255,
+              '_in_group        -> true,
+              'placeholder      -> InfoGatheringCtrl.msg("employment.department"),
+              "empty-to-null".s -> None,
+              "ng-model".s      -> s"${interview}.employment_details.checks.supervisor_position_title.provided.translated.$language.department"
+            )
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@edit_salary(language: String) = {
+  @ng._form_control(s"salary_$language",
+    '_formname        -> "employ_form",
+    '_type            -> "number",
+    '_label           -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline          -> false,
+    '_addon_label     -> MSG("CNY.yuan"),
+    'pattern          -> """^\d+(.\d{1,1})?$""",
+    '_pattern_msg_key -> "error.real.precision1",
+    "empty-to-null".s -> None,
+    "ng-model".s      -> s"${interview}.employment_details.checks.earnings.provided.translated.$language[0].data.rate.amount"
+  )
+}
+
+@edit_reason_for_leaving(language: String) = {
+  @ng._form_control(s"reason_for_leaving_$language",
+    '_formname        -> "employ_form",
+    '_label           -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline          -> false,
+    'maxLength        -> 255,
+    "empty-to-null".s -> None,
+    "ng-model".s      -> s"${interview}.employment_details.checks.reason_for_leaving.provided.translated.$language"
+  )
+}
+
+@edit_handed_over(language: String) = {
+  @ng._form_group_static(s"handed_over_$language",
+    '_formname -> "employ_form",
+    '_label    -> TasksCtrl.msg(s"provided.edit.$language"),
+    '_inline   -> false
+  ){
+    <div class="radio radio-success radio-inline">
+      <input type="radio" name="handed_over_{{$index}}_@(referenceType)_@(language)" id="already_{{$index}}_@(referenceType)_@(language)" value="true" ng-model="@(interview).employment_details.checks.handed_over.provided.translated.@(language)">
+      <label for="already_{{$index}}_@(referenceType)_@(language)">
+        @MSG("yes")
+      </label>
+    </div>
+
+    <div class="radio radio-danger radio-inline">
+      <input type="radio" name="handed_over_{{$index}}_@(referenceType)_@(language)" id="not_yet_{{$index}}_@(referenceType)_@(language)" value="false" ng-model="@(interview).employment_details.checks.handed_over.provided.translated.@(language)">
+      <label for="not_yet_{{$index}}_@(referenceType)_@(language)">
+        @MSG("no")
+      </label>
+    </div>
+  }
+}

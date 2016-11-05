@@ -1,0 +1,24 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  背景调查核实项目, 合并单元格用 (工作履历核实)
+*@
+@(prefix: String, check: ExtraCheck.StrictMultipleChoice)(implicit messages: Messages)
+
+@* #472 兼容历史数据 *@
+@defining(check.comments.map(_.format).orElse(check.approaches).format) { comment =>
+@defining(check.rating) { rating =>
+  @__strict_multiple_choice_merged(prefix, check, rowspan = 1, comment, rating)
+}}

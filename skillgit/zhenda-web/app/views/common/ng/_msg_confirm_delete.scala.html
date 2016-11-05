@@ -1,0 +1,36 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(confirmInfomation: String = "")(implicit messages: Messages)
+
+<script type="text/ng-template" id="confirm_delete.html">
+  @confirm_delete
+</script>
+
+@confirm_delete = {
+  <div class="modal-header">
+    <button type="button" class="close" aria-label="Close" ng-click="cancel()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">@MSG("msg.confirm_delete.title")</h4>
+  </div>
+  <div class="modal-body">
+    @confirmInfomation
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-danger" ng-click="ok()" autofocus>
+      <i class="fa fa-trash"></i>
+      @MSG("delete")
+    </button>
+    <button class="btn btn-default" ng-click="cancel()">
+      @MSG("cancel")
+    </button>
+  </div>
+}

@@ -1,0 +1,175 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+@import common._
+
+<div class="panel panel-default ng-cloak">
+  <div class="panel-body">
+    <form name="id_form" novalidate>
+      <div class="row">
+        <div class="col-xs-4">
+          @ng._form_control("personalLastName",
+            '_formname          -> "id_form",
+            '_label             -> MSG("identity.last_name"),
+            '_inline            -> false,
+            'maxLength          -> 64,
+            'required           -> true,
+            Symbol("ng-model")  -> "identity_data.basic_info.personal_name.last"
+          )
+        </div>
+
+        <div class="col-xs-4">
+          @ng._form_control("personalFirstName",
+            '_formname         -> "id_form",
+            '_label            -> MSG("identity.first_name"),
+            '_inline           -> false,
+            'maxLength         -> 64,
+            'required          -> true,
+            Symbol("ng-model") -> "identity_data.basic_info.personal_name.first"
+          )
+        </div>
+        <div class="col-xs-4">
+          @ng._form_control("personalFormerName",
+            '_formname              -> "id_form",
+            '_label                 -> MSG("identity.former_name"),
+            '_inline                -> false,
+            'maxLength              -> 64,
+            'minLength              -> 2,
+            Symbol("empty-to-null") -> None,
+            Symbol("ng-model")      -> "identity_data.former_name"
+          )
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+          <div class="form-group">
+            <label>@MSG("identity.nationality")</label>
+            <select class="form-control" ng-model="identity_data.basic_info.nationality"
+              ng-options="key as type for (key, type) in Svc.dictionary.countries">
+            </select>
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+          @ng._form_group_static("gender",
+          '_formname -> "id_form",
+          '_inline   -> false,
+          '_label    -> MSG("identity.gender")
+          ){
+            <div class="btn-group">
+              <label class="btn btn-default" ng-model="identity_data.basic_info.gender" uib-btn-radio="'Male'">
+                <i class="fa zd-male2 fa-fw text-primary"></i>
+                @MSG("Gender.Male")
+              </label>
+              <label class="btn btn-default" ng-model="identity_data.basic_info.gender" uib-btn-radio="'Female'">
+                <i class="fa zd-female2 fa-fw text-danger"></i>
+                @MSG("Gender.Female")
+              </label>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+          <div class="form-group">
+            <label>@MSG("identity.date_of_birth")</label>
+            @ng._input_date_picker("personalBirthDate",
+              '_formname               -> "id_form",
+              "ng-model".s             -> "identity_data.basic_info.date_of_birth",
+              "uib-datepicker-popup".s -> MSG("date.format.long"),
+              "datepicker-options".s   -> "date_picker.birth_date.date_options",
+              "is-open".s              -> "date_picker.birth_date.opened",
+              '_click                  -> "date_picker.birth_date.open()",
+              "localdate-to-string".s  -> None,
+              'required                -> None
+            )
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+          @ng._form_control("cell_phone",
+            '_formname           -> "id_form",
+            '_type               -> "tel",
+            '_inline             -> false,
+            '_pattern_msg_key    -> "error.cellphone_number",
+            'pattern             -> CellPhone.regex,
+            'required            -> true,
+            Symbol("ng-model")   -> "identity_data.phone"
+          )
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+          @ng._form_control("email",
+            '_formname         -> "id_form",
+            '_inline           -> false,
+            '_pattern_msg_key  -> "error.email",
+            'pattern           -> EmailAddress.emailRegex,
+            'required          -> true,
+            Symbol("ng-model") -> "identity_data.email"
+          )
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="form-group">
+            <label>@MSG("identity.id_doc_nbr")</label>
+            <div class="row">
+              <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" style="margin-bottom: 5px">
+                <select class="form-control" ng-model="identity_data.basic_info.id_doc_nbr.type"
+                  ng-options="key as type for (key, type) in Svc.dictionary.id_doc_types">
+                </select>
+              </div>
+              <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" style="margin-bottom: 5px">
+                @ng._form_control("personalIdNumber",
+                  '_formname         -> "id_form",
+                  'maxLength         -> 64,
+                  'required          -> true,
+                  Symbol("ng-model") -> "identity_data.basic_info.id_doc_nbr.number"
+                )
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="form-group">
+            <label>@MSG("identity.registered_address")</label>
+            <address ng-model="identity_data.hukou_location" show-country="false">
+            </address>
+          </div>
+        </div>
+      </div>
+
+      @*  上传身份证照片  *@
+      <div class="row">
+        <div class="col-xs-12">
+          <upload-image title="@MSG("upload.id_card_image")" name="id_card" module-name="image" module-index="0" ng-model="identity_data.id_card_images" src-fn="Svc.getLoadUrl(fName)" thumbnail-fn="Svc.getThumbnailloadUrl(fName)" upload-fn="Svc.getUploadUrl(fName)" no-more="true">
+          </upload-image>
+        </div>
+      </div>
+
+      <div class="row text-right">
+        <div class="col-xs-12">
+          <button type="submit" class="btn btn-primary" ng-click="id_form.$valid ? saveIdentity() : ''">@MSG("save")</button>
+          <button class="btn btn-default" ng-click="cancelIdentity()">@MSG("cancel")</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

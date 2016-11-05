@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:9000/" />
+<title>create_individual</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">create_individual</td></tr>
+</thead><tbody>
+<!--#119 以最快速度执行此脚本，则individuals表不会被写入。-->
+<tr>
+	<td>open</td>
+	<td>/individuals/new</td>
+	<td></td>
+</tr>
+<!--每次执行脚本，需要使用新的email-->
+<tr>
+	<td>type</td>
+	<td>//input[@type='text']</td>
+	<td>hfjjfjee@382917451.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=(//input[@type='text'])[2]</td>
+	<td>HR</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=(//input[@type='text'])[3]</td>
+	<td>H</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=(//input[@type='text'])[4]</td>
+	<td>R</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>xpath=(//input[@type='text'])[5]</td>
+	<td>1234567890</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>xpath=(//button[@type='submit'])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/individuals/new</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>

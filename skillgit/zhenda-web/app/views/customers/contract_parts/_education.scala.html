@@ -1,0 +1,88 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(idx: Int)(implicit message: Messages)
+
+<div class="m-b-md">
+  <h3>
+    @CustomersCtrl.msg("contract.education" + idx)
+  </h3>
+</div>
+
+@{parts._line_header()}
+
+@*  学校名称  *@
+@{parts._line(MSG("education_details.institution"), "edu_" + idx + "_institution", s"ContractSvc.value.education[${idx}].edu.institution", s"ContractSvc.saveEducation('institution',1,${idx})", s"ContractSvc.saveEducation('institution',2,${idx})", s"ContractSvc.saveEducation('institution',3,${idx},#desc_type)", s"ContractSvc.saveEducation('institution',4,${idx})",None,true)}
+
+@*  学习时间  *@
+@{parts._line(MSG("education_details.interval"), "edu_" + idx + "_interval", s"ContractSvc.value.education[${idx}].edu.interval", s"ContractSvc.saveEducation('interval',1,${idx})", s"ContractSvc.saveEducation('interval',2,${idx})", s"ContractSvc.saveEducation('interval',3,${idx},#desc_type)", s"ContractSvc.saveEducation('interval',4,${idx})",None,true)}
+
+@*  所在地  *@
+@{parts._line(MSG("education_details.address"), "edu_" + idx + "_address", s"ContractSvc.value.education[${idx}].edu.address", s"ContractSvc.saveEducation('address',1,${idx})", s"ContractSvc.saveEducation('address',2,${idx})", s"ContractSvc.saveEducation('address',3,${idx},#desc_type)", s"ContractSvc.saveEducation('address',4,${idx})",None,true)}
+
+@*  学习专业  *@
+@{parts._line(MSG("education_details.major"), "edu_" + idx + "_major", s"ContractSvc.value.education[${idx}].edu.major", s"ContractSvc.saveEducation('major',1,${idx})", s"ContractSvc.saveEducation('major',2,${idx})", s"ContractSvc.saveEducation('major',3,${idx},#desc_type)", s"ContractSvc.saveEducation('major',4,${idx})")}
+
+@*  学习方式  *@
+@{parts._line(MSG("education_details.mode_of_study"), "edu_" + idx + "_mode_of_study",s"ContractSvc.value.education[${idx}].edu.mode_of_study", s"ContractSvc.saveEducation('mode_of_study',1,${idx})", s"ContractSvc.saveEducation('mode_of_study',2,${idx})", s"ContractSvc.saveEducation('mode_of_study',3,${idx},#desc_type)", s"ContractSvc.saveEducation('mode_of_study',4,${idx})")}
+
+@*  学历性质  *@
+@{parts._line(MSG("education_details.education_level"), "edu_" + idx + "_education_level", s"ContractSvc.value.education[${idx}].edu.education_level", s"ContractSvc.saveEducation('education_level',1,${idx})", s"ContractSvc.saveEducation('education_level',2,${idx})", s"ContractSvc.saveEducation('education_level',3,${idx},#desc_type)", s"ContractSvc.saveEducation('education_level',4,${idx})")}
+
+<div class="m-b-md m-t-xl">
+  <h4>
+    @CustomersCtrl.msg("contract.degree")
+  </h4>
+</div>
+
+@{parts._line_header()}
+
+@*  学校名称  *@
+@{parts._line(MSG("education_details.institution"), "degree_" + idx + "_institution", s"ContractSvc.value.education[${idx}].degree.institution", s"ContractSvc.saveDegree('institution',1,${idx})", s"ContractSvc.saveDegree('institution',2,${idx})", s"ContractSvc.saveDegree('institution',3,${idx},#desc_type)", s"ContractSvc.saveDegree('institution',4,${idx})",None,true)}
+
+@*  学习专业  *@
+@{parts._line(MSG("education_details.major"), "degree_" + idx + "_major", s"ContractSvc.value.education[${idx}].degree.major", s"ContractSvc.saveDegree('major',1,${idx})", s"ContractSvc.saveDegree('major',2,${idx})", s"ContractSvc.saveDegree('major',3,${idx},#desc_type)", s"ContractSvc.saveDegree('major',4,${idx})")}
+
+@*  授予时间  *@
+@{parts._line(MSG("degree.date_of_award"), "degree_" + idx + "_date_of_award", s"ContractSvc.value.education[${idx}].degree.date_of_award", s"ContractSvc.saveDegree('date_of_award',1,${idx})", s"ContractSvc.saveDegree('date_of_award',2,${idx})", s"ContractSvc.saveDegree('date_of_award',3,${idx},#desc_type)", s"ContractSvc.saveDegree('date_of_award',4,${idx})")}
+
+@*  学位类别  *@
+@{parts._line(MSG("degree.degree_type"), "degree_" + idx + "_degree_type", s"ContractSvc.value.education[${idx}].degree.degree_type", s"ContractSvc.saveDegree('degree_type',1,${idx})", s"ContractSvc.saveDegree('degree_type',2,${idx})", s"ContractSvc.saveDegree('degree_type',3,${idx},#desc_type)", s"ContractSvc.saveDegree('degree_type',4,${idx})")}
+
+<div class="m-t-xl">
+  <h4>
+    @CustomersCtrl.msg("contract.extra_gathering")
+  </h4>
+</div>
+@*  学校名称  *@
+@{parts._education_extra_gathering(MSG("education_details.institution"), "institution", idx, "education_details", true)}
+@*  学习时间  *@
+@{parts._education_extra_gathering(MSG("education_details.interval"), "interval", idx, "education_details", true)}
+@*  所在地  *@
+@{parts._education_extra_gathering(MSG("education_details.address"), "address", idx, "education_details", true)}
+@*  学习专业  *@
+@{parts._education_extra_gathering(MSG("education_details.major"), "major", idx)}
+@*  学习方式  *@
+@{parts._education_extra_gathering(MSG("education_details.mode_of_study"), "mode_of_study", idx)}
+@*  学历性质  *@
+@{parts._education_extra_gathering(MSG("education_details.education_level"), "education_level", idx)}
+@*  学历证书照片  *@
+@{parts._education_extra_gathering(MSG("education_details.diploma_images"), "diploma_images", idx)}
+@*  学历证书编号  *@
+@{parts._education_extra_gathering(MSG("education_details.diploma_number"), "diploma_number", idx)}
+@*  是否获得学位  *@
+@{parts._education_extra_gathering(MSG("education_details.degree_awarded"), "degree_awarded", idx)}
+@*  学位类别  *@
+@{parts._education_extra_gathering(MSG("degree.degree_type"), "degree_type", idx, "degree")}
+@*  授予时间  *@
+@{parts._education_extra_gathering(MSG("degree.date_of_award"), "date_of_award", idx, "degree")}
+
+@*  学位证书照片  *@
+@{parts._education_extra_gathering(MSG("degree.degree_images"), "degree_images", idx, "degree")}

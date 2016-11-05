@@ -1,0 +1,80 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import models.business.services._
+@import views.ClassFormats._
+@import views.fo.Magic._
+
+@*
+  报告正文 -- 学位信息核实
+*@
+@(check_list: EducationCheckList, chk_ls_opt: Option[DegreeCheckList], idx: Int)(implicit messages: Messages)
+
+@* 学位未提供 *@
+@if(check_list.not_provided.status) {
+  @* 学位未提供时用学历未提供代替 *@
+} else {
+  @chk_ls_opt.map { chk_ls =>
+    @panel(MSG("education.degree", idx)) {
+      @* 显示每个核实项 *@
+      @defining(
+        chk_ls.checks.collect { case chk: Check.Strict[_] => chk.asInstanceOf[Check.Strict[_]] }
+      ) { checks =>
+        @checks match {
+          case _ if !check_list.review_result.passed_? => {
+            @* 审核未通过 *@
+            @checks.headOption.map { head =>
+              @__strict_check_merged(chk_ls.basicName, head, checks.size, BackgroundReportsCtrl.msg("pdf.review_not_passed"))
+            }
+            @checks.tail.map { other =>
+              @__strict_check_merged(chk_ls.basicName, other)
+            }
+          }
+
+          case _ if check_list.remaining.status => {
+            @* 待查 *@
+            @checks.headOption.map { head =>
+              @__strict_check_merged(chk_ls.basicName, head, checks.size, __remaining(check_list.remaining, EducationCheckList.RemainingReason))
+            }
+            @checks.tail.map { other =>
+              @__strict_check_merged(chk_ls.basicName, other)
+            }
+          }
+
+          case _ => {
+            @* 正常 *@
+            @checks.map { check =>
+              @__strict_check(chk_ls.basicName, check)
+            }
+
+            @* 备注 *@
+            @__panel_comment(chk_ls_opt.flatMap(_.comments))
+          }
+        }
+      }
+    }
+  }
+}
+
+@panel(title: String)(content: Xml) = {
+  <fo:table @attribute_sets("panel", "panel-block", "margin-bottom-sm", s"${messages.lang.code}-panel")>
+    @* 布局 *@
+    @__panel_layout1()
+
+    <fo:table-body>
+      @* 标题 *@
+      @__panel_header(title)
+
+      @* 内容 *@
+      @content
+    </fo:table-body>
+  </fo:table>
+}

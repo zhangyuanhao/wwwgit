@@ -1,0 +1,174 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(customer: Customer)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+
+@layouts.base(CustomersCtrl.msg("orders.title", customer.info.name)) {
+
+  <div class="row" ng-controller="OrdersCtrl">
+    <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-10 col-md-offset-1">
+
+      <div class="page-header">
+        <h2>
+          <i class="fa fa-black-tie fa-lg fa-fw"></i>
+          @CustomersCtrl.msg("orders.head")
+          <small>@customer.info.name</small>
+        </h2>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>
+                    <h4>
+                      @CustomersCtrl.msg("orders.list")
+                    </h4>
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="ng-cloak" ng-repeat="order in OrdersSvc.orders">
+                <tr class="bg-info">
+                  <td>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                      <div class="row" ng-show="!order.isInfoCollapse">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                          <h5> <strong>@CustomersCtrl.msg("orders.order_info")</strong> :</h5>
+                        </div>
+                      </div>
+                      <div class="row" ng-show="!order.isInfoCollapse">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                            <label>@CustomersCtrl.msg("orders.order_info.customer") :</label>
+                            <span>{{order.customer.name}}</span>
+                          </div>
+                          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                            <label>@CustomersCtrl.msg("orders.order_info.hr") :</label>
+                            <span>{{order.created_by.card.personal_name | personalName:"@messages.lang.language"}}</span>
+                          </div>
+                          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                            <label>@CustomersCtrl.msg("orders.order_info.created_at") :</label>
+                            <span>{{order.created_at | date:"@MSG("date.format.long")"}}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                            <label>@CustomersCtrl.msg("orders.order_info.candidate") :</label>
+                            <span>{{order.candidate_info.personal_name | personalName:"@messages.lang.language"}}</span>
+                          </div>
+                          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+                            <label>@CustomersCtrl.msg("orders.order_info.phone") :</label>
+                            <span>{{ order.candidate_info.phone }}</span>
+                          </div>
+                          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4"
+                            ng-show="order.candidate_info.email">
+                            <label>@CustomersCtrl.msg("orders.order_info.email") :</label>
+                            <a href="{{'mailto:' + order.candidate_info.email}}">{{order.candidate_info.email}}</a>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row" ng-show="!order.isInfoCollapse">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                          <h5> <strong>@CustomersCtrl.msg("orders.actors")</strong> :</h5>
+                        </div>
+                      </div>
+                      <div class="row" ng-show="!order.isInfoCollapse">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                          <div class="col-xs-12 col-sm-6 col-md-12 col-lg-3"
+                            ng-show="order.assignees.Support !== undefined">
+                            <label>@CustomersCtrl.msg("orders.actors.support") :</label>
+                            <span> {{order.assignees.Support.card.personal_name | personalName:"@messages.lang.language"}}</span>
+                          </div>
+                          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3"
+                            ng-show="order.assignees.Review !== undefined">
+                            <label>@CustomersCtrl.msg("orders.actors.reviewer") :</label>
+                            <span>{{order.assignees.Review.card.personal_name | personalName:"@messages.lang.language"}}</span>
+                          </div>
+                          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3"
+                            ng-show="order.assignees.Qualification !== undefined">
+                            <label>@CustomersCtrl.msg("orders.actors.qualification") :</label>
+                            <span>{{order.assignees.Qualification.card.personal_name | personalName:"@messages.lang.language"}}</span>
+                          </div>
+                          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3"
+                             ng-show="order.assignees.Employment !== undefined">
+                            <label>@CustomersCtrl.msg("orders.actors.employment") :</label>
+                            <span>{{order.assignees.Employment.card.personal_name | personalName:"@messages.lang.language"}}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right" ng-show="!order.isInfoCollapse">
+                          <button type="button" class="btn btn-default btn-xs"
+                            ng-click="order.isInfoCollapse = true">
+                            @CustomersCtrl.msg("orders.collapse")
+                          </button>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right" ng-show="order.isInfoCollapse">
+                          <button type="button" class="btn btn-default btn-xs"
+                            ng-click="order.isInfoCollapse = false">
+                            @CustomersCtrl.msg("orders.expand")
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right">
+                      <button type="button" class="btn btn-primary btn-xs"
+                        ng-click="OrdersSvc.publish(order.id)">
+                        <i class="fa fa-bullhorn"></i>
+                        @CustomersCtrl.msg("orders.publish")
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          @ng._pager("OrdersSvc.links", jump = false)
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/employee_customers"),
+  libs.assets("js", "api_internal/employee_orders"),
+  libs.assets("js", "customers/orders"),
+  controller
+)
+
+@controller = {
+  <script>
+    views.customers.orders.run(['OrdersSvc', function(OrdersSvc) {
+      OrdersSvc.customer_id = '@customer.id';
+      OrdersSvc.page        = @Pager.first.pageNum;
+      OrdersSvc.pageSize    = @Pager.first.pageSize;
+      OrdersSvc.load();
+    }]);
+  </script>
+}

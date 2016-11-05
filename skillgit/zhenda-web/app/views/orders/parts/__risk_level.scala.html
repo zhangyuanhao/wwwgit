@@ -1,0 +1,31 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+  <span ng-if="order.rating === 'A'" class="label label-success lable-inline m-b-xs">
+    @CustomerUserOrdersCtrl.msg("order.levelA")
+  </span>
+  <span ng-if="order.rating === 'A10'" class="label label-success lable-inline m-b-xs">
+    @CustomerUserOrdersCtrl.msg("order.levelA")
+  </span>
+  <span ng-if="order.rating === 'A20'" class="label label-successlable-inline m-b-xs">
+    @CustomerUserOrdersCtrl.msg("order.levelA")
+  </span>
+  <span ng-if="order.rating === 'B'" class="label label-info lable-inline m-b-xs">
+    @CustomerUserOrdersCtrl.msg("order.levelB")
+  </span>
+  <span ng-if="order.rating === 'C'" class="label label-warning lable-inline m-b-xs">
+    @CustomerUserOrdersCtrl.msg("order.levelC")
+  </span>
+  <span ng-if="order.rating === 'D'" class="label label-danger lable-inline m-b-xs">
+    @CustomerUserOrdersCtrl.msg("order.levelD")
+  </span>

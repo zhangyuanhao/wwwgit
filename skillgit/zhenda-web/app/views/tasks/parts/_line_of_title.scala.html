@@ -1,0 +1,39 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(itemMsg: String, ngModel: String, withAPI: Boolean = false)(implicit message: Messages)
+
+<div class="line-header">
+  <div class="row">
+    <div class="col-xs-8 col-is-6">
+      <span class="column-header">
+        <strong>@itemMsg</strong>
+        <i class="fa fa-warning fa-lg text-danger fa-fw" ng-show="@(ngModel).remind_till | not_expired">
+        </i>
+      </span>
+    </div>
+    <div class="col-xs-8 col-is-3" ng-if="@withAPI">
+      <span class="column-header" hidden="true">
+        @TasksCtrl.msg("information_by_api")
+      </span>
+    </div>
+    <div class="col-xs-4" ng-class="@withAPI ? 'col-is-3' : 'col-is-6'">
+      <span class="column-header checkbox checkbox-primary checkbox-inline m-r-md pull-right" >
+        <input id="@(ngModel)"
+          type="checkbox"
+          class="styled"
+          ng-model="@(ngModel).to_recheck">
+        <label for="@(ngModel)">
+          @TasksCtrl.msg("to_recheck")
+        </label>
+      </span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,82 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(customer: Customer)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+
+@layouts.base(CustomersCtrl.msg("edit.title", customer.info.name)) {
+
+  <div class="row page-heading white-bg" ng-controller="EditCtrl">
+    <h2>
+      <i class="fa fa-black-tie fa-lg fa-fw"></i>
+      @CustomersCtrl.msg("edit.head")
+      <small>@customer.info.name</small>
+    </h2>
+  </div>
+
+  <div class="row wrapper-content" ng-controller="EditCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <form name="form" novalidate>
+        <div class="ibox">
+          <div class="ibox-content">
+            <div class="row ng-cloak">
+              <div class="col-xs-12 col-sm-6 col-md-4">
+                @ng._form_control("name",
+                  '_inline           -> false,
+                  'maxLength         -> 64,
+                  'minLength         -> 2,
+                  'required          -> true,
+                  Symbol("ng-model") -> "CustomerSvc.customer.name"
+                )
+              </div>
+            </div>
+            <br>
+            @{_customer()}
+          </div>
+          <div class="ibox-footer">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 text-right">
+                <button type="submit" class="btn btn-primary" ng-disabled="!CustomerSvc.customer.id" ng-click="form.$valid ? save() : ''">
+                  <i class="fa fa-save"></i>
+                  @MSG("save")
+                </button>
+                <a class="btn btn-link" href="@routes.CustomersCtrl.index()">
+                  @MSG("cancel")
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/business_entities"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "customers/customer_svc"),
+  libs.assets("js", "customers/edit"),
+  controller
+)
+
+@controller = {
+  <script>
+    views.customers.customer_svc.run(['CustomerSvc', function(CustomerSvc) {
+      CustomerSvc.customer_id = '@customer.id';
+      CustomerSvc.dictionary = {
+        'msg.saved'                : '@CustomersCtrl.message("msg.saved")'
+      };
+    }]);
+  </script>
+}

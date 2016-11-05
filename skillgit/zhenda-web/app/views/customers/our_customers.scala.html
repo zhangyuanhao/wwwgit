@@ -1,0 +1,98 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(pager: Pager)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import helper._
+
+@layouts.base(CustomersCtrl.msg("our_customers.title")) {
+
+  <div class="row" ng-controller="CustomerListCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+      <div class="row page-heading white-bg">
+        <h2>
+          <i class="fa fa-black-tie fa-lg fa-fw"></i>
+          @CustomersCtrl.msg("our_customers.head")
+        </h2>
+      </div>
+
+      <div class="row m-t-md ng-cloak">
+        <div class="col-xs-12 col-sm-6 col-md-4" ng-repeat="customer in Models.values">
+          <div class="thumbnail">
+            <img ng-src="http://fakeimg.pl/450x200/5cb85c,128/000,255"/>
+            <div class="caption">
+              <h3>{{customer.name}}</h3>
+              <p>...</p>
+              <p>
+                <button type="button" class="btn btn-default" ng-show="!customer.isFollowed" ng-click="follow(customer)">
+                  <i class="fa fa-eye fa-lg"></i>
+                  <strong>@MSG("follow")</strong>
+                </button>
+                <button type="button" class="btn btn-default" ng-show="customer.isFollowed" ng-click="unfollow(customer)">
+                  <i class="fa fa-eye-slash fa-lg"></i>
+                  <strong>@MSG("unfollow")</strong>
+                </button>
+                <a type="button" class="btn btn-default pull-right"
+                  ng-href="{{ jsRoutes.controllers.CustomersCtrl.orders(customer.id).url }}"
+                  target="_blank"
+                  ng-show="Models.show_order">
+                  <i class="fa fa-search fa-lg"></i>
+                  <strong>@CustomersCtrl.msg("our_customers.orders")</strong>
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        @ng._pager("Models.links")
+      </div>
+    </div>
+
+  </div>
+
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "api_internal/employees"),
+  libs.assets("js", "api_internal/employee_customers"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "customers/our_customers"),
+  jsRoutes,
+  controller
+)
+
+@jsRoutes = {
+  @helper.javascriptRouter("jsRoutes")(
+    routes.javascript.CustomersCtrl.orders
+  )
+}
+
+@controller = {
+  <script>
+    views.customers.our_customers.run(['Models', function(Models) {
+      Models.options = {
+        page        : @pager.pageNum,
+        pageSize    : @pager.pageSize,
+        employee_id : '@req.user.id',
+        nextPage    : '@Html(routes.CustomersCtrl.our_customers(pager.next).toString)',
+        prevPage    : '@Html(routes.CustomersCtrl.our_customers(pager.prev).toString)'
+      };
+      Models.load();
+    }]);
+  </script>
+}

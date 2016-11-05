@@ -1,0 +1,160 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import tasks._
+
+@(referenceType: String, interview: String, task_type: String)(implicit message: Messages)
+
+<div ng-if="TaskSvc.lang.zh">
+  @reference_info("zh")
+</div>
+
+<div ng-if="TaskSvc.lang.en">
+  @reference_info("en")
+</div>
+
+@* 证明人验证 *@
+<div class="row m-t-md" ng-if="!@(interview).invalid.status">
+  <div class="col-xs-12">
+    <div class="section-header">
+      <h4>@MSG("references.authenticity")</h4>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="form-group" ng-if="TaskSvc.lang.zh">
+          <label class="sr-only">@MSG("report.lang.zh")</label>
+          <input type="text" class="form-control"
+            ng-model="@(interview).checks.authenticity.approaches.zh"
+            placeholder="@TasksCtrl.msg("reference.authenticity.method.zh")">
+        </div>
+        <div class="form-group" ng-if="TaskSvc.lang.en">
+          <label class="sr-only">@MSG("report.lang.en")</label>
+          <input type="text" class="form-control"
+            ng-model="@(interview).checks.authenticity.approaches.en"
+            placeholder="@TasksCtrl.msg("reference.authenticity.method.en")">
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        @{parts._line_of_truth(s"${interview}.checks.authenticity", false)}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12" ng-class="{'col-is-6':TaskSvc.lang.en}" ng-if="TaskSvc.lang.zh">
+        <div class="form-group">
+          <label class="control-label">@TasksCtrl.msg("comment.zh")</label>
+            <textarea class="form-control" rows="2" ng-model="@(interview).comments.zh" max-length="512" empty-to-null></textarea>
+          </label>
+        </div>
+      </div>
+      <div class="col-xs-12" ng-class="{'col-is-6':TaskSvc.lang.zh}" ng-if="TaskSvc.lang.en">
+        <div class="form-group">
+          <label class="control-label">@TasksCtrl.msg("comment.en")</label>
+            <textarea class="form-control" rows="2" ng-model="@(interview).comments.en" max-length="512" empty-to-null></textarea>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@reference_info(language: String) = {
+  <div class="section-header">
+    <h4>@MSG(s"references.reference_info.$language")</h4>
+  </div>
+  <div class="row ng-cloak">
+    <div class="col-xs-12">
+      <form class="form-horizontal">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="form-group">
+              <label class="col-xs-12 col-is-2 col-sm-2 control-label p-reference-label">@MSG("references.source")</label>
+              <div class="col-xs-12 col-is-10 col-sm-10 p-reference-content">
+                <p class="m-b-none">
+                  {{ TaskSvc.dictionary.reference_sources[@(interview).source] }}
+                  <span ng-if="@(interview).source!='Provided' && @(interview).reason_for_changing.@(language)">
+                    {{"( " + @(interview).reason_for_changing.@(language) + " )"}}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            <div class="form-group">
+              <label class="col-xs-12 col-is-2 col-sm-4 control-label p-reference-label">@MSG("references.name")</label>
+              <div class="col-xs-12 col-is-10 col-sm-8 p-reference-content">
+                <p class="m-b-none">{{ @(interview).current.translated.@(language).basic_info.name }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            <div class="form-group">
+              <label class="col-xs-12 col-is-2 col-sm-4 control-label p-reference-label">@MSG("references.position_title")</label>
+              <div class="col-xs-12 col-is-10 col-sm-8 p-reference-content">
+                <p class="m-b-none">{{ @(interview).current.translated.@(language).basic_info.position_title | jobTitle }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            <div class="form-group">
+              <label class="col-xs-12 col-is-2 col-is-2 col-sm-4 control-label p-reference-label">@MSG("telephone")</label>
+              <div class="col-xs-12 col-is-10 col-sm-8 p-reference-content">
+                <p class="m-b-none">{{ @(interview).current.translated.@(language).basic_info.phone }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            <div class="form-group">
+              <label class="col-xs-12 col-is-2 col-sm-4 control-label p-reference-label">@MSG("email")</label>
+              <div class="col-xs-12 col-is-10 col-sm-8 p-reference-content">
+                <p class="m-b-none">{{ @(interview).current.translated.@(language).basic_info.email }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            <div class="form-group">
+              <label class="col-xs-12 col-is-2 col-sm-4 control-label p-reference-label">@MSG("references.relationship")</label>
+              <div class="col-xs-12 col-is-10 col-sm-8 p-reference-input">
+                <textarea class="form-control" rows="1" ng-model="@(interview).current.translated.@(language).relationship" empty-to-null></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            <div class="form-group">
+              <label class="col-xs-12 col-is-2 col-sm-4 control-label p-reference-label">@MSG("references.how_long")</label>
+              <div class="col-xs-12 col-is-10 col-sm-8 p-reference-input">
+                <textarea class="form-control" rows="1" ng-model="@(interview).current.translated.@(language).how_long" empty-to-null></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="form-group">
+              <label class="col-xs-12 col-is-2 col-sm-2 control-label p-reference-label">@MSG("comment")</label>
+              <div class="col-xs-12 col-is-10 col-sm-10 p-reference-content">
+                <p class="m-b-none">{{ @(interview).current.translated.@(language).basic_info.comment }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+}

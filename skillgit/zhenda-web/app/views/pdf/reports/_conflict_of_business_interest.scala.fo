@@ -1,0 +1,209 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.checks._
+@import views.ClassFormats._
+@import views.fo.Magic._
+@import helpers.Money
+@import models.fact.regulations.BusinessType
+
+@*
+  报告正文 -- 商业利益冲突
+*@
+@(checks_set: ChecksSet)(implicit messages: Messages)
+
+@ConflictOfBusinessInterestChecks.findIn(checks_set).map{ conflict =>
+
+  @add_page_breaker
+
+  @if(!conflict.review_result.passed_?) {
+    @* 未通过审核 *@
+    @__panel_explanation(MSG("conflict_of_business_interest"), MSG("views.background_reports.pdf.review_not_passed"))
+  } else {
+    @if(conflict.remaining.status) {
+      @* 待查 *@
+      @__panel_explanation(MSG("conflict_of_business_interest"), __remaining(conflict.remaining, ConflictOfBusinessInterestChecks.RemainingReason).toString)
+    } else {
+      <fo:table @attribute_sets("panel", "margin-bottom-sm", s"${messages.lang.code}-panel")>
+        <fo:table-column column-width="25%"/>
+        <fo:table-column column-width="75%"/>
+
+        <fo:table-body>
+          @* 标题 *@
+          @__panel_header(MSG("conflict_of_business_interest"), colspan = 2)
+          @ConflictOfBusinessInterestCheck.LegalRepresentative.findIn(conflict).map { legal_representative =>
+            @legal_representative.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+              @if(fact.isEmpty) {
+                @* 企业法定代表人 *@
+                @cbi_title("legal_representative")
+                @cbi_empty("legal_representative")
+              } else {
+                @fact.map { lr =>
+                  @* 企业法定代表人 *@
+                  @cbi_title("legal_representative")
+                  @cbi_basic_data(lr.corporation.name.format, lr.corporation.registration_number, lr.corporation.business_type, lr.corporation.registered_capital, lr.corporation.status)
+                }
+              }
+            }
+          }
+
+          @ConflictOfBusinessInterestCheck.Shareholder.findIn(conflict).map { shareholder =>
+            @shareholder.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+              @if(fact.isEmpty) {
+                @* 个人股权投资信息 *@
+                @cbi_title("shareholder")
+                @cbi_empty("shareholder")
+              } else {
+                @fact.map { sh =>
+                  @* 个人股权投资信息 *@
+                  @cbi_title("shareholder")
+                  @cbi_basic_data(sh.corporation.name.format, sh.corporation.registration_number, sh.corporation.business_type, sh.corporation.registered_capital, sh.corporation.status)
+
+                  @__panel_row(
+                    __panel_cell(MSG("shareholder.investment"), Seq("text-strong")),
+                    __panel_cell(sh.investment.map{a => (BigDecimal(a.getAmount) / BigDecimal(10000)).toString()}.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")))
+                  )()
+                  @__panel_row(
+                    __panel_cell(MSG("shareholder.investment_unit"), Seq("text-strong")),
+                    __panel_cell(sh.investment.map(_.getCurrencyUnit).formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")))
+                  )()
+                  @__panel_row(
+                    __panel_cell(MSG("shareholder.investment_percentage1"), Seq("text-strong")),
+                    __panel_cell(sh.investment_percentage.map{percentage => MSG("ratio", percentage.toString)}.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")))
+                  )()
+                }
+              }
+            }
+          }
+
+          @ConflictOfBusinessInterestCheck.CorporateExecutive.findIn(conflict).map { corporate_executive =>
+            @corporate_executive.facts.map(f => f.translate(messages.lang).getOrElse(f.origin).all.map(_.fact).toList.reduce((a1, a2) => a1 ++ a2)).map { fact =>
+              @if(fact.isEmpty) {
+                @* 个人担任企业高管信息 *@
+                @cbi_title("corporate_executive")
+                @cbi_empty("corporate_executive")
+              } else {
+                @fact.map { ce =>
+                  @* 个人担任企业高管信息 *@
+                  @cbi_title("corporate_executive")
+                  @cbi_basic_data(ce.corporation.name.format, ce.corporation.registration_number, ce.corporation.business_type, ce.corporation.registered_capital, ce.corporation.status)
+                  @__panel_row(
+                    __panel_cell(MSG("corporate_executive.position_title"), Seq("text-strong")),
+                    __panel_cell(ce.position_title.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")))
+                  )()
+                }
+              }
+            }
+          }
+          @* 备注 *@
+          @__panel_comment(conflict.comments, colspan = 2)
+        </fo:table-body>
+      </fo:table>
+    }
+  }
+}
+
+@cbi_title(cbi_type: String) = {
+  @__panel_header2(MSG(s"conflict_of_business_interest.$cbi_type"), colspan = 2)
+}
+
+@cbi_empty(cbi_type: String) = {
+  @__panel_row(
+    __panel_cell(MSG("corporation.name"), Seq("text-strong")),
+    __panel_cell(MSG("conflict_of_business_interest.none"))
+  )()
+  @__panel_row(
+    __panel_cell(MSG("corporation.registration_number"), Seq("text-strong")),
+    __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"))
+  )()
+  @__panel_row(
+    __panel_cell(MSG("corporation.business_type"), Seq("text-strong")),
+    __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"))
+  )()
+  @__panel_row(
+    __panel_cell(MSG("corporation.registered_capital.amount"), Seq("text-strong")),
+    __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"))
+  )()
+  @__panel_row(
+    __panel_cell(MSG("corporation.registered_capital.unit"), Seq("text-strong")),
+    __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"))
+  )()
+  @__panel_row(
+    __panel_cell(MSG("corporation.status"), Seq("text-strong")),
+    __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"))
+  )()
+  @if(cbi_type == "shareholder"){
+    @__panel_row(
+      __panel_cell(MSG("shareholder.investment"), Seq("text-strong")),
+      __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"))
+    )()
+    @__panel_row(
+      __panel_cell(MSG("shareholder.investment_unit"), Seq("text-strong")),
+      __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"))
+    )()
+    @__panel_row(
+      __panel_cell(MSG("shareholder.investment_percentage1"), Seq("text-strong")),
+      __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"))
+    )()
+  }
+  @if(cbi_type == "corporate_executive"){
+    @__panel_row(
+      __panel_cell(MSG("corporate_executive.position_title"), Seq("text-strong")),
+      __panel_cell(BackgroundReportsCtrl.msg("pdf.empty"))
+    )()
+  }
+}
+
+@cbi_basic_data(name: String, number: Option[BusinessLicenseRegistrationNumber], business_type: Option[BusinessType], rc: Option[Money], status: Option[BusinessEntity.Status]) = {
+  @__panel_row(
+    __panel_cell(MSG("corporation.name"), Seq("text-strong")),
+    __panel_cell(name)
+  )()
+  @__panel_row(
+    __panel_cell(MSG("corporation.registration_number"), Seq("text-strong")),
+    __panel_cell(number.map(_.self).formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")))
+  )()
+  @__panel_row(
+    __panel_cell(MSG("corporation.business_type"), Seq("text-strong")),
+    __panel_cell(business_type.map(BusinessType.msg(_)).formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")))
+  )()
+  @__panel_row(
+    __panel_cell(MSG("corporation.registered_capital.amount"), Seq("text-strong")),
+    __panel_cell(rc.map{a => (BigDecimal(a.getAmount) / BigDecimal(10000)).toString()}.formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")))
+  )()
+  @__panel_row(
+    __panel_cell(MSG("corporation.registered_capital.unit"), Seq("text-strong")),
+    __panel_cell(rc.map(_.getCurrencyUnit).formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")))
+  )()
+  @__panel_row(
+    __panel_cell(MSG("corporation.status"), Seq("text-strong")),
+    __panel_cell(status.map(BusinessEntity.Status.msg(_)).formatOrElse(BackgroundReportsCtrl.msg("pdf.not_shown")))
+  )()
+}
+
+@*
+  如果有下列服务，则需要断页
+*@
+@add_page_breaker = {
+  @defining(
+    checks_set.exists {
+      case (IdentityChecks.basicName, _)                   => true
+      case (EducationChecks.basicName, _)                  => true
+      case (ProfessionalLicenseChecks.basicName, _)        => true
+      case (CriminalRecordsChecks.basicName, _)            => true
+      case (IllegalOrganizationRecordsChecks.basicName, _) => true
+      case (CourtRecordsChecks.basicName, _)               => true
+      case (FinancialIrregularitiesChecks.basicName, _)    => true
+      case _                                               => false
+    }
+  ) { exists =>
+    @if(exists) { <fo:block @attribute_sets("page-breaker")/> }
+  }
+}

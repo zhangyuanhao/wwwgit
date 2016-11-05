@@ -1,0 +1,78 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import common._
+@()(implicit messages: Messages)
+
+<div class="row">
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    @ng._form_control("email",
+      '_type             -> "email",
+      'email             -> None,
+      'placeholder       -> MSG("email"),
+      'autocomplete      -> "off",
+      '_formname         -> "submit_form",
+      'required          -> true,
+      Symbol("ng-model") -> "Service.user.email"
+    )
+  </div>
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+    @ng._form_control("name",
+      'maxLength         -> 64,
+      'minLength         -> 4,
+      'placeholder       -> MSG("user.user_name"),
+      '_formname         -> "submit_form",
+      'required          -> true,
+      Symbol("ng-model") -> "Service.user.user_name"
+    )
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
+    <div class="form-group">
+      @ng._form_control("last_name",
+        'maxLength         -> 64,
+        'minLength         -> 1,
+        'placeholder       -> MSG("identity.last_name"),
+        '_formname         -> "submit_form",
+        'required          -> true,
+        Symbol("ng-model") -> "Service.individual.last_name",
+        Symbol("ng-disabled") -> "Service.id_record.verified"
+      )
+    </div>
+  </div>
+
+  <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
+    <div class="form-group">
+      @ng._form_control("first_name",
+        'maxLength         -> 64,
+        'minLength         -> 1,
+        'placeholder       -> MSG("identity.first_name"),
+        '_formname         -> "submit_form",
+        'required          -> true,
+        Symbol("ng-model") -> "Service.individual.first_name",
+        Symbol("ng-disabled") -> "Service.id_record.verified"
+      )
+    </div>
+  </div>
+
+  <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+      @ng._form_control("cell_phone",
+        '_type             -> "tel",
+        '_formname         -> "submit_form",
+        '_pattern_msg_key  -> "error.cellphone_number",
+        'pattern           -> CellPhone.regex,
+        'placeholder       -> MSG("cell_phone"),
+        'required          -> true,
+        Symbol("ng-model") -> "Service.individual.phone"
+      )
+  </div>
+</div>

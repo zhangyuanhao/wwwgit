@@ -1,0 +1,107 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+<td>
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="row" ng-show="!order.isInfoCollapse">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h5> <strong>@EmployeeOrdersCtrl.msg("order_info")</strong> :</h5>
+      </div>
+    </div>
+    <div class="row" ng-show="!order.isInfoCollapse">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+          <label>@EmployeeOrdersCtrl.msg("order_info.customer") :</label>
+          <span>{{order.customer.name}}</span>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+          <label>@EmployeeOrdersCtrl.msg("order_info.hr") :</label>
+          <span>{{order.created_by.card.personal_name | personalName:"@messages.lang.language" }}</span>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+          <label>@EmployeeOrdersCtrl.msg("order_info.created_at") :</label>
+          <span>{{order.created_at | date:"@MSG("date.format.long")"}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="row" ng-show="order.dead_line && !order.attributes.Expedited">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <label>@EmployeeOrdersCtrl.msg("dead_line") :</label>
+          <span>{{ order.dead_line | date:"@MSG("datetime.format.long")" }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+          <label>@EmployeeOrdersCtrl.msg("order_info.candidate") :</label>
+          <span>{{ order.candidate_info.personal_name | personalName:"@messages.lang.language" }}</span>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+          <label>@EmployeeOrdersCtrl.msg("order_info.phone") :</label>
+          <span>{{ order.candidate_info.phone }}</span>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4"
+          ng-show="order.candidate_info.email">
+          <label>@EmployeeOrdersCtrl.msg("order_info.email") :</label>
+          <a href="{{'mailto:' + order.candidate_info.email}}">{{order.candidate_info.email}}</a>
+        </div>
+      </div>
+    </div>
+    <div class="row" ng-show="!order.isInfoCollapse">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h5> <strong>@EmployeeOrdersCtrl.msg("actors")</strong> :</h5>
+      </div>
+    </div>
+    <div class="row" ng-show="!order.isInfoCollapse">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="col-xs-12 col-sm-6 col-md-12 col-lg-3"
+          ng-show="order.assignees.Support !== undefined">
+          <label>@EmployeeOrdersCtrl.msg("actors.support") :</label>
+          <span> {{order.assignees.Support.card.personal_name | personalName:"@messages.lang.language" }}</span>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3"
+          ng-show="order.assignees.Review !== undefined">
+          <label>@EmployeeOrdersCtrl.msg("actors.reviewer") :</label>
+          <span>{{order.assignees.Review.card.personal_name | personalName:"@messages.lang.language" }}</span>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3"
+          ng-show="order.assignees.Qualification !== undefined">
+          <label>@EmployeeOrdersCtrl.msg("actors.qualification") :</label>
+          <span>{{order.assignees.Qualification.card.personal_name | personalName:"@messages.lang.language" }}</span>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3"
+           ng-show="order.assignees.Employment !== undefined">
+          <label>@EmployeeOrdersCtrl.msg("actors.employment") :</label>
+          <span>{{order.assignees.Employment.card.personal_name | personalName:"@messages.lang.language" }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right"
+        ng-show="!order.isInfoCollapse">
+        <button type="button" class="btn btn-default btn-xs"
+          ng-click="order.isInfoCollapse = true">
+          @EmployeeOrdersCtrl.msg("collapse")
+        </button>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right"
+        ng-show="order.isInfoCollapse">
+        <button type="button" class="btn btn-default btn-xs"
+          ng-click="order.isInfoCollapse = false">
+          @EmployeeOrdersCtrl.msg("expand")
+        </button>
+      </div>
+    </div>
+  </div>
+</td>

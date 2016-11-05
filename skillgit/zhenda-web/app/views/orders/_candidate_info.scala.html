@@ -1,0 +1,98 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import common._
+@(editable: Boolean)(implicit messages: Messages)
+
+<div class="ibox">
+  <div class="ibox-title">
+    <h3>
+      <i class="fa fa-black-tie fa-lg fa-fw"></i>
+      @CustomerUserOrdersCtrl.msg("basic_info")
+    </h3>
+  </div>
+
+  <div class="ibox-content">
+    <div class="row">
+      <div class="col-xs-6 col-is-3">
+        @ng._form_control("lastName",
+          '_formname            -> "submit_form",
+          'maxLength            -> 64,
+          'required             -> true,
+          'placeholder          -> MSG("identity.last_name"),
+          Symbol("ng-model")    -> "OrderSvc.candidate_info.personal_name.last",
+          Symbol("ng-disabled") -> !editable
+        )
+      </div>
+      <div class="col-xs-6 col-is-3">
+        @ng._form_control("firstName",
+          '_formname            -> "submit_form",
+          'maxLength            -> 64,
+          'required             -> true,
+          'placeholder          -> MSG("identity.first_name"),
+          Symbol("ng-model")    -> "OrderSvc.candidate_info.personal_name.first",
+          Symbol("ng-disabled") -> !editable
+        )
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-is-6">
+        @ng._form_control("cell_phone",
+            '_type                -> "tel",
+            '_formname            -> "submit_form",
+            '_pattern_msg_key     -> "error.cellphone_number",
+            'pattern              -> CellPhone.regex,
+            'placeholder          -> MSG("cell_phone"),
+            'required             -> true,
+            Symbol("ng-model")    -> "OrderSvc.candidate_info.phone",
+            Symbol("ng-disabled") -> !editable
+          )
+      </div>
+      <div class="col-xs-12 col-is-6">
+        @ng._form_control("email",
+          '_type                  -> "email",
+          'email                  -> None,
+          'placeholder            -> MSG("email"),
+          'autocomplete           -> "off",
+          '_formname              -> "submit_form",
+          Symbol("ng-model")      -> "OrderSvc.candidate_info.email",
+          Symbol("ng-disabled")   -> !editable,
+          Symbol("empty-to-null") -> true
+        )
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-is-6">
+        @ng._form_control("contact_cell_phone",
+            '_type                -> "tel",
+            '_formname            -> "submit_form",
+            '_pattern_msg_key     -> "error.cellphone_number",
+            'pattern              -> CellPhone.regex,
+            'placeholder          -> MSG("contact.cell_phone"),
+            'required             -> true,
+            Symbol("ng-model")    -> "OrderSvc.candidate_info.contact_phone",
+            Symbol("ng-disabled") -> !editable
+          )
+      </div>
+      <div class="col-xs-12 col-is-6">
+        @ng._form_control("contact_email",
+          '_type                  -> "email",
+          'email                  -> None,
+          'placeholder            -> MSG("contact.email"),
+          'autocomplete           -> "off",
+          '_formname              -> "submit_form",
+          Symbol("ng-model")      -> "OrderSvc.candidate_info.contact_email",
+          Symbol("ng-disabled")   -> !editable,
+          Symbol("empty-to-null") -> true
+        )
+      </div>
+    </div>
+  </div>
+</div>

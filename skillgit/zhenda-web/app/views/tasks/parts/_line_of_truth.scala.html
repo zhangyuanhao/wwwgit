@@ -1,0 +1,94 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@(ngModel: String, withComment: Boolean = true)(implicit message: Messages)
+
+<div class="btn-group form-control-static pull-right" ng-class="{'m-b-8' : !TaskSvc.lang.zh || !TaskSvc.lang.en}">
+  <span ng-repeat="level in @(ngModel).levels">
+    <span ng-if="level==='D'">
+      <label ng-if="@(ngModel).levels_desc.D" class="btn btn-sm" ng-class="@(ngModel).rating==='D' ? 'btn-danger':'btn-default'" ng-model="@(ngModel).rating" uib-btn-radio="level" uib-popover-template="'popoverTemp.html'" popover-trigger="mouseenter" ng-mouseenter="popover_content = @(ngModel).levels_desc.D">
+        <i class="fa fa-circle" ng-class="@(ngModel).rating==='D'? 'text-default fa-lg' : 'f-text-danger'"></i>
+      </label>
+      <label ng-if="!@(ngModel).levels_desc.D" class="btn btn-sm" ng-class="@(ngModel).rating==='D' ? 'btn-danger':'btn-default'" ng-model="@(ngModel).rating" uib-btn-radio="level">
+        <i class="fa fa-circle" ng-class="@(ngModel).rating==='D'? 'text-default fa-lg' : 'f-text-danger'"></i>
+      </label>
+    </span>
+    <span ng-if="level==='C'">
+      <label ng-if="@(ngModel).levels_desc.C" class="btn btn-sm" ng-class="@(ngModel).rating==='C' ? 'btn-warning':'btn-default'" ng-model="@(ngModel).rating" uib-btn-radio="level" uib-popover-template="'popoverTemp.html'" popover-trigger="mouseenter" ng-mouseenter="popover_content = @(ngModel).levels_desc.C">
+        <i class="fa fa-circle" ng-class="@(ngModel).rating==='C'? 'text-default fa-lg' : 'f-text-warning'"></i>
+      </label>
+      <label ng-if="!@(ngModel).levels_desc.C" class="btn btn-sm" ng-class="@(ngModel).rating==='C' ? 'btn-warning':'btn-default'" ng-model="@(ngModel).rating" uib-btn-radio="level">
+        <i class="fa fa-circle" ng-class="@(ngModel).rating==='C'? 'text-default fa-lg' : 'f-text-warning'"></i>
+      </label>
+    </span>
+    <span ng-if="level==='B'">
+      <label ng-if="@(ngModel).levels_desc.B" class="btn btn-sm" ng-class="@(ngModel).rating==='B' ? 'btn-primary':'btn-default'" ng-model="@(ngModel).rating" uib-btn-radio="level" uib-popover-template="'popoverTemp.html'" popover-trigger="mouseenter" ng-mouseenter="popover_content = @(ngModel).levels_desc.B">
+        <i class="fa fa-circle" ng-class="@(ngModel).rating==='B'? 'text-default fa-lg' : 'f-text-info'"></i>
+      </label>
+      <label ng-if="!@(ngModel).levels_desc.B" class="btn btn-sm" ng-class="@(ngModel).rating==='B' ? 'btn-primary' : 'btn-default'" ng-model="@(ngModel).rating" uib-btn-radio="level">
+        <i class="fa fa-circle" ng-class="@(ngModel).rating==='B'? 'text-default fa-lg' : 'f-text-info'"></i>
+      </label>
+    </span>
+    <span ng-if="level==='A'">
+      <label ng-if="@(ngModel).levels_desc.A" class="btn btn-sm" ng-class="@(ngModel).rating==='A' ? 'btn-success' : 'btn-default'" ng-model="@(ngModel).rating" uib-btn-radio="level" uib-popover-template="'popoverTemp.html'" popover-trigger="mouseenter" ng-mouseenter="popover_content = @(ngModel).levels_desc.A">
+        <i class="fa fa-circle" ng-class="@(ngModel).rating==='A'? 'text-default fa-lg' : 'f-text-success'"></i>
+      </label>
+      <label ng-if="!@(ngModel).levels_desc.A" class="btn btn-sm" ng-class="@(ngModel).rating==='A' ? 'btn-success' : 'btn-default'" ng-model="@(ngModel).rating" uib-btn-radio="level">
+        <i class="fa fa-circle" ng-class="@(ngModel).rating==='A'? 'text-default fa-lg' : 'f-text-success'"></i>
+      </label>
+    </span>
+    <span ng-if="level==='Na'">
+      <label ng-if="@(ngModel).levels_desc.Na" class="btn btn-default btn-sm" ng-model="@(ngModel).rating" uib-btn-radio="level" uib-popover-template="'popoverTemp.html'" popover-trigger="mouseenter" ng-mouseenter="popover_content = @(ngModel).levels_desc.Na">
+        <span>@MSG("level.Na")</span>
+      </label>
+      <label ng-if="!@(ngModel).levels_desc.Na" class="btn btn-default btn-sm" ng-model="@(ngModel).rating" uib-btn-radio="level">
+        <span>@MSG("level.Na")</span>
+      </label>
+    </span>
+    <span ng-if="level==='A20'">
+      <label ng-if="@(ngModel).levels_desc.A20" class="btn btn-sm" ng-class="@(ngModel).rating==='A20' ? 'btn-info' : 'btn-default'" ng-model="@(ngModel).rating" uib-btn-radio="level" uib-popover-template="'popoverTemp.html'" popover-trigger="mouseenter" ng-mouseenter="popover_content = @(ngModel).levels_desc.A20">
+        <span>@MSG("level.A20")</span>
+      </label>
+      <label ng-if="!@(ngModel).levels_desc.A20" class="btn btn-sm" ng-class="@(ngModel).rating==='A20' ? 'btn-info' : 'btn-default'" ng-model="@(ngModel).rating" uib-btn-radio="level">
+        <span>@MSG("level.A20")</span>
+      </label>
+    </span>
+    <span ng-if="level==='A10'">
+      <label ng-if="@(ngModel).levels_desc.A10" class="btn btn-sm" ng-class="@(ngModel).rating==='A10' ? 'btn-info' : 'btn-default'" ng-model="@(ngModel).rating" uib-btn-radio="level" uib-popover-template="'popoverTemp.html'" popover-trigger="mouseenter" ng-mouseenter="popover_content = @(ngModel).levels_desc.A10">
+        <span>@MSG("level.A10")</span>
+      </label>
+      <label ng-if="!@(ngModel).levels_desc.A10" class="btn btn-sm" ng-class="@(ngModel).rating==='A10' ? 'btn-info' : 'btn-default'" ng-model="@(ngModel).rating" uib-btn-radio="level">
+        <span>@MSG("level.A10")</span>
+      </label>
+    </span>
+  </span>
+</div>
+
+@if(withComment){
+  <div class="row" ng-if="TaskSvc.lang.zh">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <label class="control-label">@TasksCtrl.msg("comment.zh")</label>
+          <textarea class="form-control" rows="2" ng-model="@(ngModel).comments.zh" max-length="512" empty-to-null></textarea>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="row" ng-if="TaskSvc.lang.en">
+    <div class="col-xs-12">
+      <div class="form-group">
+        <label class="control-label">@TasksCtrl.msg("comment.en")</label>
+          <textarea class="form-control" rows="2" ng-model="@(ngModel).comments.en" max-length="512" empty-to-null></textarea>
+        </label>
+      </div>
+    </div>
+  </div>
+}
+

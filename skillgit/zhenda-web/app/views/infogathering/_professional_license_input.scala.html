@@ -1,0 +1,119 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+@import common._
+
+<div class="panel panel-default ng-cloak">
+  <div class="panel-body">
+    <form name="prl_form" novalidate>
+      <div class="row">
+        <div class="col-xs-12 col-sm-6">
+          @ng._form_control("organization",
+            '_formname          -> "prl_form",
+            '_label             -> MSG("professional_license.organization"),
+            '_inline            -> false,
+            'maxLength          -> 64,
+            'required           -> true,
+            Symbol("ng-model")  -> "prl_data.organization"
+          )
+        </div>
+
+        <div class="col-xs-12 col-sm-6">
+          @ng._form_control("location",
+            '_formname         -> "prl_form",
+            '_label            -> MSG("professional_license.location"),
+            '_inline           -> false,
+            'maxLength         -> 64,
+            'required          -> true,
+            Symbol("ng-model") -> "prl_data.location"
+          )
+        </div>
+
+        <div class="col-xs-12 col-sm-6">
+          <div class="form-group">
+            <label>@MSG("professional_license.issue_date")</label>
+            @ng._input_date_picker("issueDate",
+              '_formname                -> "prl_form",
+              "ng-model".s              -> "prl_data.issue_date",
+              "uib-datepicker-popup".s  -> MSG("date.format.long"),
+              "datepicker-options".s    -> "date_picker.issue_date.date_options",
+              "is-open".s               -> "date_picker.issue_date.opened",
+              "localdate-to-string".s   -> None,
+              '_click                   -> "date_picker.issue_date.open()",
+              'required                 -> true
+            )
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6">
+          @ng._form_control("licenseType",
+            '_formname          -> "prl_form",
+            '_label             -> MSG("professional_license.license_type"),
+            '_inline            -> false,
+            'maxLength          -> 64,
+            'required           -> true,
+            Symbol("ng-model")  -> "prl_data.license_type"
+          )
+        </div>
+
+        <div class="col-xs-12 col-sm-6">
+          <div class="form-group">
+            <label>@MSG("professional_license.expire_date")</label>
+            @ng._input_date_picker("expireDate",
+              '_formname               -> "prl_form",
+              "ng-model".s             -> "prl_data.expire_date",
+              "uib-datepicker-popup".s -> MSG("date.format.long"),
+              "is-open".s              -> "date_picker.expire_date.opened",
+              "localdate-to-string".s  -> None,
+              '_click                  -> "date_picker.expire_date.open()"
+            )
+          </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6">
+          @ng._form_control("licenseNumber",
+            '_formname          -> "prl_form",
+            '_label             -> MSG("professional_license.license_number"),
+            '_inline            -> false,
+            'maxLength          -> 64,
+            'required           -> true,
+            Symbol("ng-model")  -> "prl_data.license_number"
+          )
+        </div>
+
+        <div class="col-xs-12 col-sm-6">
+          @ng._form_control("contactInfo",
+            '_formname          -> "prl_form",
+            '_label             -> MSG("professional_license.contact_info"),
+            '_inline            -> false,
+            'maxLength          -> 64,
+            'required           -> true,
+            Symbol("ng-model")  -> "prl_data.contact_info"
+          )
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <upload-image title="@MSG("upload.prl_image")" name="professional_license" module-name="image" module-index="0" ng-model="prl_data.images" src-fn="Svc.getLoadUrl(fName)" thumbnail-fn="Svc.getThumbnailloadUrl(fName)" upload-fn="Svc.getUploadUrl(fName)">
+          </upload-image>
+        </div>
+      </div>
+      <div class="row text-right">
+        <div class="col-xs-12">
+          <button type="submit" class="btn btn-primary" ng-click="prl_form.$valid ? savePrl() : ''">@MSG("save")</button>
+          <button class="btn btn-default" ng-click="cancelPrl()">@MSG("cancel")</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

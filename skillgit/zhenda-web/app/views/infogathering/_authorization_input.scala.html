@@ -1,0 +1,135 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(implicit messages: Messages)
+
+@import common._
+
+<div class="panel panel-default ng-cloak">
+  <div class="panel-body">
+    <form name="authorization_form" novalidate>
+      <p ng-if="authorization_data.handwritten.letter_def.title.en" class="text-center">
+        <strong>{{authorization_data.handwritten.letter_def.content.title.en}}</strong>
+      </p>
+      <p ng-if="authorization_data.handwritten.letter_def.title.zh" class="text-center">
+        {{authorization_data.handwritten.letter_def.content.title.zh}}
+      </p>
+      <div ng-repeat="o in authorization_data.handwritten.letter_def.content.blocks"
+        ng-init="block_index = $index">
+        <p ng-if="block_index === 0">
+          <strong>{{o.en}}</strong>
+        </p>
+        <p ng-if="block_index !== 0" class="justify-text">
+          {{o.en}}
+        </p>
+        <p class="justify-text">
+          {{o.zh}}
+        </p>
+      </div>
+
+      <div ng-if="authorization_data.handwritten.letter_def.inputs.identity">
+        <p class="m-t-lg">
+          <strong>{{authorization_data.handwritten.letter_def.inputs.identity.label.en}}</strong>
+        </p>
+        <p>
+          {{authorization_data.handwritten.letter_def.inputs.identity.label.zh}}
+        </p>
+
+        <div class="row">
+          <div class="col-xs-12 col-sm-6 m-b-xs">
+            <select class="form-control" ng-model="authorization_data.handwritten.inputs.identity.type"
+              ng-options="key as type for (key, type) in Svc.dictionary.id_doc_types">
+            </select>
+          </div>
+          <div class="col-xs-12 col-sm-6 m-b-xs">
+            @ng._form_control("id",
+              '_formname         -> "authorization_form",
+              '_inline           -> true,
+              'maxLength         -> 64,
+              'required          -> true,
+              Symbol("ng-model") -> "authorization_data.handwritten.inputs.identity.number"
+            )
+          </div>
+        </div>
+      </div>
+
+      <div ng-if="authorization_data.handwritten.letter_def.inputs.signature_zh">
+        <p>
+          <strong>{{authorization_data.handwritten.letter_def.inputs.signature_zh.label.en}}</strong>
+        </p>
+        <p>
+          {{authorization_data.handwritten.letter_def.inputs.signature_zh.label.zh}}
+        </p>
+
+        <div class="row">
+          <div class="col-xs-8">
+            <span class="text-primary">
+              <strong>@MSG("authorize.signature.area")</strong>
+              <i class="fa fa-arrow-down"></i>
+            </span>
+          </div>
+          <div class="col-xs-4 text-right">
+            <button type="button" class="btn btn-primary btn-xs" ng-click="signaturePad_zh.clear()">@MSG("authorize.signature.clear")</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div>
+              <div class="signature-pad-body">
+                <canvas id="signature_pad_zh">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div ng-if="authorization_data.handwritten.letter_def.inputs.signature_en">
+        <p class="m-t-lg">
+          <strong>{{authorization_data.handwritten.letter_def.inputs.signature_en.label.en}}</strong>
+        </p>
+        <p>
+          {{authorization_data.handwritten.letter_def.inputs.signature_en.label.zh}}
+        </p>
+
+        <div class="row">
+          <div class="col-xs-8">
+            <span class="text-primary">
+              <strong>@MSG("authorize.signature.area")</strong>
+              <i class="fa fa-arrow-down"></i>
+            </span>
+          </div>
+          <div class="col-xs-4 text-right">
+            <button type="button" class="btn btn-primary btn-xs" ng-click="signaturePad_en.clear()">@MSG("authorize.signature.clear")</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="signature-pad-body">
+              <canvas id="signature_pad_en">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row text-right m-t-lg">
+        <div class="col-xs-12">
+          <button type="submit" class="btn btn-success"
+            ng-click="authorization_form.$valid ? saveAuthorization() : ''">
+            @InfoGatheringCtrl.msg("authorization")</button>
+          <button type="button" class="btn btn-default" ng-click="cancelAuthorization()"
+            ng-show="Svc.authorization_saved">@MSG("cancel")</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -1,0 +1,80 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@()(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+
+@layouts.base(CustomersCtrl.msg("new.title")) {
+
+  <div class="row page-heading white-bg">
+    <h2>
+      @CustomersCtrl.msg("new.head")
+    </h2>
+  </div>
+
+  <div class="row wrapper-content" ng-controller="NewCtrl">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <form name="form" novalidate>
+        <div class="ibox">
+          <div class="ibox-content">
+            <div class="row">
+              <div class="form-group col-xs-12 col-sm-8 col-md-8">
+                <label class="sr-only">
+                  @CustomersCtrl.msg("search.label")
+                </label>
+                <input type="search" class="form-control"
+                  ng-model="CustomerSvc.business_entity"
+                  uib-typeahead="be as be.name for be in getBusinessEntities($viewValue)"
+                  placeholder="@CustomersCtrl.msg("search.be.placeholder")">
+              </div>
+            </div>
+            <br>
+            @{_customer()}
+          </div>
+          <div class="ibox-footer">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-12 text-right">
+                <button type="submit" class="btn btn-primary" ng-disabled="!CustomerSvc.business_entity.id" ng-click="form.$valid ? create() : ''">
+                  <i class="fa fa-save"></i>
+                  @MSG("create")
+                </button>
+                <a class="btn btn-link" href="@routes.CustomersCtrl.index()">
+                  @MSG("cancel")
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+}()(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "api_internal/business_entities"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "customers/customer_svc"),
+  libs.assets("js", "customers/nnew"),
+  controller
+)
+
+@controller = {
+  <script>
+    views.customers.customer_svc.run(['CustomerSvc', function(CustomerSvc) {
+      CustomerSvc.dictionary = {
+        'msg.exist'                : '@CustomersCtrl.message("msg.exist")',
+        'msg.created'              : '@CustomersCtrl.message("msg.created")'
+      };
+    }]);
+  </script>
+}

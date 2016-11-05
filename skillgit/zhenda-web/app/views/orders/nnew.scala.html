@@ -1,0 +1,96 @@
+@*
+ * Copyright (c) Factchina Inc, 2015-2016
+ *
+ * This unpublished material is proprietary to Factchina Inc.
+ * All rights reserved. The methods and techniques described herein
+ * are considered trade secrets and/or confidential.
+ * Reproduction or distribution, in whole or in part,
+ * is forbidden except by express written permission of Factchina Inc.
+ *@
+
+@import models.business.services.definitions.PurchasedServices
+
+@(customer_id: UUID, purchased_services: PurchasedServices)(
+implicit req: UserRequest[_], messages: Messages, env: Environment)
+
+@import common._
+@import service_options._
+
+@layouts.base(CustomerUserOrdersCtrl.msg("nnew.title")){
+
+  <div class="row page-heading white-bg">
+    <h2>
+      <i class="fa fa-file-text-o fa-lg fa-fw"></i>
+      @CustomerUserOrdersCtrl.msg("my.orders")
+      <small>@CustomerUserOrdersCtrl.msg("nnew.head_small")</small>
+    </h2>
+  </div>
+
+  <div class="row wrapper-content" ng-controller="OrderCtrl">
+    <form name="submit_form" novalidate >
+      <div class="col-xs-12 col-sm-12 col-md-8 col-lg-9">
+        @{_candidate_info(true)}
+
+        <div class="ibox">
+          <div class="ibox-title">
+            @{_preferred_keys()}
+          </div>
+          <div class="ibox-content">
+            @{_service_set(purchased_services)}
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3">
+        <div class="ibox">
+          <div class="ibox-title">
+            <h3>
+              <i class="fa fa-comments fa-lg fa-fw"></i>
+              @CustomerUserOrdersCtrl.msg("order_comments")
+            </h3>
+          </div>
+          <div class="ibox-content">
+            @{_comments()}
+          </div>
+        </div>
+        <div class="ibox">
+          <div class="ibox-title">
+            <button type="submit" class="btn btn-primary btn-block" ng-click="submit_form.$valid ? create() : ''">
+              <i class="fa fa-paper-plane-o fa-lg fa-fw"></i>
+              @CustomerUserOrdersCtrl.msg("place.order")
+            </button>
+            <a href="@routes.CustomerUserOrdersCtrl.index()" class="btn btn-default btn-block">
+              <i class="fa fa-arrow-left fa-fw"></i>
+              @CustomerUserOrdersCtrl.msg("place.order.return")
+            </a>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+}(
+  libs.webjars("css", "awesome-bootstrap-checkbox"),
+  libs.assets("css", "orders/show")
+)(
+  libs.webjars("js", "angular-resource"),
+  libs.assets("js", "api.helper"),
+  libs.assets("js", "api_internal/orders"),
+  libs.assets("js", "api_internal/customers"),
+  libs.assets("js", "ui.parts"),
+  libs.assets("js", "orders/nnew"),
+  libs.assets("js", "orders/order_svc"),
+  libs.assets("js", "service_options/preferred_set"),
+  controller
+)
+
+@controller = {
+  <script>
+    views.orders.order_svc.run(['OrderSvc', function(OrderSvc) {
+      OrderSvc.customer_id = '@customer_id';
+      OrderSvc.dictionary = {
+        'msg.created'                : '@CustomerUserOrdersCtrl.message("msg.created")',
+        'msg.need_employment_total'  : '@CustomerUserOrdersCtrl.message("msg.need_employment_total")',
+        'msg.need_employment_detail' : '@CustomerUserOrdersCtrl.message("msg.need_employment_detail")'
+      };
+    }]);
+  </script>
+}
